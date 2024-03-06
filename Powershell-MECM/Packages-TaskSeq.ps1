@@ -1,4 +1,4 @@
-
+# test
 $apiEndpoint = (Get-ItemProperty -Path "HKLM:\SOFTWARE\VirtuSphere\MECM").Token
 
 $apiEndpoint = $apiEndpoint + "/mecm_packages.php"
