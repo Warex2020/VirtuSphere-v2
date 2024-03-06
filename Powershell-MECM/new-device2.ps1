@@ -28,7 +28,17 @@ Set-Location "$($MECM_SiteCode):\"
     # Füge fehlende Geräte hinzu
     foreach ($device in $MissingDevices) {
         $deviceName = $device.vm_name
-        $deviceMAC = $device.MACAddress
+        #$deviceInterface = {@{id=101; vm_id=58; ip=; subnet=; gateway=; dns1=; dns2=; vlan=SIDS_SRV_3_Data; mac=00:50:56:9d:0a:fe; mode=DHCP; type=}}
+        $deviceInterface = $device.interfaces
+        if($deviceInterface.Count -gt 1){
+            foreach ($interface in $deviceInterface) {
+                if($interface.mode = "DHCP"){
+                    $deviceMAC = $interface.mac
+                }
+            }
+        }else{
+            $deviceMAC = $deviceInterface[0].mac}
+
         $deviceSMSID = $device.SMSID
         Write-Host "Adding device $deviceName with MAC $deviceMAC and SMSID $deviceSMSID to MECM"
         #$newDevice = New-CMDevice -Name $deviceName -MacAddress $deviceMAC -SMSID $deviceSMSID
