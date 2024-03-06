@@ -21,7 +21,7 @@ Set-Location "$($MECM_SiteCode):\"
     # Lade DeviceList vom MECM
     $MECMDeviceList = Get-CMDevice | Select-Object -Property Name, MACAddress, SMSID
     
-    
+    ## interfaces    : {@{id=101; vm_id=58; ip=; subnet=; gateway=; dns1=; dns2=; vlan=SIDS_SRV_3_Data; mac=00:50:56:9d:0a:fe; mode=DHCP; type=}}
     # Vergleiche die beiden Listen und zeige die fehlenden Geräte in MECMDeviceList an
     $MissingDevices = Compare-Object -ReferenceObject $MySQLDeviceList -DifferenceObject $MECMDeviceList -Property Name, MACAddress, SMSID -PassThru | Where-Object { $_.SideIndicator -eq "<=" }
     
