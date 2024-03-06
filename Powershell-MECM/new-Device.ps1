@@ -51,3 +51,4 @@ foreach ($device in $MissingDevices) {
     #$newDevice = New-CMDevice -Name $deviceName -MacAddress $deviceMAC -SMSID $deviceSMSID
     Write-Host "Device $deviceName added to MECM"
 }
+
