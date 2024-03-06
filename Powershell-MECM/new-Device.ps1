@@ -29,53 +29,25 @@ Set-Location $MECM_ProviderMachineName + "\" + $MECM_SiteCode + ":"
 # JSON-Inhalt von der URL abrufen
 try {
     $jsonUrl = $VirtuSphere_WebAPI + "?action=getDeviceList"
-    $jsonContent = Invoke-RestMethod -Uri $jsonUrl
+    $MySQLDeviceList = Invoke-RestMethod -Uri $jsonUrl
 } catch {
     Write-Host "Failed to connect to $jsonUrl. Please check your connection and try again." -ForegroundColor Red
     exit
 }
 
 # Lade DeviceList vom MECM
-$DeviceList = Get-CMDevice | Select-Object -Property Name, MACAddress, SMSID
+$MECMDeviceList = Get-CMDevice | Select-Object -Property Name, MACAddress, SMSID
 
-foreach ($vm in $jsonContent) {
 
-    write-host "$($vm.vm_name) " -ForegroundColor Yellow
-    foreach ($interface in $vm.interfaces) {
-        $mecm_match = $false
+# Vergleiche die beiden Listen und zeige die fehlenden Geräte in MECMDeviceList an
+$MissingDevices = Compare-Object -ReferenceObject $MySQLDeviceList -DifferenceObject $MECMDeviceList -Property Name, MACAddress, SMSID -PassThru | Where-Object { $_.SideIndicator -eq "<=" }
 
-        $macAddress = $interface.mac
-        write-host "- $macAddress" -ForegroundColor Magenta
-
-        # prüfe ob MAC-Adresse in MECM vorhanden
-        foreach ($device in $DeviceList) {
-            if ($device.MACAddress -eq $macAddress) {
-                write-host "  - $macAddress found in MECM" -ForegroundColor Green
-                $mecm_match = $true
-                break
-            }
-        }
-    }
-
-    if($mecm_match){
-        write-host "  - $macAddress found in MECM" -ForegroundColor Green
-    } else {
-        write-host "  - $macAddress not found in MECM" -ForegroundColor Red
-        # lege device an
-        $device = New-CMDevice -Name $vm.vm_name -MacAddress $macAddress
-
-        # schreibe in log
-        Add-Content -Path $PowershellLogPath -Value "Device $($vm.vm_name) with MAC-Address $macAddress added to MECM"
-    }
+# Füge fehlende Geräte hinzu
+foreach ($device in $MissingDevices) {
+    $deviceName = $device.Name
+    $deviceMAC = $device.MACAddress
+    $deviceSMSID = $device.SMSID
+    Write-Host "Adding device $deviceName with MAC $deviceMAC and SMSID $deviceSMSID to MECM"
+    #$newDevice = New-CMDevice -Name $deviceName -MacAddress $deviceMAC -SMSID $deviceSMSID
+    Write-Host "Device $deviceName added to MECM"
 }
-
-# Lade DeviceList vom MECM
-$DeviceList2 = Get-CMDevice | Select-Object -Property Name, MACAddress, SMSID
-
-# Vergleiche Devicelist mit DeviceList2 und zeige änderungen
-Compare-Object -ReferenceObject $DeviceList -DifferenceObject $DeviceList2 | Format-Table
-
-# Sende Änderungen an WebAPI
-Invoke-RestMethod -Uri $VirtuSphere_WebAPI -Method Post -Body $DeviceList2
-
-write-host $DeviceList2
