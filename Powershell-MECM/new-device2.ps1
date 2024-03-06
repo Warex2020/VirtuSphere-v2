@@ -28,6 +28,8 @@ Set-Location "$($MECM_SiteCode):\"
     # Füge fehlende Geräte hinzu
     foreach ($device in $MissingDevices) {
         $deviceName = $device.vm_name
+        $deviceOS = $device.vm_os
+        $deviceMAC = $null
         #$deviceInterface = {@{id=101; vm_id=58; ip=; subnet=; gateway=; dns1=; dns2=; vlan=SIDS_SRV_3_Data; mac=00:50:56:9d:0a:fe; mode=DHCP; type=}}
         $deviceInterface = $device.interfaces
         if($deviceInterface.Count -gt 1){
@@ -39,9 +41,29 @@ Set-Location "$($MECM_SiteCode):\"
         }else{
             $deviceMAC = $deviceInterface[0].mac}
 
-        $deviceSMSID = $device.SMSID
-        Write-Host "Adding device $deviceName with MAC $deviceMAC and SMSID $deviceSMSID to MECM"
-        #$newDevice = New-CMDevice -Name $deviceName -MacAddress $deviceMAC -SMSID $deviceSMSID
-        Write-Host "Device $deviceName added to MECM"
+        if($null -eq $deviceMAC){
+            Write-Host "Device $deviceName has no MAC-Address. Skipping device" -ForegroundColor Red
+            continue
+        }else{
+
+            $deviceSMSID = $device.SMSID
+            Write-Host "Adding device $deviceName with MAC $deviceMAC and SMSID $deviceSMSID to MECM" -ForegroundColor Green
+            #$newDevice = New-CMDevice -Name $deviceName -MacAddress $deviceMAC -SMSID $deviceSMSID
+            #Import-CMComputerInformation -ComputerName "$($hostname)" -MacAddress $($computer.macAddress) -CollectionName "$($computer.deployment)"
+            Import-CMComputerInformation -ComputerName $deviceName -MacAddress $deviceMAC -CollectionName "All Systems"
+
+            # Füge zur deviceCollection $deviceOS hinzu
+            $deviceCollection = Get-CMDeviceCollection -Name $deviceOS
+            if($null -eq $deviceCollection){
+                Write-Host "Collection $deviceOS does not exist. Skipping device" -ForegroundColor Red
+                continue
+            }else{
+                Add-CMDeviceCollectionDirectMembershipRule -CollectionName $deviceOS -ResourceID $newDevice.ResourceID
+                Invoke-CMCollectionUpdate -Name $deviceOS
+            }
+
+            
+        }
+
     }
     
