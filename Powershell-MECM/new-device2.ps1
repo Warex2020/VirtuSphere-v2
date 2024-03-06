@@ -35,4 +35,3 @@ Set-Location "$($MECM_SiteCode):\"
         Write-Host "Device $deviceName added to MECM"
     }
     
-    
