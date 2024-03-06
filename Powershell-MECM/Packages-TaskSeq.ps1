@@ -1,7 +1,7 @@
 # test
-$apiEndpoint = (Get-ItemProperty -Path "HKLM:\SOFTWARE\VirtuSphere\MECM").Token
+$apiEndpoint = (Get-ItemProperty -Path "HKLM:\SOFTWARE\VirtuSphere\MECM").VirtuSphere_WebAPI
 
-$apiEndpoint = $apiEndpoint + "/mecm_packages.php"
+$apiEndpoint = "http://"+$apiEndpoint + "/mecm_packages.php"
 
 # Funktion zum Senden von Daten an die Web-API
 function Send-ToApi($data) {
