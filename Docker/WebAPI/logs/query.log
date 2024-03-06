@@ -1,0 +1,2 @@
+aUPDATE deploy_missions SET mission_name = ?, mission_status = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 1
+Params: 'Sauerland', '', 'test', '100', 'test', 'test', '1'

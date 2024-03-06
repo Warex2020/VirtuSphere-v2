@@ -1,0 +1,114 @@
+---
+- name: Erstellen von VMs auf einem ESXi-Host
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ./serverlist.yml
+    - ./accounts.yml
+
+  tasks:
+    - name: VMs erstellen basierend auf der Konfigurationsdatei
+      community.vmware.vmware_guest:
+        hostname: "{{ esxi_hostname }}"
+        username: "{{ esxi_username }}"
+        password: "{{ esxi_password }}"
+        validate_certs: no
+        name: "{{ item.vm_name }}"
+        state: present
+        folder: "/"
+        guest_id: "{{ item.guest_id }}"
+        datacenter: "{{ item.datacenter_name }}"
+        datastore: "{{ item.datastore_name }}"
+        disk:
+          - size_gb: "{{ item.disk_size }}"
+            type: thin
+            datastore: "{{ item.datastore_name }}"
+        hardware:
+          memory_mb: "{{ item.memory }}"
+          num_cpus: "{{ item.vcpus }}"
+          scsi: lsilogicsas
+          secure_boot: true
+          boot_firmware: "efi"
+        networks:
+          - name: "{{ item.network[0].name }}"
+            device_type: e1000e
+      delegate_to: localhost
+      loop: "{{ vm_configurations }}"
+      when: vm_configurations | length > 0
+      register: vm_creation_results
+
+    - name: Setze das Hinweisfeld der VM mit Erstellungsdatum, User, Installation und Rollen
+      ignore_errors: true
+      community.vmware.vmware_guest:
+        hostname: "{{ esxi_hostname }}"
+        username: "{{ esxi_username }}"
+        password: "{{ esxi_password }}"
+        validate_certs: no
+        name: "{{ item.vm_name }}"
+        datacenter: "{{ item.datacenter_name }}"
+        folder: "/{{ item.datacenter_name }}/"  # Stellen Sie sicher, dass dieser Pfad korrekt ist
+        annotation: >-
+          Erstellt durch Ansible-Playbook am: {{ ansible_date_time.date }} {{ ansible_date_time.time }},
+          Ersteller: {{ ansible_env.USER }},
+          Installation: {{ item.deployment }},
+          Rollen: {{ item.role }},
+          Domain: {{ item.domain }},
+          IP: {{ item.ip }},
+          VLAN: {{ item.network }}
+        state: present
+      delegate_to: localhost
+      loop: "{{ vm_configurations }}"
+      when: vm_creation_results is changed
+
+    - name: Sammle Informationen aller VMs
+      community.vmware.vmware_guest_info:
+        hostname: "{{ esxi_hostname }}"
+        username: "{{ esxi_username }}"
+        password: "{{ esxi_password }}"
+        validate_certs: no
+        datacenter: "{{ item.datacenter_name }}"
+        name: "{{ item.vm_name}}"
+      delegate_to: localhost
+      register: vm_infos
+      loop: "{{ vm_configurations }}"
+
+    - name: Sammle Hostnamen und MAC-Adressen für die Datei
+      set_fact:
+        vm_lines: "{{ vm_lines | default([]) + [ item.instance.hw_name + ';' + item.instance.hw_eth0.summary + ';' + item.instance.hw_eth0.macaddress ] }}"
+      loop: "{{ vm_infos.results }}"
+      when: item.instance.hw_eth0.macaddress is defined
+
+    - name: V2 - Sammle Hostnamen und MAC-Adressen für jede VM
+      hosts: localhost
+      gather_facts: no
+      tasks:
+        - name: Initialize an empty list for VM lines
+          set_fact:
+            vm_lines2: []
+
+        - name: V2 - Loop through each VM
+          set_fact:
+            vm_lines2: "{{ vm_lines + [vm_line] }}"
+          vars:
+            interface_names: ['hw_eth0', 'hw_eth1', 'hw_eth2'] # Beispiel-Interface-Namen
+            vm_line2: "{{ item.instance.hw_name }};{{ interface_mac_addresses | join(';') }}"
+            interface_mac_addresses: "{{ interface_names | map('extract', item.instance) | map(attribute='macaddress') | select('defined') | list }}"
+          loop: "{{ vm_infos.results }}"
+          when: item.instance.hw_eth0.macaddress is defined
+
+        - name: V2 - Show VM lines
+          debug:
+            var: vm_lines2
+
+
+    - name: Show VM lines
+      debug:
+        var: vm_lines
+
+    - name: Speichere Hostnamen und MAC-Adressen in eine Datei
+      copy:
+        dest: "/tmp/vm_mac_list.csv"
+        content: "{{ vm_lines | join('\n') }}"
+        owner: "{{ ansible_username }}"
+        group: "{{ ansible_username }}"
+        mode: '0666'

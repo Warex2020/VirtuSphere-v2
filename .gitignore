@@ -1,0 +1,4 @@
+Docker/mysql/mysql-data/
+Docker/WebAPI/logs/
+Docker/WebAPI/logs/query.log
+Docker/WebAPI/logs/fail.log

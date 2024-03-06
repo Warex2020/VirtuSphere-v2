@@ -1,0 +1,5 @@
+esxi_hostname: ""
+esxi_username: 
+esxi_password: ""
+ansible_username: ""
+WaitingTime: "5"

@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  webserver:
+    build:
+      context: ./Docker/nginx
+      dockerfile: Dockerfile
+    ports:
+      - 8021:80
+    volumes:
+      - ./Docker/WebAPI:/var/www/html
+
+  php:
+    build:
+      context: ./Docker/php
+      dockerfile: Dockerfile
+    expose:
+      - 9000
+    volumes:
+      - ./Docker/WebAPI:/var/www/html
+
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: RootP@ssw0rd
+      MYSQL_DATABASE: deploymentcenter
+      MYSQL_USER: mysqluser
+      MYSQL_PASSWORD: UserP@ssw0rd
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./Docker/mysql/mysql-data:/var/lib/mysql
+      - ./Docker/mysql/mysql-init:/docker-entrypoint-initdb.d
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8080:80
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: RootP@ssw0rd
