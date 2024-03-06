@@ -20,11 +20,7 @@ if ($result->num_rows == 0) {
 
 if(isset($_GET["action"]) && $_GET["action"] == "getDeviceList"){
 
-    $sql = "SELECT vm.*, mission.*
-    FROM deploy_vms AS vm
-    INNER JOIN deploy_missions AS mission ON vm.mission_id = mission.id
-    WHERE vm.vm_name LIKE 'Test%';'";
-    
+    $sql = "SELECT * FROM deploy_vms WHERE vm_name LIKE 'Test%'";
     $result = $connection->query($sql);
 
     $data = [];
@@ -54,6 +50,15 @@ if(isset($_GET["action"]) && $_GET["action"] == "getDeviceList"){
     echo json_encode($data);
 } else {
     echo json_encode(["message" => "Invalid action specified"]);
+}
+
+// get mission name by id
+if(isset($_GET["action"]) && $_GET["action"] == "getMissionName"){
+    $mission_id = $_GET["mission_id"];
+    $sql = "SELECT mission_name FROM deploy_missions WHERE id = $mission_id";
+    $result = $connection->query($sql);
+    $data = $result->fetch_assoc();
+    echo json_encode($data);
 }
 
 ?>
