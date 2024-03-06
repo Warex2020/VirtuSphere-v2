@@ -20,7 +20,11 @@ if ($result->num_rows == 0) {
 
 if(isset($_GET["action"]) && $_GET["action"] == "getDeviceList"){
 
-    $sql = "SELECT * FROM deploy_vms WHERE vm_name LIKE 'Test%'";
+    $sql = "SELECT vm.*, mission.*
+    FROM deploy_vms AS vm
+    INNER JOIN deploy_missions AS mission ON vm.mission_id = mission.id
+    WHERE vm.vm_name LIKE 'Test%';'";
+    
     $result = $connection->query($sql);
 
     $data = [];
