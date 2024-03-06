@@ -26,7 +26,7 @@ if (-not (Test-Path "HKLM:\SOFTWARE\VirtuSphere\MECM")) {
         $MECM_SiteCode = (Get-ItemProperty -Path "HKLM:\SOFTWARE\VirtuSphere\MECM").MECM_SiteCode
         $VirtuSphere_WebAPI = (Get-ItemProperty -Path "HKLM:\SOFTWARE\VirtuSphere\MECM").VirtuSphere_WebAPI
         $PowershellLogPath = (Get-ItemProperty -Path "HKLM:\SOFTWARE\VirtuSphere\MECM").PowershellLogPath
-    
+    $VirtuSphere_WebAPI = $VirtuSphere_WebAPI + "/mecm-api.php"
 
     # Import    MECM Module
     Import-Module ($env:SMS_ADMIN_UI_PATH.Substring(0,$env:SMS_ADMIN_UI_PATH.Length-5) + '\ConfigurationManager.psd1')
