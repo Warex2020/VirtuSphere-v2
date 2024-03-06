@@ -51,5 +51,5 @@ if (-not (Test-Path "HKLM:\SOFTWARE\VirtuSphere\MECM")) {
         #$newDevice = New-CMDevice -Name $deviceName -MacAddress $deviceMAC -SMSID $deviceSMSID
         Write-Host "Device $deviceName added to MECM"
     }
-    a
+    
     
