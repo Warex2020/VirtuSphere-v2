@@ -28,11 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!empty($data)) {
         // Datenverarbeitung basierend auf dem Typ der gesendeten Daten
         switch ($data['type']) {
-            case 'Package':
+            case 'deviceCollection':
                 // Daten in die Tabelle deploy_packages einfügen
-                $sql = "INSERT INTO deploy_packages (package_name, package_version, package_status) VALUES (?, ?, 'Aktiv') ON DUPLICATE KEY UPDATE package_version = VALUES(package_version), package_status = VALUES(package_status)";
+                $sql = "INSERT INTO deploy_packages (package_name, package_status) VALUES (?, 'Aktiv') ON DUPLICATE KEY UPDATE package_status = VALUES(package_status)";
                 $stmt = $connection->prepare($sql);
-                $stmt->bind_param("ss", $data['name'], $data['version']);
+                $stmt->bind_param("s", $data['name']);
                 $stmt->execute();
                 break;
             case 'TaskSequence':
