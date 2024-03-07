@@ -146,7 +146,7 @@ while($true){
         
         try{
             $response = Invoke-RestMethod -Uri $updateID_Url -Method Post -Body $jsonPayload -ContentType "application/json"
-            write-host "`t - ResourceID ab DB gesendet: $response" -ForegroundColor green
+            write-host "`t - ResourceID an DB gesendet: $response" -ForegroundColor green
         }catch{
             write-host "`t - Fehler beim Übertragen der ResourceID an DB" -ForegroundColor red
         }
