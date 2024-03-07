@@ -149,7 +149,7 @@ namespace VirtuSphere
                         }
                         Console.WriteLine(executionCommand);
 
-                        await ExecuteCommandAsync("Execution Command: "+executionCommand);
+                        await ExecuteCommandAsync(executionCommand);
 
 
 
