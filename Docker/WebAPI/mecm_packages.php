@@ -30,11 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         switch ($data['type']) {
             case 'deviceCollection':
                 // Daten in die Tabelle deploy_packages einfügen
-                $sql = "INSERT INTO deploy_packages (package_name, package_status) VALUES (?, 'Aktiv') ON DUPLICATE KEY UPDATE package_version = VALUES(package_version), package_status = VALUES(package_status)";
+                $sql = "INSERT INTO deploy_packages (package_name, package_version, package_status) VALUES (?,'', 'Aktiv') ON DUPLICATE KEY UPDATE package_version = VALUES(package_version), package_status = VALUES(package_status)";
                 $stmt = $connection->prepare($sql);
                 $stmt->bind_param("s", $data['name']);
                 $stmt->execute();
-                if(!($stmt->execute())){ echo "Error: ".$connection->error();}
+                if(!($stmt->execute())){ echo "Error: ".$connection->error;}
                 break;
             case 'TaskSequence':
                 // Daten in die Tabelle deploy_os einfügen
@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt = $connection->prepare($sql);
                 $stmt->bind_param("s", $data['name']);
                 $stmt->execute();
+                if(!($stmt->execute())){ echo "Error: ".$connection->error;}
                 break;
             default:
                 // Unbekannter Typ
