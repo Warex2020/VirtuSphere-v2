@@ -107,7 +107,7 @@ namespace VirtuSphere
 
 
 
-        public async Task ConnectAndExecuteSSHCommands(string host, int port, string username, string password, string missionName, string runPlaybook, bool chk_autostart, bool chk_verbose)
+        public async Task ConnectAndExecuteSSHCommands(string host, int port, string username, string password, string missionName, string runPlaybook, bool chk_autostart, bool chk_verbose, bool run_python)
         {
             await Task.Run(async () =>
             {
@@ -115,7 +115,7 @@ namespace VirtuSphere
                 try
                 {
                     sshClient.Connect();
-                    if (sshClient.IsConnected) 
+                    if (sshClient.IsConnected)
                     {
                         shellStream = sshClient.CreateShellStream("customTerminal", 80, 24, 800, 600, 1024);
 
@@ -130,25 +130,24 @@ namespace VirtuSphere
                         };
 
                         string executionCommand;
+                        // baue hier den Run befehl zusammen
 
-                        if (chk_autostart && chk_verbose)
-                        {
-                            executionCommand = "cd /tmp/" + missionName + "; chmod 666 /tmp/" + missionName + "/*; ansible-playbook " + runPlaybook + " -vvv; ansible-playbook startVMs*";
-                        }
-                        else if (chk_verbose)
-                        {
-                            executionCommand = "cd /tmp/" + missionName + "; chmod 666 /tmp/" + missionName + "/*; ansible-playbook " + runPlaybook + " -vvv";
-                        }
-                        else if (chk_autostart)
-                        {
-                            executionCommand = "cd /tmp/" + missionName + "; chmod 666 /tmp/" + missionName + "/*; ansible-playbook " + runPlaybook + "; ansible-playbook startVMs*";
+                        executionCommand = "cd /tmp/" + missionName + "; chmod 666 /tmp/" + missionName + "/*";
+
+                        if (runPlaybook.EndsWith("eateVMs-ESXi_playbook.yml")) { 
+                            executionCommand += "ansible-playbook " + runPlaybook;
+
+                            if (chk_verbose) { executionCommand += " -vvv"; }
+                            if (run_python) { executionCommand += " ansible-playbook exportVMS*"; if (chk_verbose) { executionCommand += " -vvv"; } }
+                            if (chk_autostart) { executionCommand += "; ansible-playbook startVMs*"; if (chk_verbose) { executionCommand += " -vvv"; } }
                         }
                         else
                         {
-                            executionCommand = "cd /tmp/" + missionName + "; chmod 666 /tmp/" + missionName + "/*; ansible-playbook " + runPlaybook;
+                            executionCommand += "ansible-playbook " + runPlaybook;
                         }
+                        Console.WriteLine(executionCommand);
 
-                        await ExecuteCommandAsync(executionCommand);
+                        await ExecuteCommandAsync("Execution Command: "+executionCommand);
 
 
 

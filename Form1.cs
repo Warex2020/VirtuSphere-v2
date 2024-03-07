@@ -1349,6 +1349,13 @@ namespace VirtuSphere
 
             Console.WriteLine("ProjecttempPath: " + ProjecttempPath);
 
+            // Öffne unter ProjecttempPath die Datei upload_mac_list.py und ersetze {{WEBAPI}}  zu hostname
+            string upload_mac_list = Path.Combine(ProjecttempPath, "upload_mac_list.py");
+            string text = File.ReadAllText(upload_mac_list);
+            text = text.Replace("{{WEBAPI}}", hostname);
+            File.WriteAllText(upload_mac_list, text);
+
+
 
             try
             {

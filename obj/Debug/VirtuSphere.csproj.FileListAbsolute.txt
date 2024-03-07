@@ -37,3 +37,5 @@ C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSphere.applic
 C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSph.31DFAD95.Up2Date
 C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSphere.exe
 C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSphere.pdb
+C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\bin\Debug\Ansible\upload_mac_list.py
+C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\bin\Debug\Ansible\exportVMs-Informations-ESXi_playbook.yml

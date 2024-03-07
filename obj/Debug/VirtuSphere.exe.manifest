@@ -163,24 +163,33 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="VirtuSphere.exe" size="2775480">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="VirtuSphere.exe" size="2775992">
       <assemblyIdentity name="VirtuSphere" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>LERzotYqMeH+BcI2iXg/gW4DKQP3bIVkwl622oIRMn0=</dsig:DigestValue>
+        <dsig:DigestValue>R4O7FNVZLsM02frcOAZ1xWHs6JcnjBSeyHEtdIuF+x8=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="Ansible\createVMs-ESXi_playbook.yml" size="4200">
+  <file name="Ansible\createVMs-ESXi_playbook.yml" size="2220">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>BqL764UCDHsHH6xvMpxY14o+uE9iJ8fWZXUcX9QoLqY=</dsig:DigestValue>
+      <dsig:DigestValue>1OwVur0IefK4dxycq4LSnjC3OVXFUHaGt946sgt1XxI=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Ansible\exportVMs-Informations-ESXi_playbook.yml" size="1365">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>lGDYHY9R7p/1uY06zmoCEqj/+JzZ1ADTmovfCupgLOM=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Ansible\startVMs-ESXi_playbook.yml" size="758">
@@ -199,6 +208,15 @@
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
       <dsig:DigestValue>4MKLuF5X6te688Ur87h/JminN81Ol976BZSkEAMX6QM=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Ansible\upload_mac_list.py" size="1055">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>LOXZb1Th1/XILiSnnpa5ZlJuKmH6PkLFkWBmFP82FYY=</dsig:DigestValue>
     </hash>
   </file>
   <file name="banner_3I7_icon.ico" size="151492">
