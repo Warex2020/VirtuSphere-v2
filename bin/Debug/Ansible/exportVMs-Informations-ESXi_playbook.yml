@@ -19,7 +19,7 @@
       register: vm_infos
       loop: "{{ vm_configurations }}"
 
-    - name: Sammle Hostnamen und MAC-Adressen für die Datei
+    - name: Sammle Hostnamen und MAC-Adressen fuer die Datei
       set_fact:
         vm_lines: "{{ vm_lines | default([]) + [ item.instance.hw_name + ';' + item.instance.hw_eth0.summary + ';' + item.instance.hw_eth0.macaddress ] }}"
       loop: "{{ vm_infos.results }}"

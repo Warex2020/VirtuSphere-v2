@@ -132,6 +132,8 @@ namespace VirtuSphere
                         string executionCommand;
                         // baue hier den Run befehl zusammen
 
+                        await ExecuteCommandAsync("cd /tmp/\" + missionName + \";");
+
                         executionCommand = "cd /tmp/" + missionName + "; chmod 666 /tmp/" + missionName + "/* ; ";
 
                         if (runPlaybook.EndsWith("eateVMs-ESXi_playbook.yml")) { 
