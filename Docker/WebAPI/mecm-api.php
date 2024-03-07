@@ -18,6 +18,7 @@ if ($result->num_rows == 0) {
     exit();
 }
 
+
 if(isset($_GET["action"]) && $_GET["action"] == "getDeviceList"){
 
     $sql = "SELECT * FROM deploy_vms WHERE mecm_id is null";
