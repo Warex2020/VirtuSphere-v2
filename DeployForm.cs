@@ -132,7 +132,7 @@ namespace VirtuSphere
                         string executionCommand;
                         // baue hier den Run befehl zusammen
 
-                        await ExecuteCommandAsync("cd /tmp/\" + missionName + \";");
+                       // await ExecuteCommandAsync("cd /tmp/" + missionName + ";");
 
                         executionCommand = "cd /tmp/" + missionName + "; chmod 666 /tmp/" + missionName + "/* ; ";
 
@@ -140,7 +140,7 @@ namespace VirtuSphere
                             executionCommand += "/tmp/"+ missionName+"/ansible-playbook " + runPlaybook;
 
                             if (chk_verbose) { executionCommand += " -vvv; "; } else { executionCommand += "; ";}
-                            if (run_python) { executionCommand += " ansible-playbook /tmp/"+ missionName+"/exportVMS * "; if (chk_verbose) { executionCommand += " -vvv ; "; } else { executionCommand += "; "; } }
+                            if (run_python) { executionCommand += " ansible-playbook /tmp/{missionName}/exportVMS * "; if (chk_verbose) { executionCommand += " -vvv ; "; } else { executionCommand += "; "; } }
                             if (chk_autostart) { executionCommand += " ansible-playbook /tmp/"+ missionName+"/startVMs*"; if (chk_verbose) { executionCommand += " -vvv"; } else { executionCommand += "; "; } }
                         }
                         else
