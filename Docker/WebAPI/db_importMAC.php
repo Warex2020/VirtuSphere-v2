@@ -11,6 +11,7 @@ $sql->bind_param("s", $clientIP);
 $sql->execute();
 $result = $sql->get_result();
 
+
 if ($result->num_rows == 0) {
     // IP nicht gefunden, Zugriff verweigert
     http_response_code(403);
@@ -19,7 +20,7 @@ if ($result->num_rows == 0) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_GET["action"] == "updateInterface") {
-    updateInterface($db);
+    updateInterface($connection);
 } else {
     http_response_code(405);
     echo json_encode(['error' => 'Method not allowed']);
@@ -31,23 +32,43 @@ function updateInterface($db) {
     $input = file_get_contents('php://input');
     $data = json_decode($input, true);
 
-    if (!empty($data)) {
-        if (isset($data['mac_address'], $data['vm_name'], $data['interface'])) {
-            $sql = "UPDATE deploy_interfaces SET mac = ? WHERE vm_id = (SELECT id FROM deploy_vms WHERE vm_name = ?) AND interface_name = ?";
-            $stmt = $db->prepare($sql);
-            $stmt->bind_param("sss", $data['mac_address'], $data['vm_name'], $data['interface']);
-            if ($stmt->execute()) {
-                http_response_code(200);
-                echo json_encode(['success' => 'Data updated successfully']);
-            } else {
-                echo "Error: " . $db->error;
-            }
-        } else {
-            http_response_code(400);
-            echo json_encode(['error' => 'Invalid data format']);
-        }
-    } else {
+    if (empty($data)) {
         http_response_code(400);
         echo json_encode(['error' => 'No data received']);
+        return;
+    }
+
+    // Beginne eine Transaktion
+    $db->begin_transaction();
+
+    try {
+        foreach ($data as $vm) {
+            if (!isset($vm['mac_address'], $vm['vm_name'], $vm['interface'])) {
+                // Wirf eine Exception, um in den Catch-Block zu gelangen
+                throw new Exception('Invalid data format');
+            }
+
+            $sql = "UPDATE deploy_interfaces SET mac = ? WHERE vm_id = (SELECT id FROM deploy_vms WHERE vm_name = ?) AND vlan = ?";
+            $stmt = $db->prepare($sql);
+            if (!$stmt) {
+                throw new Exception("Prepare statement failed: " . $db->error);
+            }
+
+            $stmt->bind_param("sss", $vm['mac_address'], $vm['vm_name'], $vm['interface']);
+            if (!$stmt->execute()) {
+                // Wirf eine Exception, wenn das Ausführen fehlschlägt
+                throw new Exception("Execute statement failed: " . $stmt->error);
+            }
+        }
+
+        // Commit der Transaktion
+        $db->commit();
+        echo json_encode(['success' => 'Data updated successfully']);
+
+    } catch (Exception $e) {
+        // Rollback, falls ein Fehler auftritt
+        $db->rollback();
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
     }
 }
