@@ -34,8 +34,6 @@ foreach ($package in $packages) {
     $deployData += @{
         type = "deviceCollection"
         name = $package.Name
-        version = $package.Version # Möglicherweise müssen Sie dies anpassen, um die korrekte Versionsinformation zu erhalten
-        id = $package.CollectionID
     }
 }
 
