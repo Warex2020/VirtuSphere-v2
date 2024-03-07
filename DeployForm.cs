@@ -132,14 +132,14 @@ namespace VirtuSphere
                         string executionCommand;
                         // baue hier den Run befehl zusammen
 
-                        executionCommand = "cd /tmp/" + missionName + "; chmod 666 /tmp/" + missionName + "/*";
+                        executionCommand = "cd /tmp/" + missionName + "; chmod 666 /tmp/" + missionName + "/* ; ";
 
                         if (runPlaybook.EndsWith("eateVMs-ESXi_playbook.yml")) { 
                             executionCommand += "ansible-playbook " + runPlaybook;
 
-                            if (chk_verbose) { executionCommand += " -vvv"; }
-                            if (run_python) { executionCommand += " ansible-playbook exportVMS*"; if (chk_verbose) { executionCommand += " -vvv"; } }
-                            if (chk_autostart) { executionCommand += "; ansible-playbook startVMs*"; if (chk_verbose) { executionCommand += " -vvv"; } }
+                            if (chk_verbose) { executionCommand += " -vvv; "; } else { executionCommand += "; ";}
+                            if (run_python) { executionCommand += " ansible-playbook exportVMS*"; if (chk_verbose) { executionCommand += " -vvv ; "; } else { executionCommand += "; "; } }
+                            if (chk_autostart) { executionCommand += " ansible-playbook startVMs*"; if (chk_verbose) { executionCommand += " -vvv"; } else { executionCommand += "; "; } }
                         }
                         else
                         {
