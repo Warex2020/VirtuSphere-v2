@@ -31,7 +31,7 @@ if(isset($_GET["action"]) && $_GET["action"] == "getDeviceList"){
             $vm_id = $vm['id'];
 
             // Get interfaces for this VM
-            $interfacesSql = $connection->prepare("SELECT * FROM deploy_interfaces WHERE vm_id = ?");
+            $interfacesSql = $connection->prepare("SELECT * FROM deploy_interfaces WHERE `mac` IS NOT NULL AND vm_id = ?");
             $interfacesSql->bind_param("i", $vm_id);
             $interfacesSql->execute();
             $interfacesResult = $interfacesSql->get_result();
@@ -44,7 +44,7 @@ if(isset($_GET["action"]) && $_GET["action"] == "getDeviceList"){
             $packagesResult = $packagesSql->get_result();
             $vm['packages'] = $packagesResult->fetch_all(MYSQLI_ASSOC);
 
-            $data[] = $vm;
+            if($vm['interfaces']) $data[] = $vm; 
         }
     }
 
