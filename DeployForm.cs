@@ -140,8 +140,8 @@ namespace VirtuSphere
                             executionCommand += "ansible-playbook /tmp/" + missionName + "/" + runPlaybook;
 
                             if (chk_verbose) { executionCommand += " -vvv; "; } else { executionCommand += "; ";}
-                            if (run_python) { executionCommand += " ansible-playbook /tmp/{missionName}/exportVMS * "; if (chk_verbose) { executionCommand += " -vvv ; "; } else { executionCommand += "; "; } }
-                            if (chk_autostart) { executionCommand += " ansible-playbook /tmp/"+ missionName+"/startVMs*"; if (chk_verbose) { executionCommand += " -vvv"; } else { executionCommand += "; "; } }
+                            if (run_python) { executionCommand += " ansible-playbook exportVMs* "; if (chk_verbose) { executionCommand += " -vvv ; "; } else { executionCommand += "; "; } }
+                            if (chk_autostart) { executionCommand += " ansible-playbook startVMs*"; if (chk_verbose) { executionCommand += " -vvv"; } else { executionCommand += "; "; } }
                         }
                         else
                         {
