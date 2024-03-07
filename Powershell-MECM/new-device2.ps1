@@ -1,7 +1,5 @@
-$MECM_ProviderMachineName = (Get-ItemProperty -Path "HKLM:\SOFTWARE\VirtuSphere\MECM").MECM_ProviderMachineName
 $MECM_SiteCode = (Get-ItemProperty -Path "HKLM:\SOFTWARE\VirtuSphere\MECM").MECM_SiteCode
 $VirtuSphere_WebAPI = (Get-ItemProperty -Path "HKLM:\SOFTWARE\VirtuSphere\MECM").VirtuSphere_WebAPI
-$PowershellLogPath = (Get-ItemProperty -Path "HKLM:\SOFTWARE\VirtuSphere\MECM").PowershellLogPath
 
 $VirtuSphere_Folder_Collections = "$($MECM_SiteCode):\DeviceCollection"
 # Import MECM Module
@@ -12,7 +10,7 @@ Set-Location "$($MECM_SiteCode):\"
 # JSON-Inhalt von der URL abrufen
 $jsonUrl = "http://$VirtuSphere_WebAPI/mecm-api.php?action=getDeviceList"
 $missionName = "http://$VirtuSphere_WebAPI/mecm-api.php?action=getMissionName&mission_id="
-$updateID = "http://$VirtuSphere_WebAPI/mecm-updateid.php?action=updateDevice"
+$updateID_Url = "http://$VirtuSphere_WebAPI/mecm_updateid.php?action=updateDevice"
 
 while($true){
     try {
@@ -24,12 +22,11 @@ while($true){
 
     # Lade DeviceList vom MECM
     $MECMDeviceList = Get-CMDevice | Select-Object Name, MACAddress, SMSID
-    $alltaskSequences = Get-CMTaskSequence | Select-Object Name, PackageID
+    $alltaskSequences = Get-CMTaskSequence -Fast | Select-Object Name, PackageID
 
     foreach ($device in $MySQLDeviceList) {
         $deviceName = $device.vm_name
         $deviceMAC = ($device.interfaces | Where-Object { $_.mode -eq 'DHCP' }).mac
-        $deviceSMSID = $device.SMSID
         $deviceOS = $device.vm_os
         $devicePackages = $device.packages
         $mission_id = $device.mission_id
@@ -143,18 +140,16 @@ while($true){
         # Construct the JSON payload
         $jsonPayload = @{
             deviceName = $deviceName
-            deviceSMSID = $deviceSMSID # Diese Variable wird im PHP-Beispiel nicht verwendet; Prüfen ob notwendig
             deviceResourceID = $deviceResourceID
             deviceid = $($device.id)
         } | ConvertTo-Json
         
-        # Send the POST request
-        #$response = Invoke-RestMethod -Uri $updateID -Method Post -Body $jsonPayload -ContentType "application/json"
-        
-        $jsonPayload
-
-        # Display the response
-        Write-Host "Response: $response" -ForegroundColor Green
+        try{
+            $response = Invoke-RestMethod -Uri $updateID_Url -Method Post -Body $jsonPayload -ContentType "application/json"
+            write-host "`t - ResourceID ab DB gesendet: $response" -ForegroundColor green
+        }catch{
+            write-host "`t - Fehler beim Übertragen der ResourceID an DB" -ForegroundColor red
+        }
 
 
     }
