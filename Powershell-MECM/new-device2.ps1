@@ -12,6 +12,7 @@ Set-Location "$($MECM_SiteCode):\"
 # JSON-Inhalt von der URL abrufen
 $jsonUrl = "http://$VirtuSphere_WebAPI/mecm-api.php?action=getDeviceList"
 $missionName = "http://$VirtuSphere_WebAPI/mecm-api.php?action=getMissionName&mission_id="
+$updateID = "http://$VirtuSphere_WebAPI/mecm-updateid.php?action=updateDevice"
 
 while($true){
     try {
@@ -136,7 +137,27 @@ while($true){
             }
 
         }
+   
+
+        
+        # Construct the JSON payload
+        $jsonPayload = @{
+            deviceName = $deviceName
+            deviceSMSID = $deviceSMSID # Diese Variable wird im PHP-Beispiel nicht verwendet; Prüfen ob notwendig
+            deviceResourceID = $deviceResourceID
+            deviceid = $($device.id)
+        } | ConvertTo-Json
+        
+        # Send the POST request
+        #$response = Invoke-RestMethod -Uri $updateID -Method Post -Body $jsonPayload -ContentType "application/json"
+        
+        $jsonPayload
+
+        # Display the response
+        Write-Host "Response: $response" -ForegroundColor Green
+
+
     }
 
-    sleep 10
+    Start-Sleep 10
 }
