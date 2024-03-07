@@ -20,7 +20,7 @@ if ($result->num_rows == 0) {
 
 if(isset($_GET["action"]) && $_GET["action"] == "getDeviceList"){
 
-    $sql = "SELECT * FROM deploy_vms WHERE vm_name LIKE 'Test%'";
+    $sql = "SELECT * FROM deploy_vms WHERE mecm_id is null";
     $result = $connection->query($sql);
 
     $data = [];
