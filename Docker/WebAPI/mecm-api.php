@@ -48,17 +48,15 @@ if(isset($_GET["action"]) && $_GET["action"] == "getDeviceList"){
     }
 
     echo json_encode($data);
-} else {
-    echo json_encode(["message" => "Invalid action specified"]);
-}
 
-// get mission name by id
-if(isset($_GET["action"]) && $_GET["action"] == "getMissionName"){
+}elseif(isset($_GET["action"]) && $_GET["action"] == "getMissionName"){
     $mission_id = $_GET["mission_id"];
     $sql = "SELECT mission_name FROM deploy_missions WHERE id = $mission_id";
     $result = $connection->query($sql);
     $data = $result->fetch_assoc();
     echo json_encode($data);
+} else {
+    echo json_encode(["message" => "Invalid action specified"]);
 }
 
 ?>
