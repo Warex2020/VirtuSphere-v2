@@ -32,6 +32,9 @@
             this.listFiles = new System.Windows.Forms.ListView();
             this.txtAnsible = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtWaitTime = new System.Windows.Forms.TextBox();
+            this.chk_verbose = new System.Windows.Forms.CheckBox();
             this.button5 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.chk_autostart = new System.Windows.Forms.CheckBox();
@@ -45,9 +48,7 @@
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.chk_verbose = new System.Windows.Forms.CheckBox();
-            this.txtWaitTime = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.chk_runPython = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -74,6 +75,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.chk_runPython);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.txtWaitTime);
             this.groupBox1.Controls.Add(this.chk_verbose);
@@ -99,6 +101,34 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Generierten Ansible Playbooks";
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(834, 392);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(24, 13);
+            this.label2.TabIndex = 29;
+            this.label2.Text = "Min";
+            // 
+            // txtWaitTime
+            // 
+            this.txtWaitTime.Location = new System.Drawing.Point(802, 388);
+            this.txtWaitTime.Name = "txtWaitTime";
+            this.txtWaitTime.Size = new System.Drawing.Size(28, 20);
+            this.txtWaitTime.TabIndex = 28;
+            this.txtWaitTime.Text = "5";
+            this.txtWaitTime.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            // 
+            // chk_verbose
+            // 
+            this.chk_verbose.AutoSize = true;
+            this.chk_verbose.Location = new System.Drawing.Point(701, 411);
+            this.chk_verbose.Name = "chk_verbose";
+            this.chk_verbose.Size = new System.Drawing.Size(95, 17);
+            this.chk_verbose.TabIndex = 27;
+            this.chk_verbose.Text = "Ansible Debug";
+            this.chk_verbose.UseVisualStyleBackColor = true;
+            // 
             // button5
             // 
             this.button5.Location = new System.Drawing.Point(779, 261);
@@ -122,27 +152,31 @@
             // chk_autostart
             // 
             this.chk_autostart.AutoSize = true;
-            this.chk_autostart.Location = new System.Drawing.Point(704, 407);
+            this.chk_autostart.Checked = true;
+            this.chk_autostart.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chk_autostart.Location = new System.Drawing.Point(701, 388);
             this.chk_autostart.Name = "chk_autostart";
-            this.chk_autostart.Size = new System.Drawing.Size(95, 17);
+            this.chk_autostart.Size = new System.Drawing.Size(87, 17);
             this.chk_autostart.TabIndex = 24;
-            this.chk_autostart.Text = "Autostart nach";
+            this.chk_autostart.Text = "Starten nach";
             this.chk_autostart.UseVisualStyleBackColor = true;
             // 
             // chk_macinDB
             // 
             this.chk_macinDB.AutoSize = true;
-            this.chk_macinDB.Location = new System.Drawing.Point(704, 384);
+            this.chk_macinDB.Enabled = false;
+            this.chk_macinDB.Location = new System.Drawing.Point(701, 342);
             this.chk_macinDB.Name = "chk_macinDB";
-            this.chk_macinDB.Size = new System.Drawing.Size(141, 17);
+            this.chk_macinDB.Size = new System.Drawing.Size(130, 17);
             this.chk_macinDB.TabIndex = 23;
-            this.chk_macinDB.Text = "MAC -> DB Import (auto)";
+            this.chk_macinDB.Text = "MAC Liste empfangen";
             this.chk_macinDB.UseVisualStyleBackColor = true;
+            this.chk_macinDB.Visible = false;
             // 
             // btn_importMacDB
             // 
             this.btn_importMacDB.Enabled = false;
-            this.btn_importMacDB.Location = new System.Drawing.Point(701, 355);
+            this.btn_importMacDB.Location = new System.Drawing.Point(706, 446);
             this.btn_importMacDB.Name = "btn_importMacDB";
             this.btn_importMacDB.Size = new System.Drawing.Size(157, 23);
             this.btn_importMacDB.TabIndex = 22;
@@ -163,7 +197,7 @@
             // comboPlaybooks
             // 
             this.comboPlaybooks.FormattingEnabled = true;
-            this.comboPlaybooks.Location = new System.Drawing.Point(692, 328);
+            this.comboPlaybooks.Location = new System.Drawing.Point(692, 306);
             this.comboPlaybooks.Name = "comboPlaybooks";
             this.comboPlaybooks.Size = new System.Drawing.Size(173, 21);
             this.comboPlaybooks.TabIndex = 17;
@@ -228,33 +262,17 @@
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
-            // chk_verbose
+            // chk_runPython
             // 
-            this.chk_verbose.AutoSize = true;
-            this.chk_verbose.Location = new System.Drawing.Point(703, 455);
-            this.chk_verbose.Name = "chk_verbose";
-            this.chk_verbose.Size = new System.Drawing.Size(95, 17);
-            this.chk_verbose.TabIndex = 27;
-            this.chk_verbose.Text = "Ansible Debug";
-            this.chk_verbose.UseVisualStyleBackColor = true;
-            // 
-            // txtWaitTime
-            // 
-            this.txtWaitTime.Location = new System.Drawing.Point(802, 404);
-            this.txtWaitTime.Name = "txtWaitTime";
-            this.txtWaitTime.Size = new System.Drawing.Size(28, 20);
-            this.txtWaitTime.TabIndex = 28;
-            this.txtWaitTime.Text = "5";
-            this.txtWaitTime.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(834, 407);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(24, 13);
-            this.label2.TabIndex = 29;
-            this.label2.Text = "Min";
+            this.chk_runPython.AutoSize = true;
+            this.chk_runPython.Checked = true;
+            this.chk_runPython.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chk_runPython.Location = new System.Drawing.Point(701, 365);
+            this.chk_runPython.Name = "chk_runPython";
+            this.chk_runPython.Size = new System.Drawing.Size(137, 17);
+            this.chk_runPython.TabIndex = 30;
+            this.chk_runPython.Text = "MAC an MECM senden";
+            this.chk_runPython.UseVisualStyleBackColor = true;
             // 
             // AnsibleForm
             // 
@@ -293,5 +311,6 @@
         internal System.Windows.Forms.CheckBox chk_verbose;
         private System.Windows.Forms.TextBox txtWaitTime;
         private System.Windows.Forms.Label label2;
+        internal System.Windows.Forms.CheckBox chk_runPython;
     }
 }

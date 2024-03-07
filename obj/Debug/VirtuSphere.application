@@ -7,14 +7,14 @@
     <framework targetVersion="4.7.2" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="VirtuSphere.exe.manifest" size="12724">
+    <dependentAssembly dependencyType="install" codebase="VirtuSphere.exe.manifest" size="13554">
       <assemblyIdentity name="VirtuSphere.exe" version="1.0.0.1" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>OaHsEJA5fi+2dyGfm/HcChKK7JlPvDB6NHEiljziDvE=</dsig:DigestValue>
+        <dsig:DigestValue>rY/yrZoQCljU07VtVU7cZCM3uUCoj4LZULHl6GCP6WI=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

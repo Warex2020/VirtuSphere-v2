@@ -1,0 +1,41 @@
+---
+- name: Erstellen von VMs auf einem ESXi-Host
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ./serverlist.yml
+    - ./accounts.yml
+
+  tasks:
+    - name: Sammle Informationen aller VMs
+      community.vmware.vmware_guest_info:
+        hostname: "{{ esxi_hostname }}"
+        username: "{{ esxi_username }}"
+        password: "{{ esxi_password }}"
+        validate_certs: no
+        datacenter: "{{ item.datacenter_name }}"
+        name: "{{ item.vm_name}}"
+      delegate_to: localhost
+      register: vm_infos
+      loop: "{{ vm_configurations }}"
+
+    - name: Sammle Hostnamen und MAC-Adressen für die Datei
+      set_fact:
+        vm_lines: "{{ vm_lines | default([]) + [ item.instance.hw_name + ';' + item.instance.hw_eth0.summary + ';' + item.instance.hw_eth0.macaddress ] }}"
+      loop: "{{ vm_infos.results }}"
+      when: item.instance.hw_eth0.macaddress is defined
+
+    - name: Show VM lines
+      debug:
+        var: vm_lines
+
+    - name: Speichere Hostnamen und MAC-Adressen in eine Datei
+      copy:
+        dest: "/tmp/vm_mac_list.csv"
+        content: "{{ vm_lines | join('\n') }}"
+        owner: "{{ ansible_username }}"
+        group: "{{ ansible_username }}"
+        mode: '0666'
+
+    - name: run Python for upload csv to webi
+      ansible.builtin.command: python3 /tmp/upload_mac_list.py 

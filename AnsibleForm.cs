@@ -373,7 +373,7 @@ namespace VirtuSphere
             deployForm.CommandsCompleted += (s, e2) => tcs.SetResult(true);
 
             // Rufen Sie die neue Methode auf, um die SSH-Verbindung herzustellen und Befehle auszuführen
-            await deployForm.ConnectAndExecuteSSHCommands(ssh_hostname, ssh_port2, ssh_username, ssh_password, missionName, selectedPlaybook, chk_autostart.Checked, chk_verbose.Checked);
+            await deployForm.ConnectAndExecuteSSHCommands(ssh_hostname, ssh_port2, ssh_username, ssh_password, missionName, selectedPlaybook, chk_autostart.Checked, chk_verbose.Checked, chk_runPython.Checked);
 
             await tcs.Task;
 
