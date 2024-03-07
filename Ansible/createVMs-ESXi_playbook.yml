@@ -60,3 +60,6 @@
       loop: "{{ vm_configurations }}"
       when: vm_creation_results is changed
 
+    - name: warten
+      pause:
+        seconds: 30
