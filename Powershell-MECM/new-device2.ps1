@@ -22,6 +22,7 @@ try {
 
 # Lade DeviceList vom MECM
 $MECMDeviceList = Get-CMDevice | Select-Object Name, MACAddress, SMSID
+$alltaskSequences = Get-CMTaskSequence | Select-Object Name, PackageID
 
 foreach ($device in $MySQLDeviceList) {
     $deviceName = $device.vm_name
@@ -35,7 +36,7 @@ foreach ($device in $MySQLDeviceList) {
     $mission_name = $Mission.mission_name
 
     if($mission_name -eq $null){
-        write-host "Skip $deviceName, weil die Mission mit #$mission_id gel�scht wurde - Empfehlung: Datenbank bereinigen!" -ForegroundColor Magenta
+        write-host "Skip $deviceName, weil die Mission mit #$mission_id geloescht wurde - Empfehlung: Datenbank bereinigen!" -ForegroundColor Magenta
         continue
     }
     
@@ -50,18 +51,22 @@ foreach ($device in $MySQLDeviceList) {
 
     }
 
+
+    Write-Host "`n`n##########################################################################################################" -ForegroundColor Green
+    Write-Host " Device $deviceName with MAC $deviceMAC" -ForegroundColor Green
+    Write-Host "##########################################################################################################" -ForegroundColor Green
+    
     if ($MECMDeviceList.Name -contains $deviceName) {
-        Write-Host "Skip $deviceName, bereits in MECM DB vorhanden." -ForegroundColor Cyan
-        continue
+        Write-Host "$deviceName, bereits in MECM DB vorhanden." -ForegroundColor Cyan
     }
 
     if (-not $deviceMAC) {
         Write-Host "Device $deviceName has no MAC-Address. Skipping device" -ForegroundColor Yellow
         continue
     }
-
-    Write-Host "Adding device $deviceName with MAC $deviceMAC and SMSID $deviceSMSID to MECM" -ForegroundColor Green
-
+    if($deviceMAC.count -gt 1){
+        $deviceMAC = $deviceMAC[0]
+    }
     # Prüfe, ob das Gerät bereits existiert, bevor es hinzugefügt wird
     if (!(Get-CMDevice -Name $deviceName)) {
         try {
@@ -72,27 +77,62 @@ foreach ($device in $MySQLDeviceList) {
         }
     }
 
+    $deviceResourceID = (Get-CMDevice -Name $deviceName).ResourceID
+
+    # Prüfe ob zu jeder Task Seq eine DeviceCollection existiert
+    foreach($task in $alltaskSequences){
+        if($null -eq (Get-CMDeviceCollection -Name $($task.Name))){
+            try{
+            New-CMDeviceCollection -Comment "Autogeneriert by VirtuSphere" -name $($task.Name)  -LimitingCollectionName "All Systems"
+            Get-CMDeviceCollection -Name $($task.Name)  | Move-CMObject -FolderPath "$($VirtuSphere_Folder_Collections)\VirtuSphere"
+            Write-host "CollectionGroup für Task Sequence \"$($task.Name)\" erstellt!" -ForegroundColor green
+            }catch{
+                Write-host "Fehler beim erstellen: CollectionGroup für Task Sequence \"$($task.Name)\"!" -ForegroundColor red
+            }
+        }
+    }
+
     # Betriebssystem-Collection
     $deviceCollection = Get-CMDeviceCollection -Name $deviceOS
     if ($null -eq $deviceCollection) {
-        Write-Host "Collection $deviceOS does not exist. Skipping device" -ForegroundColor Magenta
+        Write-Host "`t - Collection $($deviceOS) does not exist. Skipping device" -ForegroundColor Magenta
     } else {
-        try {
-            Add-CMDeviceCollectionDirectMembershipRule -CollectionName $deviceOS -ResourceId ($deviceCollection.CollectionID)
-            Invoke-CMCollectionUpdate -Name $deviceOS
-        } catch {
-            Write-Host "$deviceOS Fehler beim Hinzufügen des Geräts zur Collection!" -ForegroundColor Red
+        $memberships = Get-CMDeviceCollectionDirectMembershipRule -CollectionName $($deviceCollection.Name) -ResourceId $deviceResourceID
+        if(!($memberships)){
+            try {
+                #Add-CMDeviceCollectionDirectMembershipRule -CollectionName $($deviceCollection.Name) -ResourceName $deviceName
+                Add-CMDeviceCollectionDirectMembershipRule -CollectionId $($deviceCollection.CollectionID) -ResourceId $deviceResourceID
+                Invoke-CMCollectionUpdate -Name $($deviceCollection.Name)
+                write-host "`t - $($deviceCollection.Name) wurde \"$($deviceCollection.Name)\" hinzugefuegt!" -ForegroundColor Green
+            } catch {
+                Write-Host "`t - Fehler beim Hinzufügen AddCollectionMembership \"$($deviceCollection.Name)\" zu $deviceName" -ForegroundColor Red
+            }
+        }else{
+            Write-Host "`t - Skip, weil bereits AddCollectionMembership \"$($deviceCollection.Name)\" zu $deviceName" -ForegroundColor Yellow
         }
     }
 
     # Pakete
     foreach ($Package in $devicePackages) {
-        Write-Host "Adding $($Package.package_name) to $deviceName" -ForegroundColor Blue
-        try {
-            Add-CMDeviceCollectionDirectMembershipRule -CollectionName "$($Package.package_name)" -ResourceName $deviceName
-            Invoke-CMCollectionUpdate -Name $deviceOS
-        } catch {
-            Write-Host "Fehler beim Hinzufügen von $($Package.package_name) zu $deviceName" -ForegroundColor Red
+
+        $deviceCollection = Get-CMDeviceCollection -Name $($Package.package_name)
+        if ($null -eq $deviceCollection) {
+            Write-Host "`t - Collection $($Package.package_name) does not exist. Skipping device" -ForegroundColor Magenta
+        } else {
+            $memberships = Get-CMDeviceCollectionDirectMembershipRule -CollectionName $($deviceCollection.Name) -ResourceId $deviceResourceID
+            if(!($memberships)){
+                try {
+                    #Add-CMDeviceCollectionDirectMembershipRule -CollectionName $($deviceCollection.Name) -ResourceName $deviceName
+                    Add-CMDeviceCollectionDirectMembershipRule -CollectionId $($deviceCollection.CollectionID) -ResourceId $deviceResourceID
+                    Invoke-CMCollectionUpdate -Name $($deviceCollection.Name)
+                    write-host "`t - $($deviceCollection.Name) wurde \"$($deviceCollection.Name)\" hinzugefuegt!" -ForegroundColor Green
+                } catch {
+                    Write-Host "`t - Fehler beim Hinzufügen AddCollectionMembership \"$($deviceCollection.Name)\" zu $deviceName" -ForegroundColor Red
+                }
+            }else{
+                Write-Host "`t - Skip, weil bereits AddCollectionMembership \"$($deviceCollection.Name)\" zu $deviceName" -ForegroundColor Yellow
+            }
         }
+
     }
 }
