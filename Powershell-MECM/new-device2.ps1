@@ -1,18 +1,18 @@
-# Verbesserte Variablen-Ladung aus der Registry mit einem HashTable zur Vereinfachung
-$paths = 'HKLM:\SOFTWARE\VirtuSphere\MECM'
-$registryProps = @( 'MECM_ProviderMachineName', 'MECM_SiteCode', 'VirtuSphere_WebAPI', 'PowershellLogPath' ) | ForEach-Object {
-    @{ $_ = (Get-ItemProperty -Path $paths).$_ }
-}
-$Config = @{}
-$registryProps.ForEach({ $Config += $_ })
+$MECM_ProviderMachineName = (Get-ItemProperty -Path "HKLM:\SOFTWARE\VirtuSphere\MECM").MECM_ProviderMachineName
+$MECM_SiteCode = (Get-ItemProperty -Path "HKLM:\SOFTWARE\VirtuSphere\MECM").MECM_SiteCode
+$VirtuSphere_WebAPI = (Get-ItemProperty -Path "HKLM:\SOFTWARE\VirtuSphere\MECM").VirtuSphere_WebAPI
+$PowershellLogPath = (Get-ItemProperty -Path "HKLM:\SOFTWARE\VirtuSphere\MECM").PowershellLogPath
 
+$VirtuSphere_Folder_Collections = "$($MECM_SiteCode):\DeviceCollection"
 # Import MECM Module
 $adminUIPath = $env:SMS_ADMIN_UI_PATH.Substring(0, $env:SMS_ADMIN_UI_PATH.Length-5)
 Import-Module "$adminUIPath\ConfigurationManager.psd1"
-Set-Location "$($Config.MECM_SiteCode):\"
+Set-Location "$($MECM_SiteCode):\"
 
 # JSON-Inhalt von der URL abrufen
-$jsonUrl = "http://${Config.VirtuSphere_WebAPI}/mecm-api.php?action=getDeviceList"
+$jsonUrl = "http://$VirtuSphere_WebAPI/mecm-api.php?action=getDeviceList"
+$missionName = "http://$VirtuSphere_WebAPI/mecm-api.php?action=getMissionName&mission_id="
+
 try {
     $MySQLDeviceList = Invoke-RestMethod -Uri $jsonUrl
 } catch {
@@ -29,6 +29,26 @@ foreach ($device in $MySQLDeviceList) {
     $deviceSMSID = $device.SMSID
     $deviceOS = $device.vm_os
     $devicePackages = $device.packages
+    $mission_id = $device.mission_id
+
+    $Mission = Invoke-RestMethod -Uri $($missionName+"$mission_id")
+    $mission_name = $Mission.mission_name
+
+    if($mission_name -eq $null){
+        write-host "Skip $deviceName, weil die Mission mit #$mission_id gelöscht wurde - Empfehlung: Datenbank bereinigen!" -ForegroundColor Magenta
+        continue
+    }
+    
+    # Lege unter DeviceCollection den Ordner VirtuSphere an
+    if(!(Get-CMFolder -FolderPath "$($VirtuSphere_Folder_Collections)\VirtuSphere")){
+        New-CMFolder -Name "VirtuSphere" -ParentFolderPath $VirtuSphere_Folder_Collections
+        }
+
+    if(!(Get-CMDeviceCollection -Name $mission_name)){
+        New-CMDeviceCollection -Comment "Autogeneriert by VirtuSphere" -name $mission_name  -LimitingCollectionName "All Systems"
+        Get-CMDeviceCollection -Name $mission_name | Move-CMObject -FolderPath "$($VirtuSphere_Folder_Collections)\VirtuSphere"
+
+    }
 
     if ($MECMDeviceList.Name -contains $deviceName) {
         Write-Host "Skip $deviceName, bereits in MECM DB vorhanden." -ForegroundColor Cyan
