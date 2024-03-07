@@ -38,4 +38,4 @@
         mode: '0666'
 
     - name: run Python for upload csv to webi
-      ansible.builtin.command: python3 /tmp/upload_mac_list.py 
+      ansible.builtin.command: python3 ./upload_mac_list.py 

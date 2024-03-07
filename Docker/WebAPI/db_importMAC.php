@@ -1,18 +1,20 @@
 <?php
 include("mysql.php");
+
 header('Content-Type: application/json');
 
 $clientIP = $_SERVER['REMOTE_ADDR'];
 
-// Prüfe, ob die Client-IP Zugang hat
-$query = $db->prepare("SELECT * FROM access_control WHERE ip_address = ?"); // Klare, konsistente Benennung
-$query->bind_param("s", $clientIP);
-$query->execute();
-$result = $query->get_result();
+// Prüfe, ob die Client-IP in der Datenbank vorhanden ist
+$sql = $connection->prepare("SELECT * FROM deploy_accessToWebAPI WHERE ipAddress = ?");
+$sql->bind_param("s", $clientIP);
+$sql->execute();
+$result = $sql->get_result();
 
 if ($result->num_rows == 0) {
+    // IP nicht gefunden, Zugriff verweigert
     http_response_code(403);
-    echo json_encode(['error' => 'Access denied. Your IP: ' . $clientIP]);
+    echo json_encode(['error' => 'Zugriff verweigert. Ihre IP: ' . $clientIP]);
     exit();
 }
 
