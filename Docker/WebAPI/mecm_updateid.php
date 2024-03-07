@@ -28,10 +28,10 @@ function updateDevice($db) {
     $data = json_decode($input, true);
 
     if (!empty($data)) {
-        if (isset($data['deviceResourceID'], $data['deviceid'])) {
+        if (isset($data['deviceResourceID'], $data['deviceResourceID'])) {
             $sql = "UPDATE deploy_vms SET mecm_id = ? WHERE id = ?";
             $stmt = $db->prepare($sql);
-            $stmt->bind_param("ss", $data['deviceResourceID'], $data['deviceid']);
+            $stmt->bind_param("ss", $data['deviceResourceID'], $data['deviceResourceID']);
             if ($stmt->execute()) {
                 http_response_code(200);
                 echo json_encode(['success' => 'Data updated successfully']);
