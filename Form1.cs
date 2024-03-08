@@ -30,6 +30,7 @@ namespace VirtuSphere
         public List<VM> vmListToUpdate = new List<VM>();
         public List<Package> packageItems = new List<Package>();
         public List<MissionItem> missionsList; // Liste der Missionen
+        public List<VLANItem> vLANItems = new List<VLANItem>();
 
 
 
@@ -139,6 +140,13 @@ namespace VirtuSphere
         {
             string packages = "";
 
+            // prüfe ob der txtName.Text länger als 16 Zeichen ist
+            if (txtName.Text.Length > 16)
+            {
+                MessageBox.Show("Der Name darf nicht länger als 16 Zeichen sein.");
+                return;
+            }
+
             // Prüfe ob die VM schon in der Liste ist
             for (int i = 0; i < vms.Count; i++)
             {
@@ -157,9 +165,20 @@ namespace VirtuSphere
             }
 
 
+            string missiondefaultVLAN = comboWDSVlan.SelectedItem.ToString();
 
-            // ermittel das erste VLAN in der Liste
-            string erstesVLAN = comboWDSVlan.SelectedItem.ToString();
+            // Wähle das vLANItems mit MissionID aus
+            VLANItem selectedVLAN = vLANItems.FirstOrDefault(v => v.Id == missionId);
+
+            if (selectedVLAN != null)
+            {
+                Console.WriteLine("Selected VLAN: " + selectedVLAN.vlan_name);
+                missiondefaultVLAN = selectedVLAN.vlan_name;
+            }
+            else
+            {
+                Console.WriteLine("Kein VLAN für Mission " + missionId + " gefunden.");
+            }
 
             // erstelle Inteface und weise es vm zu
             Interface newInterface = new Interface
@@ -169,7 +188,7 @@ namespace VirtuSphere
                 gateway = "",
                 dns1 = "",
                 dns2 = "",
-                vlan = erstesVLAN,
+                vlan = missiondefaultVLAN,
                 mode = "DHCP"
             };
 
@@ -794,6 +813,13 @@ namespace VirtuSphere
             }
             else if (missionBox.Text != "")
             {
+                // Prüfe ob missionBox.Text Leerzeichen beinhaltet und breche ab
+                if (missionBox.Text.Contains(" "))
+                {
+                    MessageBox.Show("Der Name darf keine Leerzeichen enthalten.");
+                    return;
+                }
+
                 string missionName2 = missionBox.Text;
                 CreateMission(missionName2);
 
@@ -804,6 +830,24 @@ namespace VirtuSphere
                 // wähle die neu erstellte Mission aus
                 ShowMissions(missionsList);
                 selectMission(missionName2 + " (0)");
+
+                // Übertrage das ausgewählte Mission-Objekt von der Liste missionBox an das Formular MissionDetails
+                MessageBox.Show("Neue Mission " + missionId + " erstellt und ausgewählt.");
+
+                MissionItem selectedMission = missionsList.FirstOrDefault(m => m.Id == missionId);
+
+                if (selectedMission != null)
+                {
+                    MissionDetails missionDetails = new MissionDetails(this, selectedMission);
+
+                    // Zeige das Formular an
+                    missionDetails.ShowDialog();
+                }
+                else
+                {
+                    MessageBox.Show("Bitte wählen Sie eine Mission aus.");
+                }
+
                 EnableInputFields();
             }
             else
@@ -820,6 +864,7 @@ namespace VirtuSphere
             if (obj != null)
             {
                 missionBox.SelectedItem = obj;
+                missionId = ((MissionItem)obj).Id;
             }
             else
             {
@@ -1530,6 +1575,25 @@ namespace VirtuSphere
                 MessageBox.Show("Verbindung fehlgeschlagen");
                 lbl_ssh_status.Text = "Status: Verbindung fehlgeschlagen";
             }
+        }
+
+        internal void CopyVMs(int quellid, int zielid)
+        {
+
+            //alle VMs aus der Liste vms, die die Quellid haben, in die Liste vmListToCreate kopieren
+            foreach (var vm in vms)
+            {
+                if (vm.mission_id == quellid)
+                {
+                    Console.WriteLine("Kopiere zu neuer Mission: "+vm.vm_name);
+                    MessageBox.Show("Kopiere zu neuer Mission: " + vm.vm_name);
+
+                    // kopiere VM zu neuer Mission
+                    vm.mission_id = zielid;
+                    vmListToCreate.Add(vm);
+                }
+            }
+
         }
     }
 }

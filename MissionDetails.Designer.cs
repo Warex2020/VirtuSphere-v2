@@ -43,7 +43,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.txtMissionDatastorage = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.txtMissionWDS = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.txtMissionNotes = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -52,11 +51,17 @@
             this.btn_save = new System.Windows.Forms.Button();
             this.txtMissionId = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.comboMissionWDS = new System.Windows.Forms.ComboBox();
+            this.comboCopyMission = new System.Windows.Forms.ComboBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.comboCopyMission);
+            this.groupBox1.Controls.Add(this.label11);
+            this.groupBox1.Controls.Add(this.comboMissionWDS);
             this.groupBox1.Controls.Add(this.txtMissionStatus);
             this.groupBox1.Controls.Add(this.label10);
             this.groupBox1.Controls.Add(this.txtMissionCount);
@@ -70,7 +75,6 @@
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.txtMissionDatastorage);
             this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Controls.Add(this.txtMissionWDS);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.txtMissionNotes);
             this.groupBox1.Controls.Add(this.label3);
@@ -151,11 +155,6 @@
             resources.ApplyResources(this.label5, "label5");
             this.label5.Name = "label5";
             // 
-            // txtMissionWDS
-            // 
-            resources.ApplyResources(this.txtMissionWDS, "txtMissionWDS");
-            this.txtMissionWDS.Name = "txtMissionWDS";
-            // 
             // label4
             // 
             resources.ApplyResources(this.label4, "label4");
@@ -198,6 +197,23 @@
             resources.ApplyResources(this.label1, "label1");
             this.label1.Name = "label1";
             // 
+            // comboMissionWDS
+            // 
+            this.comboMissionWDS.FormattingEnabled = true;
+            resources.ApplyResources(this.comboMissionWDS, "comboMissionWDS");
+            this.comboMissionWDS.Name = "comboMissionWDS";
+            // 
+            // comboCopyMission
+            // 
+            this.comboCopyMission.FormattingEnabled = true;
+            resources.ApplyResources(this.comboCopyMission, "comboCopyMission");
+            this.comboCopyMission.Name = "comboCopyMission";
+            // 
+            // label11
+            // 
+            resources.ApplyResources(this.label11, "label11");
+            this.label11.Name = "label11";
+            // 
             // MissionDetails
             // 
             resources.ApplyResources(this, "$this");
@@ -225,7 +241,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox txtMissionDatastorage;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox txtMissionWDS;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtMissionNotes;
         private System.Windows.Forms.Label label3;
@@ -238,5 +253,8 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox txtMissionStatus;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ComboBox comboMissionWDS;
+        private System.Windows.Forms.ComboBox comboCopyMission;
+        private System.Windows.Forms.Label label11;
     }
 }

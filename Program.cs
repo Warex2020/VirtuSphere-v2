@@ -57,6 +57,7 @@ namespace VirtuSphere
 
                 mainForm.ShowPackages(PackagesList);
                 mainForm.ShowVLANs(VlanList);
+                mainForm.vLANItems = VlanList;
                 mainForm.ApiService = new ApiService(); // oder übergebe eine existierende Instanz
                 mainForm.packageItems = PackagesList;
                 Application.Run(mainForm);

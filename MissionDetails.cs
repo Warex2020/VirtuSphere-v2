@@ -41,7 +41,33 @@ namespace VirtuSphere
             txtMissionId.Text = mission.Id.ToString();
             txtMissionName.Text = mission.mission_name;
             txtMissionNotes.Text = mission.mission_notes;
-            txtMissionWDS.Text = mission.wds_vlan;
+
+            // Lade alle Missionen in comboCopyMission
+            foreach (MissionItem missionItem in _mainForm.missionsList)
+            {
+                comboCopyMission.Items.Add(missionItem.mission_name);
+            }
+
+
+            // fülle comboMissionWDS mit den VLANItem aus der Mainform
+
+            foreach (VLANItem vlan in _mainForm.vLANItems)
+            {
+                comboMissionWDS.Items.Add(vlan.vlan_name);
+            }
+
+            // Setze den Wert des ComboBoxes auf den Wert der Mission, wenn er existiert sonst auf den ersten Wert
+            if (mission.wds_vlan != null)
+            {
+                comboMissionWDS.Text = mission.wds_vlan;
+            }
+            else
+            {
+                comboMissionWDS.Text = comboMissionWDS.Items[0].ToString();
+            }
+
+
+
             txtMissionDatastorage.Text = mission.hypervisor_datastorage;
             txtMissionDatacenter.Text = mission.hypervisor_datacenter;
             txtMissionCreated.Text = mission.created_at;
@@ -56,13 +82,27 @@ namespace VirtuSphere
             int missionId = Convert.ToInt32(txtMissionId.Text);
             string missionName = txtMissionName.Text;
             string missionNotes = txtMissionNotes.Text;
-            string missionWDS = txtMissionWDS.Text;
+            string missionWDS = comboMissionWDS.Text;
             string MissionDatastorage = txtMissionDatastorage.Text;
             string MissionDatacenter = txtMissionDatacenter.Text;
             string MissionCreated = txtMissionCreated.Text;
             string MissionUpdated = txtMissionUpdated.Text;
             string MissionStatus = txtMissionStatus.Text;
             int MissionCount = Convert.ToInt32(txtMissionCount.Text);
+
+            // Abbrech wenn missionName leerzeichen beinhaltet
+            if (missionName.Contains(" "))
+            {
+                MessageBox.Show("Mission Name darf keine Leerzeichen enthalten");
+                return;
+            }
+            
+            // missionDatastorage und MissionDatacenter dürfen nicht leer sein
+            if (MissionDatastorage == "" || MissionDatacenter == "")
+            {
+                MessageBox.Show("Datastorage und Datacenter dürfen nicht leer sein");
+                return;
+            }
 
             // Speichere die Daten in der Klasse
             MissionItem mission = new MissionItem
@@ -81,6 +121,21 @@ namespace VirtuSphere
 
             // Gib die Daten an das Hauptformular zurück
             _mainForm.UpdateMission(mission);
+
+            // Wenn comboCopyMission nicht leer ist, dann kopiere die die ausgewählte Mission in die neue Mission und speichere sie
+            if (comboCopyMission.Text != "")
+            {
+                MessageBox.Show("Mission wurde kopiert");
+
+
+                MissionItem copyMission = _mainForm.missionsList[comboCopyMission.SelectedIndex];
+                MessageBox.Show("kopie erstellen von: "+copyMission.mission_name);
+
+                // Kopiere alle VMs mit der alten Mission ID in die neue Mission ID
+                _mainForm.CopyVMs(copyMission.Id, mission.Id);
+
+            }
+
             this.Close();
         }
 

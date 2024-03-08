@@ -1,2 +1,16 @@
 aUPDATE deploy_missions SET mission_name = ?, mission_status = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 1
 Params: 'Sauerland', '', 'test', '100', 'test', 'test', '1'
+UPDATE deploy_missions SET mission_name = ?, mission_status = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 7
+Params: 'Siegerland', '', '', '1900', 'asd', 'asd', '7'
+UPDATE deploy_missions SET mission_name = ?, mission_status = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 8
+Params: 'Ruhrgebiet', '', '', '900', 'asd', 'asd', '8'
+UPDATE deploy_missions SET mission_name = ?, mission_status = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 24
+Params: 'HalloWelt', '', '', '2000', 'asd', 'asdasdas', '24'
+UPDATE deploy_missions SET mission_name = ?, mission_status = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 24
+Params: 'HalloWelt', '', '', '2000', 'asd', 'asdasdas', '24'
+UPDATE deploy_missions SET mission_name = ?, mission_status = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 20
+Params: 'Bodensee', '', '', '100', 'sdaf', 'asdf', '20'
+UPDATE deploy_missions SET mission_name = ?, mission_status = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 2
+Params: 'Mosel', '', '', '100', 'asd', 'asd', '2'
+UPDATE deploy_missions SET mission_name = ?, mission_status = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 2
+Params: 'Mosel', '', '', '100', 'asd', 'asd', '2'
