@@ -30,6 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FMmain));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.button11 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
@@ -112,8 +114,6 @@
             this.txt_hv_loginpassword = new System.Windows.Forms.TextBox();
             this.txt_hv_loginname = new System.Windows.Forms.TextBox();
             this.txt_hv_ip = new System.Windows.Forms.TextBox();
-            this.button11 = new System.Windows.Forms.Button();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.Liste.SuspendLayout();
@@ -148,6 +148,26 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Tabelle";
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Location = new System.Drawing.Point(319, 721);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(114, 17);
+            this.checkBox3.TabIndex = 26;
+            this.checkBox3.Text = "Vorlagen anzeigen";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
+            // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(439, 714);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(93, 28);
+            this.button11.TabIndex = 25;
+            this.button11.Text = "Neue Mission";
+            this.button11.UseVisualStyleBackColor = true;
             // 
             // button10
             // 
@@ -216,7 +236,7 @@
             // 
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(352, 688);
+            this.label14.Location = new System.Drawing.Point(340, 688);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(56, 16);
             this.label14.TabIndex = 17;
@@ -958,26 +978,6 @@
             this.txt_hv_ip.Name = "txt_hv_ip";
             this.txt_hv_ip.Size = new System.Drawing.Size(215, 20);
             this.txt_hv_ip.TabIndex = 0;
-            // 
-            // button11
-            // 
-            this.button11.Location = new System.Drawing.Point(439, 714);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(93, 28);
-            this.button11.TabIndex = 25;
-            this.button11.Text = "Neue Mission";
-            this.button11.UseVisualStyleBackColor = true;
-            // 
-            // checkBox3
-            // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(319, 721);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(114, 17);
-            this.checkBox3.TabIndex = 26;
-            this.checkBox3.Text = "Vorlagen anzeigen";
-            this.checkBox3.UseVisualStyleBackColor = true;
-            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
             // 
             // FMmain
             // 

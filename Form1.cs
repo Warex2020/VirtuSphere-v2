@@ -1600,11 +1600,13 @@ namespace VirtuSphere
         {
             if (checkBox3.Checked)
             {
-                label14.Text = "Vorlagen:";
+                label14.Text = "Vorlage:";
+                button11.Text = "Neue Vorlage";
             }
             else
             {
                 label14.Text = "Mission:";
+                button11.Text = "Neue Mission";
             }
             
         }
