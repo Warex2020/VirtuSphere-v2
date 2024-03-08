@@ -1595,5 +1595,18 @@ namespace VirtuSphere
             }
 
         }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox3.Checked)
+            {
+                label14.Text = "Vorlagen:";
+            }
+            else
+            {
+                label14.Text = "Mission:";
+            }
+            
+        }
     }
 }

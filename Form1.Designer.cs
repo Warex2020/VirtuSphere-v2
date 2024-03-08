@@ -977,6 +977,7 @@
             this.checkBox3.TabIndex = 26;
             this.checkBox3.Text = "Vorlagen anzeigen";
             this.checkBox3.UseVisualStyleBackColor = true;
+            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
             // 
             // FMmain
             // 
