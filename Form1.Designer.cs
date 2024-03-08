@@ -30,7 +30,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FMmain));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.button11 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
@@ -113,6 +112,8 @@
             this.txt_hv_loginpassword = new System.Windows.Forms.TextBox();
             this.txt_hv_loginname = new System.Windows.Forms.TextBox();
             this.txt_hv_ip = new System.Windows.Forms.TextBox();
+            this.button11 = new System.Windows.Forms.Button();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.Liste.SuspendLayout();
@@ -126,6 +127,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.checkBox3);
             this.groupBox1.Controls.Add(this.button11);
             this.groupBox1.Controls.Add(this.button10);
             this.groupBox1.Controls.Add(this.button5);
@@ -146,15 +148,6 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Tabelle";
-            // 
-            // button11
-            // 
-            this.button11.Location = new System.Drawing.Point(456, 714);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(76, 28);
-            this.button11.TabIndex = 25;
-            this.button11.Text = "Kopieren";
-            this.button11.UseVisualStyleBackColor = true;
             // 
             // button10
             // 
@@ -966,6 +959,25 @@
             this.txt_hv_ip.Size = new System.Drawing.Size(215, 20);
             this.txt_hv_ip.TabIndex = 0;
             // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(439, 714);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(93, 28);
+            this.button11.TabIndex = 25;
+            this.button11.Text = "Neue Mission";
+            this.button11.UseVisualStyleBackColor = true;
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Location = new System.Drawing.Point(319, 721);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(114, 17);
+            this.checkBox3.TabIndex = 26;
+            this.checkBox3.Text = "Vorlagen anzeigen";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            // 
             // FMmain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1080,8 +1092,9 @@
         private System.Windows.Forms.CheckBox chk_hypervisor_credssave;
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button11;
         private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.Button button11;
     }
 }
 
