@@ -1508,10 +1508,9 @@ namespace VirtuSphere
             File.WriteAllText(upload_mac_list, text);
 
 
-
             try
             {
-                AnsibleForm ansibleForm = new AnsibleForm(vms, ProjecttempPath, apiToken, apiUrl);
+                AnsibleForm ansibleForm = new AnsibleForm(vms, ProjecttempPath, apiService.apiToken, apiService.apiUrl);
 
                 // createVMs-ESXi
                 String TargetFile = Path.Combine(ProjecttempPath, "createVMs-ESXi.yml");

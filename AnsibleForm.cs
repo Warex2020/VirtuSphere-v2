@@ -496,7 +496,7 @@ WaitingTime: ""{txtWaitTime.Text}""
 apiUrl: ""{apiUrl}""
 ";
 
-
+  
             File.WriteAllText(newFile, AccountData);
 
             //////////////////////////////////////////////////////////
