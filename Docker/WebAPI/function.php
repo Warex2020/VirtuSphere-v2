@@ -484,8 +484,8 @@ function vmListToCreate($missionId, $vmList, $mysqli){
                   // wenn $vm->interfaces nicht leer ist
                   if (!empty($vm->interfaces)) {
                      foreach ($vm->interfaces as $interface) {
-                        $stmt = $mysqli->prepare("INSERT INTO deploy_interfaces (vm_id, ip, subnet, gateway, dns1, dns2, vlan, mac, mode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                        $stmt->bind_param("issssssss", $vmId, $interface->ip, $interface->subnet, $interface->gateway, $interface->dns1, $interface->dns2, $interface->vlan, $interface->mac, $interface->mode);
+                        $stmt = $mysqli->prepare("INSERT INTO deploy_interfaces (vm_id, ip, subnet, gateway, dns1, dns2, vlan, mac, mode, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        $stmt->bind_param("isssssssss", $vmId, $interface->ip, $interface->subnet, $interface->gateway, $interface->dns1, $interface->dns2, $interface->vlan, $interface->mac, $interface->mode, $interface->type);
                         $stmt->execute();
                      }
                   }
@@ -614,11 +614,11 @@ function vmListToUpdate($vmList, $connection) {
             }
 
             // Füge neue Interfaces ein
-            $insertInterfaceQuery = "INSERT INTO deploy_interfaces (vm_id, ip, subnet, gateway, dns1, dns2, vlan, mac, mode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $insertInterfaceQuery = "INSERT INTO deploy_interfaces (vm_id, ip, subnet, gateway, dns1, dns2, vlan, mac, mode, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             foreach ($vm->interfaces as $interface) {
                 $macValue = $interface->mac !== null ? $interface->mac : ''; // Behandlung von null Werten für mac
                 if ($insertInterfaceStmt = $connection->prepare($insertInterfaceQuery)) {
-                    $insertInterfaceStmt->bind_param("issssssss", $vm->Id, $interface->ip, $interface->subnet, $interface->gateway, $interface->dns1, $interface->dns2, $interface->vlan, $macValue, $interface->mode);
+                    $insertInterfaceStmt->bind_param("isssssssss", $vm->Id, $interface->ip, $interface->subnet, $interface->gateway, $interface->dns1, $interface->dns2, $interface->vlan, $macValue, $interface->mode, $interface->type);
                     if (!$insertInterfaceStmt->execute()) {
                      if (is_writable('logs/fail.log')) {
                         file_put_contents('logs/fail.log', "Fehler beim Einfügen des Interfaces für VM mit ID " . $vm->Id . ": " . $insertInterfaceStmt->error, FILE_APPEND);
