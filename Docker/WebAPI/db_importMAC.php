@@ -37,7 +37,10 @@ function updateInterface($db) {
 
     $db->begin_transaction();
     try {
+print_r($data);
+
         foreach ($data as $entry) {
+            print_r($entry);
             // Stellen Sie sicher, dass 'instance' und 'network_info' existieren und korrekt formatiert sind
             if (!isset($entry['instance'], $entry['instance']['network_info'])) {
                 throw new Exception('Invalid data structure');
