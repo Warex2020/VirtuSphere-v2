@@ -36,6 +36,15 @@ CREATE TABLE IF NOT EXISTS deploy_interfaces (
     FOREIGN KEY (vm_id) REFERENCES deploy_vms(id) ON DELETE CASCADE
 );
 
+CREATE TABLE deploy_disks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vm_id INT NOT NULL,
+    disk_name VARCHAR(255) NOT NULL,
+    disk_size BIGINT NOT NULL,
+    disk_type VARCHAR(255) NOT NULL
+); 
+
+
 -- Packages Tabelle (bereits von Ihnen bereitgestellt)
 CREATE TABLE IF NOT EXISTS deploy_packages (
     id INT AUTO_INCREMENT PRIMARY KEY,

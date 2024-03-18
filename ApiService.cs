@@ -1,34 +1,40 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static VirtuSphere.ApiService;
+using static VirtuSphere.apiService;
 using static VirtuSphere.FMmain;
 
 namespace VirtuSphere
 {
 
-    public class ApiService
+    public class apiService
     {
         private HttpClient _httpClient;
-        public string Token { get; private set; }
+        internal string apiToken;
+        internal string apiUrl;
+
         public string globalusername;
         public DateTime TokenExpiryTime { get; private set; }
 
-        public ApiService()
+        public apiService(string apiToken, string apiUrl)
         {
             _httpClient = new HttpClient();
+            this.apiToken = apiToken;
+            this.apiUrl = apiUrl;
         }
 
         public class ApiResponse
         {
             public bool success { get; set; }
-        }
 
+        }
 
         public async Task<string> IsValidLogin(string username, string password, string hostname, bool useTls)
         {
@@ -109,9 +115,9 @@ namespace VirtuSphere
         }
 
 
-        public async Task<List<Package>> GetPackages(string hostname, string token)
+        public async Task<List<Package>> GetPackages()
         {
-            string requestUri = $"http://{hostname}/access.php?action=getPackages&token={token}";
+            string requestUri = $"http://{apiUrl}/access.php?action=getPackages&token={apiToken}";
             var response = await _httpClient.GetAsync(requestUri);
 
             // wenn responsecode 418 ist, dann gib 418 zurück
@@ -130,9 +136,9 @@ namespace VirtuSphere
             }
             return null; // Bei Fehlschlag oder "Access Forbidden"
         }
-        public async Task<List<MissionItem>> GetMissions(string hostname, string token)
+        public async Task<List<MissionItem>> GetMissions()
         {
-            string requestUri = $"http://{hostname}/access.php?action=getMissions&token={token}";
+            string requestUri = $"http://{apiUrl}/access.php?action=getMissions&token={apiToken}";
             var response = await _httpClient.GetAsync(requestUri);
 
             Console.WriteLine($"RequestUri: {requestUri}");
@@ -161,7 +167,7 @@ namespace VirtuSphere
                 {
                     // Offne LogForm und gib die Fehlermeldung aus
 
-                    LogForm logForm = new LogForm();
+                    ErrorForm logForm = new ErrorForm();
                     logForm.txtLog.Text = requestUri;
                     logForm.txtLog.Text += "\n" + responseContent;
                     logForm.ShowDialog();
@@ -197,7 +203,7 @@ namespace VirtuSphere
                 {
                     // Offne LogForm und gib die Fehlermeldung aus
 
-                    LogForm logForm = new LogForm();
+                    ErrorForm logForm = new ErrorForm();
                     logForm.txtLog.Text = requestUri;
                     logForm.txtLog.Text += "\n" + responseContent;
                     logForm.ShowDialog();
@@ -210,9 +216,9 @@ namespace VirtuSphere
         }
 
 
-        public async Task<List<OSItem>> GetOS(string hostname, string token)
+        public async Task<List<OSItem>> GetOS()
         {
-            string requestUri = $"http://{hostname}/access.php?action=getOS&token={token}";
+            string requestUri = $"http://{apiUrl}/access.php?action=getOS&token={apiToken}";
             var response = await _httpClient.GetAsync(requestUri);
 
             // wenn responsecode 418 ist, dann gib 418 zurück
@@ -231,9 +237,121 @@ namespace VirtuSphere
             }
             return null; // Bei Fehlschlag oder "Access Forbidden"
         }
-        public async Task<List<VLANItem>> GetVLANs(string hostname, string token)
+
+        // CreateOS(comboOS_Name.Text, comboOS_Status.Text);
+        public async Task<bool> CreateOS(string osName, string osStatus)
         {
-            string requestUri = $"http://{hostname}/access.php?action=getVLANs&token={token}";
+            if (apiUrl == null || apiToken == null || _httpClient == null)
+            {
+                Console.WriteLine("Hostname, Token, OSName oder HttpClient sind nicht verfügbar");
+                return false;
+            }
+            else
+            {
+                string requestUri = $"http://{apiUrl}/access.php?action=createOS&token={apiToken}&osName={osName}&osStatus={osStatus}";
+                var response = await _httpClient.PostAsync(requestUri, null);
+
+                // ausgabe response content
+                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+
+                Console.WriteLine($"RequestUri: {requestUri}");
+                Console.WriteLine($"Request: {response}");
+                Console.WriteLine($"Status Code:{response.StatusCode}");
+
+                // wenn responsecode 418 ist, dann gib 418 zurück
+                if ((int)response.StatusCode == 418)
+                {
+                    Console.WriteLine("Token abgelaufen");
+                    MessageBox.Show("Token abgelaufen");
+                    return false;
+                }
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+                    Console.WriteLine("OS erstellt");
+                    // Wenn im Response-Code 200 steht, dann gib true zurück
+                    return true;
+                }
+                return false;
+            }
+        }
+        // RemoveOS
+        public async Task<bool> RemoveOS(int osId)
+        {
+            if (apiUrl == null || apiToken == null || _httpClient == null)
+            {
+                Console.WriteLine("Hostname, Token, OSId oder HttpClient sind nicht verfügbar");
+                return false;
+            }
+            else
+            {
+                string requestUri = $"http://{apiUrl}/access.php?action=deleteOS&token={apiToken}&osId={osId}";
+                var response = await _httpClient.DeleteAsync(requestUri);
+
+                // ausgabe response content
+                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+
+                Console.WriteLine($"RequestUri: {requestUri}");
+                Console.WriteLine($"Request: {response}");
+                Console.WriteLine($"Status Code:{response.StatusCode}");
+
+                // wenn responsecode 418 ist, dann gib 418 zurück
+                if ((int)response.StatusCode == 418)
+                {
+                    Console.WriteLine("Token abgelaufen");
+                    MessageBox.Show("Token abgelaufen");
+                    return false;
+                }
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("OS gelöscht");
+                    // Wenn im Response-Code 200 steht, dann gib true zurück
+                    return true;
+                }
+                return false;
+            }
+        }
+        // UpdateOS(comboOS_Name.Text, comboOS_Status.Text);
+        public async Task<bool> UpdateOS(int osId, string osName, string osStatus)
+        {
+            if (apiUrl == null || apiToken == null || _httpClient == null)
+            {
+                Console.WriteLine("Hostname, Token, OSId oder HttpClient sind nicht verfügbar");
+                return false;
+            }
+            else
+            {
+                string requestUri = $"http://{apiUrl}/access.php?action=updateOS&token={apiToken}&osId={osId}&osName={osName}&osStatus={osStatus}";
+                var response = await _httpClient.PutAsync(requestUri, null);
+
+                // ausgabe response content
+                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+
+                Console.WriteLine($"RequestUri: {requestUri}");
+                Console.WriteLine($"Request: {response}");
+                Console.WriteLine($"Status Code:{response.StatusCode}");
+
+                // wenn responsecode 418 ist, dann gib 418 zurück
+                if ((int)response.StatusCode == 418)
+                {
+                    Console.WriteLine("Token abgelaufen");
+                    MessageBox.Show("Token abgelaufen");
+                    return false;
+                }
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("OS aktualisiert");
+                    Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+                    // Wenn im Response-Code 200 steht, dann gib true zurück
+                    return true;
+                }
+                return false;
+            }
+        }
+        public async Task<List<VLANItem>> GetVLANs()
+        {
+
+            string requestUri = $"http://{apiUrl}/access.php?action=getVLANs&token={apiToken}";
             var response = await _httpClient.GetAsync(requestUri);
 
             // wenn responsecode 418 ist, dann gib 418 zurück
@@ -267,9 +385,9 @@ namespace VirtuSphere
 
             return null; // Bei Fehlschlag oder "Access Forbidden"
         }
-        public async Task<bool> DeleteMission(string hostname, string token, int missionId)
+        public async Task<bool> DeleteMission(int missionId)
         {
-            if (hostname == null || token == null || _httpClient == null)
+            if (apiUrl == null || apiToken == null || _httpClient == null)
             {
                 Console.WriteLine("Hostname, Token, MissionId oder HttpClient sind nicht verfügbar");
                 return false;
@@ -277,15 +395,13 @@ namespace VirtuSphere
             else
             {
                 Console.WriteLine("DeleteMission aufgerufen: Mission: " + missionId.ToString());
-                Console.WriteLine("DeleteMission aufgerufen: Token: " + token);
-                Console.WriteLine("DeleteMission aufgerufen: Hostname: " + hostname);
 
                 // Die Mission ID ist in der klammer hinter dem Namen, also trenne sie
 
                 Console.WriteLine("DeleteMission aufgerufen: Mission ID: " + missionId.ToString());
 
 
-                string requestUri = $"http://{hostname}/access.php?action=deleteMission&token={token}&missionId={missionId}";
+                string requestUri = $"http://{apiUrl}/access.php?action=deleteMission&token={apiToken}&missionId={missionId}";
                 var response = await _httpClient.DeleteAsync(requestUri);
 
                 // ausgabe response content
@@ -309,9 +425,9 @@ namespace VirtuSphere
             }
         }
 
-        public async Task<bool> CreateMission(string hostname, string token, string missionName)
+        public async Task<bool> CreateMission(string missionName)
         {
-            if (hostname == null || token == null || missionName == null || _httpClient == null)
+            if (apiUrl == null || apiToken == null || missionName == null || _httpClient == null)
             {
                 Console.WriteLine("Hostname, Token, MissionName or HttpClient is not available");
                 return false;
@@ -319,11 +435,18 @@ namespace VirtuSphere
             else
             {
                 Console.WriteLine("CreateMission called: MissionName: " + missionName);
-                Console.WriteLine("CreateMission called: Token: " + token);
-                Console.WriteLine("CreateMission called: Hostname: " + hostname);
 
-                string requestUri = $"http://{hostname}/access.php?action=createMission&token={token}&missionName={missionName}";
+                //missionName leerzeichen url encoden
+                missionName = WebUtility.UrlEncode(missionName);
+
+
+
+                string requestUri = $"http://{apiUrl}/access.php?action=createMission&token={apiToken}&missionName={missionName}";
                 var response = await _httpClient.PostAsync(requestUri, null);
+
+                Console.WriteLine($"RequestUri: {requestUri}");
+                Console.WriteLine($"Request: {response}");
+                Console.WriteLine($"Status Code:{response.StatusCode}");
 
                 // wenn responsecode 418 ist, dann gib 418 zurück
                 if ((int)response.StatusCode == 418)
@@ -338,16 +461,17 @@ namespace VirtuSphere
                 return response.IsSuccessStatusCode;
             }
         }
-        public async Task<List<VM>> GetVMs(string hostname, string token, int missionId)
+        public async Task<List<VM>> GetVMs(int missionId)
         {
             Console.WriteLine("----------------------");
             Console.WriteLine("Aktion GetVMs für VM-Liste wird durchgeführt");
-            string requestUri = $"http://{hostname}/access.php?action=getVMs&token={token}&missionId={missionId}";
+            string requestUri = $"http://{apiUrl}/access.php?action=getVMs&token="+apiToken+"&missionId="+missionId;
             var response = await _httpClient.GetAsync(requestUri);
 
             Console.WriteLine($"RequestUri: {requestUri}");
             Console.WriteLine($"Request: {response}");
             Console.WriteLine($"Status Code:{response.StatusCode}");
+
 
             if ((int)response.StatusCode == 418)
             {
@@ -382,7 +506,7 @@ namespace VirtuSphere
             return null; // Bei Fehlschlag oder "Access Forbidden"
         }
 
-        public async Task<bool> UpdateMission(string hostname, string token, MissionItem updatedMission)
+        public async Task<bool> UpdateMission(MissionItem updatedMission)
         {
             if (updatedMission == null)
             {
@@ -391,14 +515,14 @@ namespace VirtuSphere
             }
 
             // Stellen Sie sicher, dass der Endpunkt Ihrer API korrekt ist.
-            string requestUri = $"http://{hostname}/access.php?action=updateMission&token={token}&missionId={updatedMission.Id}";
+            string requestUri = $"http://{apiUrl}/access.php?action=updateMission&token={apiToken}&missionId={updatedMission.Id}";
 
             // Konfigurieren des Request Body als JSON
             var json = JsonConvert.SerializeObject(updatedMission);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             // Setzen des Authorization Headers, falls Ihre API dies benötigt
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
 
             // Senden der PUT-Anfrage an den Server
             var response = await _httpClient.PutAsync(requestUri, content);
@@ -428,7 +552,7 @@ namespace VirtuSphere
         }
 
 
-        public async Task<bool> VmListToWebAPI(string action, string hostname, string token, int missionId, List<VM> vmList)
+        public async Task<bool> VmListToWebAPI(string action, int missionId, List<VM> vmList)
         {
             if (vmList == null)
             {
@@ -442,7 +566,15 @@ namespace VirtuSphere
                 Console.WriteLine($"VM: {vm.vm_name}");
             }
 
-            string requestUri = $"http://{hostname}/access.php?action={action}&token={token}&missionId={missionId}";
+            // Abbruch wenn hostname oder token leer sind
+            if (string.IsNullOrEmpty(apiUrl) || string.IsNullOrEmpty(apiToken))
+            {
+                Console.WriteLine("Hostname oder Token ist leer");
+                return false;
+            }
+
+
+            string requestUri = $"http://{apiUrl}/access.php?action={action}&token={apiToken}&missionId={missionId}";
             var json = JsonConvert.SerializeObject(vmList);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync(requestUri, content);
@@ -469,7 +601,7 @@ namespace VirtuSphere
             {
                 // Offne LogForm und gib die Fehlermeldung aus
                 
-                LogForm logForm = new LogForm();
+                ErrorForm logForm = new ErrorForm();
                 logForm.txtLog.Text = requestUri;
                 logForm.txtLog.Text += "\n" + json;
                 logForm.txtLog.Text += "\n" + responseContent;
@@ -493,6 +625,116 @@ namespace VirtuSphere
         }
 
 
+        // methode removeVLAN
+        public async Task<bool> RemoveVLAN(int vlanId)
+        {
+            if (apiUrl == null || apiToken == null || _httpClient == null)
+            {
+                Console.WriteLine("Hostname, Token, VLANId oder HttpClient sind nicht verfügbar");
+                return false;
+            }
+            else
+            {
+                string requestUri = $"http://{apiUrl}/access.php?action=deleteVLAN&token={apiToken}&vlanId={vlanId}";
+                var response = await _httpClient.DeleteAsync(requestUri);
+
+                // ausgabe response content
+                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+
+                Console.WriteLine($"RequestUri: {requestUri}");
+                Console.WriteLine($"Request: {response}");
+                Console.WriteLine($"Status Code:{response.StatusCode}");
+
+                // wenn responsecode 418 ist, dann gib 418 zurück
+                if ((int)response.StatusCode == 418)
+                {
+                    Console.WriteLine("Token abgelaufen");
+                    MessageBox.Show("Token abgelaufen");
+                    return false;
+                }
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("VLAN gelöscht");
+                    // Wenn im Response-Code 200 steht, dann gib true zurück
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateVLAN(int vlanId, string vlanName)
+        {
+            if (apiUrl == null || apiToken == null || _httpClient == null)
+            {
+                Console.WriteLine("Hostname, Token, VLANId oder HttpClient sind nicht verfügbar");
+                return false;
+            }
+            else
+            {
+                string requestUri = $"http://{apiUrl}/access.php?action=updateVLAN&token={apiToken}&vlanId={vlanId}&vlanName={vlanName}";
+                var response = await _httpClient.PutAsync(requestUri, null);
+
+                // ausgabe response content
+                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+
+                Console.WriteLine($"RequestUri: {requestUri}");
+                Console.WriteLine($"Request: {response}");
+                Console.WriteLine($"Status Code:{response.StatusCode}");
+
+                // wenn responsecode 418 ist, dann gib 418 zurück
+                if ((int)response.StatusCode == 418)
+                {
+                    Console.WriteLine("Token abgelaufen");
+                    MessageBox.Show("Token abgelaufen");
+                    return false;
+                }
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("VLAN aktualisiert");
+                    // Wenn im Response-Code 200 steht, dann gib true zurück
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        // CreateVLAN(comboPortgruppe_Name.Text)
+        public async Task<bool> CreateVLAN(string vlanName)
+        {
+            if (apiUrl == null || apiToken == null || _httpClient == null)
+            {
+                Console.WriteLine("Hostname, Token, VLANName oder HttpClient sind nicht verfügbar");
+                return false;
+            }
+            else
+            {
+                string requestUri = $"http://{apiUrl}/access.php?action=createVLAN&token={apiToken}&vlanName={vlanName}";
+                var response = await _httpClient.PostAsync(requestUri, null);
+
+                // ausgabe response content
+                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+
+                Console.WriteLine($"RequestUri: {requestUri}");
+                Console.WriteLine($"Request: {response}");
+                Console.WriteLine($"Status Code:{response.StatusCode}");
+
+                // wenn responsecode 418 ist, dann gib 418 zurück
+                if ((int)response.StatusCode == 418)
+                {
+                    Console.WriteLine("Token abgelaufen");
+                    MessageBox.Show("Token abgelaufen");
+                    return false;
+                }
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("VLAN erstellt");
+                    // Wenn im Response-Code 200 steht, dann gib true zurück
+                    return true;
+                }
+                return false;
+            }
+        }
+
         public class Missions
         {
             public string id { get; set; }
@@ -507,75 +749,7 @@ namespace VirtuSphere
 
         }
 
-        public class VM
-        {
-            public int Id { get; set; }
-            public int mission_id { get; set; }
-            public string vm_name { get; set; }
-            public string vm_hostname { get; set; }
-            public string vm_domain { get; set; }
-            public string vm_os { get; set; } // Betriebssystem is German for Operating System
-            public string vm_ram { get; set; }
-            public string vm_disk { get; set; }
-            public string vm_cpu { get; set; }
-            public string vm_datastore { get; set; }
-            public string vm_datacenter { get; set; }
-            public string vm_guest_id { get; set; } // Assuming this is a unique ID for the VM guest
-            public string vm_creator { get; set; } // Ersteller is German for Creator
-            public string vm_status { get; set; }
-            public string created_at { get; set; } // Erstellt am is German for Created on
-            public string updated_at { get; set; } // Modifiziert am is German for Modified on
-            public string vm_notes { get; set; } // Notizen is German for Notes
 
-            public List<Interface> interfaces { get; set; }
-            public List<Package> packages { get; set; }
-
-            public VM()
-            {
-                interfaces = new List<Interface>();
-                packages = new List<Package>();
-            }
-        }
-
-        public class Package
-        {
-            public string id { get; set; }
-            public string package_name { get; set; }
-            public string package_version { get; set; }
-            public string package_status { get; set; }
-
-        }
-
-        public class Interface
-        {
-            public int id { get; set; }
-            public int vm_id { get; set; }
-
-            public string ip { get; set; }
-            public string subnet { get; set; }
-            public string gateway { get; set; }
-            public string dns1 { get; set; }
-            public string dns2 { get; set; }
-            public string vlan { get; set; }
-            public string mac { get; set; }
-            public string mode { get; set; }
-            public string type { get; set; }
-
-            public string DisplayText
-            {
-                get
-                {
-                    if (mode == "DHCP")
-                    {
-                        return $"Mode: {mode}, VLAN: {vlan}";
-                    }
-                    else // Für "Static" oder andere Modi
-                    {
-                        return $"IP: {ip}, Mode: {mode}, VLAN: {vlan}";
-                    }
-                }
-            }
-        }
 
 
         public class VLAN

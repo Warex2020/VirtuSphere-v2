@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-using static VirtuSphere.ApiService;
+using static VirtuSphere.apiService;
 using Renci.SshNet.Common;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
@@ -19,6 +19,7 @@ namespace VirtuSphere
     {
         internal List<VM> vms;
         internal List<MissionItem> missionsList;
+        private apiService apiService;
 
         // mission dir missionName tmp
 
@@ -40,6 +41,10 @@ namespace VirtuSphere
         internal string Token;
         internal int missionId;
 
+        private string apiToken;
+        private string apiUrl;
+
+
         public void SetMissionName(string missionName)
         {
             // Verwende missionName hier, z.B. um einen Label-Text zu setzen
@@ -54,14 +59,16 @@ namespace VirtuSphere
         }
 
 
-        public AnsibleForm(List<VM> vms, string ProjecttempPath)
+        public AnsibleForm(List<VM> vms, string ProjecttempPath, string apiToken, string apiUrl)
         {
+            this.apiToken = apiToken;
+            this.apiUrl = apiUrl;
+        
             InitializeComponent();
 
             // comboAction
             this.vms = vms;
             this.ProjecttempPath = ProjecttempPath;
-
 
 
             Console.WriteLine("Lese Playbooks aus: " + ProjecttempPath);
@@ -424,9 +431,8 @@ namespace VirtuSphere
                     
                 }
 
-                ApiService apiService = new ApiService();
                 // Update VMs in WebAPI
-                await apiService.VmListToWebAPI("vmListToUpdate", hostname, Token, missionId, vms);
+                await apiService.VmListToWebAPI("vmListToUpdate", missionId, vms);
 
             }
         }
@@ -500,12 +506,14 @@ WaitingTime: ""{txtWaitTime.Text}""
             string serverlist = "vm_configurations:\n";
             string interfaces = "";
             string packages = "";
+            string disks = "";
 
             // Initialisiere serverlist für jede VM neu, um versehentliche Übernahmen zu vermeiden
             foreach (var vm in vms)
             {
                 packages = ""; // Zurücksetzen für jede VM
                 interfaces = ""; // Zurücksetzen für jede VM
+                disks = "";
 
                 foreach (Package package in vm.packages)
                 {
@@ -517,6 +525,13 @@ WaitingTime: ""{txtWaitTime.Text}""
                     string networktype = string.IsNullOrEmpty(network.type) ? "vmxnet3" : network.type;
                     interfaces += $"      - name: \"{network.vlan}\"\n"; // YAML-Liste formatieren
                     interfaces += $"      - type: {networktype}\n"; // YAML-Liste formatieren
+                }
+
+                foreach (Disk disk in vm.Disks)
+                {
+                    disks += $"      - disk_name: \"{disk.disk_name}\"\n"; 
+                    disks += $"      - disk_size: {disk.disk_size}\n";
+                    disks += $"      - disk_type: {disk.disk_type}\n";
                 }
 
                 // Default Werte für Datastore und Datacenter aus missionList
@@ -538,8 +553,8 @@ WaitingTime: ""{txtWaitTime.Text}""
                 serverlist += $@"  - vm_name: ""{vm.vm_name}""
     memory: {vm_ram}
     vcpus: {vm_cpu}
-    disk_size: {vm_disk}
-    network:
+    disks: 
+{disks}    network:
 {interfaces}    datastore_name: ""{vm_datastore}""
     datacenter_name: ""{vm_datacenter}""
     guest_id: ""{vm_guest_id}""

@@ -11,7 +11,7 @@ using System.Text;
 using System.Linq;
 using static System.Net.Mime.MediaTypeNames;
 using System.Text.RegularExpressions;
-using static VirtuSphere.ApiService;
+using static VirtuSphere.apiService;
 
 
 namespace VirtuSphere

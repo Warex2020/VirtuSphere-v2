@@ -30,12 +30,12 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FMmain));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.button11 = new System.Windows.Forms.Button();
-            this.button10 = new System.Windows.Forms.Button();
+            this.chk_showTemplates = new System.Windows.Forms.CheckBox();
+            this.btnMissionNew = new System.Windows.Forms.Button();
+            this.btnMissionEdit = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
-            this.button8 = new System.Windows.Forms.Button();
+            this.btnMissionDelete = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.label14 = new System.Windows.Forms.Label();
@@ -44,7 +44,7 @@
             this.txtStatus = new System.Windows.Forms.Label();
             this.btnLoad = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.VirtuSphere = new System.Windows.Forms.TabControl();
             this.Liste = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -114,8 +114,41 @@
             this.txt_hv_loginpassword = new System.Windows.Forms.TextBox();
             this.txt_hv_loginname = new System.Windows.Forms.TextBox();
             this.txt_hv_ip = new System.Windows.Forms.TextBox();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.btnPortgruppeAdd = new System.Windows.Forms.Button();
+            this.btnPortgruppeRemove = new System.Windows.Forms.Button();
+            this.btnPortgruppeEdit = new System.Windows.Forms.Button();
+            this.label27 = new System.Windows.Forms.Label();
+            this.comboPortgruppe_Name = new System.Windows.Forms.ComboBox();
+            this.label29 = new System.Windows.Forms.Label();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.btnOScreate = new System.Windows.Forms.Button();
+            this.btnOSremove = new System.Windows.Forms.Button();
+            this.btnOSedit = new System.Windows.Forms.Button();
+            this.label20 = new System.Windows.Forms.Label();
+            this.comboOS_Status = new System.Windows.Forms.ComboBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.comboOS_Name = new System.Windows.Forms.ComboBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.button15 = new System.Windows.Forms.Button();
+            this.listView3 = new System.Windows.Forms.ListView();
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.button14 = new System.Windows.Forms.Button();
+            this.button13 = new System.Windows.Forms.Button();
+            this.button12 = new System.Windows.Forms.Button();
+            this.listView2 = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.label_secureconnection = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
-            this.tabControl2.SuspendLayout();
+            this.VirtuSphere.SuspendLayout();
             this.Liste.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.Umgebung.SuspendLayout();
@@ -123,16 +156,23 @@
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.groupBox8.SuspendLayout();
+            this.groupBox7.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            this.groupBox10.SuspendLayout();
+            this.groupBox9.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.checkBox3);
-            this.groupBox1.Controls.Add(this.button11);
-            this.groupBox1.Controls.Add(this.button10);
+            this.groupBox1.Controls.Add(this.label_secureconnection);
+            this.groupBox1.Controls.Add(this.chk_showTemplates);
+            this.groupBox1.Controls.Add(this.btnMissionNew);
+            this.groupBox1.Controls.Add(this.btnMissionEdit);
             this.groupBox1.Controls.Add(this.button5);
             this.groupBox1.Controls.Add(this.label9);
-            this.groupBox1.Controls.Add(this.button8);
+            this.groupBox1.Controls.Add(this.btnMissionDelete);
             this.groupBox1.Controls.Add(this.button4);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.label14);
@@ -141,7 +181,7 @@
             this.groupBox1.Controls.Add(this.txtStatus);
             this.groupBox1.Controls.Add(this.btnLoad);
             this.groupBox1.Controls.Add(this.button3);
-            this.groupBox1.Controls.Add(this.tabControl2);
+            this.groupBox1.Controls.Add(this.VirtuSphere);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(1504, 752);
@@ -149,35 +189,37 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Tabelle";
             // 
-            // checkBox3
+            // chk_showTemplates
             // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(319, 721);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(114, 17);
-            this.checkBox3.TabIndex = 26;
-            this.checkBox3.Text = "Vorlagen anzeigen";
-            this.checkBox3.UseVisualStyleBackColor = true;
-            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
+            this.chk_showTemplates.AutoSize = true;
+            this.chk_showTemplates.Location = new System.Drawing.Point(319, 721);
+            this.chk_showTemplates.Name = "chk_showTemplates";
+            this.chk_showTemplates.Size = new System.Drawing.Size(115, 17);
+            this.chk_showTemplates.TabIndex = 26;
+            this.chk_showTemplates.Text = "Vorlage bearbeiten";
+            this.chk_showTemplates.UseVisualStyleBackColor = true;
+            this.chk_showTemplates.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
             // 
-            // button11
+            // btnMissionNew
             // 
-            this.button11.Location = new System.Drawing.Point(439, 714);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(93, 28);
-            this.button11.TabIndex = 25;
-            this.button11.Text = "Neue Mission";
-            this.button11.UseVisualStyleBackColor = true;
+            this.btnMissionNew.Location = new System.Drawing.Point(439, 714);
+            this.btnMissionNew.Name = "btnMissionNew";
+            this.btnMissionNew.Size = new System.Drawing.Size(93, 28);
+            this.btnMissionNew.TabIndex = 25;
+            this.btnMissionNew.Text = "Neue Mission";
+            this.btnMissionNew.UseVisualStyleBackColor = true;
+            this.btnMissionNew.Click += new System.EventHandler(this.button11_Click);
             // 
-            // button10
+            // btnMissionEdit
             // 
-            this.button10.Location = new System.Drawing.Point(538, 714);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(76, 28);
-            this.button10.TabIndex = 24;
-            this.button10.Text = "Bearbeiten";
-            this.button10.UseVisualStyleBackColor = true;
-            this.button10.Click += new System.EventHandler(this.btn_editMission);
+            this.btnMissionEdit.Enabled = false;
+            this.btnMissionEdit.Location = new System.Drawing.Point(538, 714);
+            this.btnMissionEdit.Name = "btnMissionEdit";
+            this.btnMissionEdit.Size = new System.Drawing.Size(76, 28);
+            this.btnMissionEdit.TabIndex = 24;
+            this.btnMissionEdit.Text = "Bearbeiten";
+            this.btnMissionEdit.UseVisualStyleBackColor = true;
+            this.btnMissionEdit.Click += new System.EventHandler(this.btn_editMission);
             // 
             // button5
             // 
@@ -200,15 +242,16 @@
             this.label9.Text = "CSV-Datei";
             this.label9.Visible = false;
             // 
-            // button8
+            // btnMissionDelete
             // 
-            this.button8.Location = new System.Drawing.Point(702, 714);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(76, 28);
-            this.button8.TabIndex = 21;
-            this.button8.Text = "Löschen";
-            this.button8.UseVisualStyleBackColor = true;
-            this.button8.Click += new System.EventHandler(this.btnDeleteMissionClick);
+            this.btnMissionDelete.Enabled = false;
+            this.btnMissionDelete.Location = new System.Drawing.Point(702, 714);
+            this.btnMissionDelete.Name = "btnMissionDelete";
+            this.btnMissionDelete.Size = new System.Drawing.Size(76, 28);
+            this.btnMissionDelete.TabIndex = 21;
+            this.btnMissionDelete.Text = "Löschen";
+            this.btnMissionDelete.UseVisualStyleBackColor = true;
+            this.btnMissionDelete.Click += new System.EventHandler(this.btnDeleteMissionClick);
             // 
             // button4
             // 
@@ -259,16 +302,18 @@
             this.missionBox.Name = "missionBox";
             this.missionBox.Size = new System.Drawing.Size(364, 21);
             this.missionBox.TabIndex = 15;
+            this.missionBox.SelectedIndexChanged += new System.EventHandler(this.missionBoxSelectedIndex);
             this.missionBox.SelectionChangeCommitted += new System.EventHandler(this.MissionChange);
+            this.missionBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.missionBoxKeyUp);
             // 
             // txtStatus
             // 
             this.txtStatus.AutoSize = true;
             this.txtStatus.Location = new System.Drawing.Point(13, 728);
             this.txtStatus.Name = "txtStatus";
-            this.txtStatus.Size = new System.Drawing.Size(101, 13);
+            this.txtStatus.Size = new System.Drawing.Size(58, 13);
             this.txtStatus.TabIndex = 12;
-            this.txtStatus.Text = "Status: Restzeit hier";
+            this.txtStatus.Text = "Status: OK";
             // 
             // btnLoad
             // 
@@ -291,15 +336,17 @@
             this.button3.Visible = false;
             this.button3.Click += new System.EventHandler(this.btnDeploy);
             // 
-            // tabControl2
+            // VirtuSphere
             // 
-            this.tabControl2.Controls.Add(this.Liste);
-            this.tabControl2.Controls.Add(this.Umgebung);
-            this.tabControl2.Location = new System.Drawing.Point(6, 19);
-            this.tabControl2.Name = "tabControl2";
-            this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(1487, 653);
-            this.tabControl2.TabIndex = 13;
+            this.VirtuSphere.Controls.Add(this.Liste);
+            this.VirtuSphere.Controls.Add(this.Umgebung);
+            this.VirtuSphere.Controls.Add(this.tabPage1);
+            this.VirtuSphere.Controls.Add(this.tabPage2);
+            this.VirtuSphere.Location = new System.Drawing.Point(6, 19);
+            this.VirtuSphere.Name = "VirtuSphere";
+            this.VirtuSphere.SelectedIndex = 0;
+            this.VirtuSphere.Size = new System.Drawing.Size(1487, 653);
+            this.VirtuSphere.TabIndex = 13;
             // 
             // Liste
             // 
@@ -979,6 +1026,338 @@
             this.txt_hv_ip.Size = new System.Drawing.Size(215, 20);
             this.txt_hv_ip.TabIndex = 0;
             // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.groupBox8);
+            this.tabPage1.Controls.Add(this.groupBox7);
+            this.tabPage1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(1479, 627);
+            this.tabPage1.TabIndex = 2;
+            this.tabPage1.Text = "VirtuSphere";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.btnPortgruppeAdd);
+            this.groupBox8.Controls.Add(this.btnPortgruppeRemove);
+            this.groupBox8.Controls.Add(this.btnPortgruppeEdit);
+            this.groupBox8.Controls.Add(this.label27);
+            this.groupBox8.Controls.Add(this.comboPortgruppe_Name);
+            this.groupBox8.Controls.Add(this.label29);
+            this.groupBox8.Location = new System.Drawing.Point(581, 17);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(541, 210);
+            this.groupBox8.TabIndex = 9;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "Portgruppen";
+            // 
+            // btnPortgruppeAdd
+            // 
+            this.btnPortgruppeAdd.Enabled = false;
+            this.btnPortgruppeAdd.Location = new System.Drawing.Point(394, 121);
+            this.btnPortgruppeAdd.Name = "btnPortgruppeAdd";
+            this.btnPortgruppeAdd.Size = new System.Drawing.Size(75, 23);
+            this.btnPortgruppeAdd.TabIndex = 8;
+            this.btnPortgruppeAdd.Text = "Hinzufügen";
+            this.btnPortgruppeAdd.UseVisualStyleBackColor = true;
+            this.btnPortgruppeAdd.Click += new System.EventHandler(this.btnPortgruppeAdd_Click);
+            // 
+            // btnPortgruppeRemove
+            // 
+            this.btnPortgruppeRemove.Enabled = false;
+            this.btnPortgruppeRemove.Location = new System.Drawing.Point(232, 121);
+            this.btnPortgruppeRemove.Name = "btnPortgruppeRemove";
+            this.btnPortgruppeRemove.Size = new System.Drawing.Size(75, 23);
+            this.btnPortgruppeRemove.TabIndex = 7;
+            this.btnPortgruppeRemove.Text = "Löschen";
+            this.btnPortgruppeRemove.UseVisualStyleBackColor = true;
+            this.btnPortgruppeRemove.Click += new System.EventHandler(this.btnPortgruppeRemove_Click);
+            // 
+            // btnPortgruppeEdit
+            // 
+            this.btnPortgruppeEdit.Enabled = false;
+            this.btnPortgruppeEdit.Location = new System.Drawing.Point(313, 121);
+            this.btnPortgruppeEdit.Name = "btnPortgruppeEdit";
+            this.btnPortgruppeEdit.Size = new System.Drawing.Size(75, 23);
+            this.btnPortgruppeEdit.TabIndex = 6;
+            this.btnPortgruppeEdit.Text = "Ändern";
+            this.btnPortgruppeEdit.UseVisualStyleBackColor = true;
+            this.btnPortgruppeEdit.Click += new System.EventHandler(this.btnPortgruppeEdit_Click);
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(126, 59);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(62, 13);
+            this.label27.TabIndex = 3;
+            this.label27.Text = "Portgruppe:";
+            // 
+            // comboPortgruppe_Name
+            // 
+            this.comboPortgruppe_Name.FormattingEnabled = true;
+            this.comboPortgruppe_Name.Location = new System.Drawing.Point(235, 56);
+            this.comboPortgruppe_Name.Name = "comboPortgruppe_Name";
+            this.comboPortgruppe_Name.Size = new System.Drawing.Size(234, 21);
+            this.comboPortgruppe_Name.TabIndex = 2;
+            this.comboPortgruppe_Name.SelectedIndexChanged += new System.EventHandler(this.activateButtons);
+            this.comboPortgruppe_Name.SelectionChangeCommitted += new System.EventHandler(this.ProtgroupSelectedChangeCommitted);
+            this.comboPortgruppe_Name.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CheckexistingPortgroup);
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(45, 165);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(333, 13);
+            this.label29.TabIndex = 0;
+            this.label29.Text = "Hinweis: Hier können die verfügbaren Portgruppen verwaltet werden.";
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.btnOScreate);
+            this.groupBox7.Controls.Add(this.btnOSremove);
+            this.groupBox7.Controls.Add(this.btnOSedit);
+            this.groupBox7.Controls.Add(this.label20);
+            this.groupBox7.Controls.Add(this.comboOS_Status);
+            this.groupBox7.Controls.Add(this.label13);
+            this.groupBox7.Controls.Add(this.comboOS_Name);
+            this.groupBox7.Controls.Add(this.label12);
+            this.groupBox7.Controls.Add(this.label11);
+            this.groupBox7.Location = new System.Drawing.Point(20, 17);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(541, 210);
+            this.groupBox7.TabIndex = 0;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Betriebssysteme";
+            // 
+            // btnOScreate
+            // 
+            this.btnOScreate.Enabled = false;
+            this.btnOScreate.Location = new System.Drawing.Point(394, 121);
+            this.btnOScreate.Name = "btnOScreate";
+            this.btnOScreate.Size = new System.Drawing.Size(75, 23);
+            this.btnOScreate.TabIndex = 8;
+            this.btnOScreate.Text = "Hinzufügen";
+            this.btnOScreate.UseVisualStyleBackColor = true;
+            this.btnOScreate.Click += new System.EventHandler(this.btnOScreate_Click);
+            // 
+            // btnOSremove
+            // 
+            this.btnOSremove.Enabled = false;
+            this.btnOSremove.Location = new System.Drawing.Point(232, 121);
+            this.btnOSremove.Name = "btnOSremove";
+            this.btnOSremove.Size = new System.Drawing.Size(75, 23);
+            this.btnOSremove.TabIndex = 7;
+            this.btnOSremove.Text = "Löschen";
+            this.btnOSremove.UseVisualStyleBackColor = true;
+            this.btnOSremove.Click += new System.EventHandler(this.btnOSremove_Click);
+            // 
+            // btnOSedit
+            // 
+            this.btnOSedit.Enabled = false;
+            this.btnOSedit.Location = new System.Drawing.Point(313, 121);
+            this.btnOSedit.Name = "btnOSedit";
+            this.btnOSedit.Size = new System.Drawing.Size(75, 23);
+            this.btnOSedit.TabIndex = 6;
+            this.btnOSedit.Text = "Ändern";
+            this.btnOSedit.UseVisualStyleBackColor = true;
+            this.btnOSedit.Click += new System.EventHandler(this.btnOSedit_Click);
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(126, 86);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(40, 13);
+            this.label20.TabIndex = 5;
+            this.label20.Text = "Status:";
+            // 
+            // comboOS_Status
+            // 
+            this.comboOS_Status.FormattingEnabled = true;
+            this.comboOS_Status.Location = new System.Drawing.Point(235, 83);
+            this.comboOS_Status.Name = "comboOS_Status";
+            this.comboOS_Status.Size = new System.Drawing.Size(234, 21);
+            this.comboOS_Status.TabIndex = 4;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(126, 59);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(80, 13);
+            this.label13.TabIndex = 3;
+            this.label13.Text = "Betriebssystem:";
+            // 
+            // comboOS_Name
+            // 
+            this.comboOS_Name.FormattingEnabled = true;
+            this.comboOS_Name.Location = new System.Drawing.Point(235, 56);
+            this.comboOS_Name.Name = "comboOS_Name";
+            this.comboOS_Name.Size = new System.Drawing.Size(234, 21);
+            this.comboOS_Name.TabIndex = 2;
+            this.comboOS_Name.SelectedIndexChanged += new System.EventHandler(this.comboOS_Name_SelectedIndexChanged);
+            this.comboOS_Name.SelectionChangeCommitted += new System.EventHandler(this.OSSelectedChangeCommitted);
+            this.comboOS_Name.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckexistingOS);
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.Location = new System.Drawing.Point(138, 178);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(333, 13);
+            this.label12.TabIndex = 1;
+            this.label12.Text = "Hier können manuelle Änderungen vorgenommen werden.";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(45, 165);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(457, 13);
+            this.label11.TabIndex = 0;
+            this.label11.Text = "Hinweis: Die verfügbaren Betriebssysteme werden über den MECM in der Datenbank ve" +
+    "rwaltet.";
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.groupBox10);
+            this.tabPage2.Controls.Add(this.groupBox9);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(1479, 627);
+            this.tabPage2.TabIndex = 3;
+            this.tabPage2.Text = resources.GetString("tabPage2.Text");
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // groupBox10
+            // 
+            this.groupBox10.Controls.Add(this.button15);
+            this.groupBox10.Controls.Add(this.listView3);
+            this.groupBox10.Location = new System.Drawing.Point(404, 16);
+            this.groupBox10.Name = "groupBox10";
+            this.groupBox10.Size = new System.Drawing.Size(319, 291);
+            this.groupBox10.TabIndex = 1;
+            this.groupBox10.TabStop = false;
+            this.groupBox10.Text = "Powershell Skripts";
+            // 
+            // button15
+            // 
+            this.button15.Location = new System.Drawing.Point(192, 259);
+            this.button15.Name = "button15";
+            this.button15.Size = new System.Drawing.Size(104, 23);
+            this.button15.TabIndex = 4;
+            this.button15.Text = "Windows Explorer";
+            this.button15.UseVisualStyleBackColor = true;
+            // 
+            // listView3
+            // 
+            this.listView3.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader4,
+            this.columnHeader5});
+            this.listView3.HideSelection = false;
+            this.listView3.Location = new System.Drawing.Point(20, 29);
+            this.listView3.Name = "listView3";
+            this.listView3.Size = new System.Drawing.Size(276, 224);
+            this.listView3.TabIndex = 4;
+            this.listView3.UseCompatibleStateImageBehavior = false;
+            this.listView3.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "Service";
+            this.columnHeader4.Width = 103;
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "Powershell-Datei";
+            this.columnHeader5.Width = 160;
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.Controls.Add(this.button14);
+            this.groupBox9.Controls.Add(this.button13);
+            this.groupBox9.Controls.Add(this.button12);
+            this.groupBox9.Controls.Add(this.listView2);
+            this.groupBox9.Location = new System.Drawing.Point(16, 16);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(370, 190);
+            this.groupBox9.TabIndex = 0;
+            this.groupBox9.TabStop = false;
+            this.groupBox9.Text = "Microsoft Endpoint Configuration Manager";
+            // 
+            // button14
+            // 
+            this.button14.Enabled = false;
+            this.button14.Location = new System.Drawing.Point(260, 152);
+            this.button14.Name = "button14";
+            this.button14.Size = new System.Drawing.Size(104, 23);
+            this.button14.TabIndex = 3;
+            this.button14.Text = "Deinstallieren";
+            this.button14.UseVisualStyleBackColor = true;
+            // 
+            // button13
+            // 
+            this.button13.Enabled = false;
+            this.button13.Location = new System.Drawing.Point(150, 152);
+            this.button13.Name = "button13";
+            this.button13.Size = new System.Drawing.Size(104, 23);
+            this.button13.TabIndex = 2;
+            this.button13.Text = "Installieren";
+            this.button13.UseVisualStyleBackColor = true;
+            // 
+            // button12
+            // 
+            this.button12.Location = new System.Drawing.Point(34, 152);
+            this.button12.Name = "button12";
+            this.button12.Size = new System.Drawing.Size(75, 23);
+            this.button12.TabIndex = 1;
+            this.button12.Text = "Verbinden";
+            this.button12.UseVisualStyleBackColor = true;
+            // 
+            // listView2
+            // 
+            this.listView2.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3});
+            this.listView2.HideSelection = false;
+            this.listView2.Location = new System.Drawing.Point(24, 39);
+            this.listView2.Name = "listView2";
+            this.listView2.Size = new System.Drawing.Size(325, 98);
+            this.listView2.TabIndex = 0;
+            this.listView2.UseCompatibleStateImageBehavior = false;
+            this.listView2.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Service";
+            this.columnHeader1.Width = 93;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Status";
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Letzte Ausführung";
+            this.columnHeader3.Width = 158;
+            // 
+            // label_secureconnection
+            // 
+            this.label_secureconnection.AutoSize = true;
+            this.label_secureconnection.Location = new System.Drawing.Point(13, 710);
+            this.label_secureconnection.Name = "label_secureconnection";
+            this.label_secureconnection.Size = new System.Drawing.Size(67, 13);
+            this.label_secureconnection.TabIndex = 27;
+            this.label_secureconnection.Text = "Verbindung: ";
+            // 
             // FMmain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -990,9 +1369,10 @@
             this.MaximizeBox = false;
             this.Name = "FMmain";
             this.Text = "VirtuSphere";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FMmain_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.tabControl2.ResumeLayout(false);
+            this.VirtuSphere.ResumeLayout(false);
             this.Liste.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
@@ -1005,6 +1385,14 @@
             this.groupBox4.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.tabPage1.ResumeLayout(false);
+            this.groupBox8.ResumeLayout(false);
+            this.groupBox8.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
+            this.tabPage2.ResumeLayout(false);
+            this.groupBox10.ResumeLayout(false);
+            this.groupBox9.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1033,7 +1421,7 @@
         private System.Windows.Forms.ColumnHeader IP;
         private System.Windows.Forms.ColumnHeader Domain;
         private System.Windows.Forms.ColumnHeader Packages;
-        private System.Windows.Forms.TabControl tabControl2;
+        private System.Windows.Forms.TabControl VirtuSphere;
         private System.Windows.Forms.TabPage Liste;
         private System.Windows.Forms.TabPage Umgebung;
         private System.Windows.Forms.ComboBox comboHypervisor;
@@ -1051,7 +1439,7 @@
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.ComboBox listBoxOS;
         private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button btnMissionDelete;
         public System.Windows.Forms.ComboBox missionBox;
         private System.Windows.Forms.ColumnHeader os;
         public System.Windows.Forms.Button btn_add;
@@ -1093,9 +1481,42 @@
         private System.Windows.Forms.CheckBox chk_hypervisor_credssave;
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button10;
-        private System.Windows.Forms.CheckBox checkBox3;
-        private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.Button btnMissionEdit;
+        private System.Windows.Forms.Button btnMissionNew;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Button btnOScreate;
+        private System.Windows.Forms.Button btnOSremove;
+        private System.Windows.Forms.Button btnOSedit;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.ComboBox comboOS_Status;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.ComboBox comboOS_Name;
+        private System.Windows.Forms.GroupBox groupBox8;
+        private System.Windows.Forms.Button btnPortgruppeAdd;
+        private System.Windows.Forms.Button btnPortgruppeRemove;
+        private System.Windows.Forms.Button btnPortgruppeEdit;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.ComboBox comboPortgruppe_Name;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.GroupBox groupBox10;
+        private System.Windows.Forms.Button button15;
+        private System.Windows.Forms.ListView listView3;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
+        private System.Windows.Forms.GroupBox groupBox9;
+        private System.Windows.Forms.Button button14;
+        private System.Windows.Forms.Button button13;
+        private System.Windows.Forms.Button button12;
+        private System.Windows.Forms.ListView listView2;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.CheckBox chk_showTemplates;
+        internal System.Windows.Forms.Label label_secureconnection;
     }
 }
 

@@ -145,6 +145,7 @@ function getVMs_2($connection, $missionId) {
    return $vms;
 }
 
+
 function getVMs($connection, $missionId) {
    // Zuerst die VMs für die gegebene mission_id abrufen
    $vmQuery = "SELECT * FROM deploy_vms WHERE mission_id = ?";
@@ -190,6 +191,20 @@ function getVMs($connection, $missionId) {
        
        // Die Interfaces zum VM-Array hinzufügen
        $row['interfaces'] = $interfaces;
+
+       // prüfe ob disks vorhanden 
+
+         $disksQuery = "SELECT * FROM deploy_disks WHERE vm_id = ?";
+         $disksStmt = $connection->prepare($disksQuery);
+         $disksStmt->bind_param("i", $vmId);
+         $disksStmt->execute();
+         $disksResult = $disksStmt->get_result();
+         $disks = array();
+         while ($diskRow = $disksResult->fetch_assoc()) {
+             $disks[] = $diskRow;
+         }
+         $row['disks'] = $disks;
+
 
        $vms[] = $row;
    }
@@ -254,6 +269,43 @@ function getOS($connection){
    return $os;
 }
 
+function createOS($osName, $osStatus, $connection){
+   $query = "INSERT INTO deploy_os (os_name, os_status) VALUES ('$osName', '$osStatus')";
+   $result = $connection->query($query);
+   if($result){
+      return true;
+      addLog($_SERVER['REMOTE_ADDR'], 'createOS', $osName, $connection);
+   } else {
+      return false;
+      addLog($_SERVER['REMOTE_ADDR'], 'createOS Failed', $osName, $connection);
+   }
+
+}
+
+function deleteOS($osId, $connection){
+   $query = "DELETE FROM deploy_os WHERE id = $osId";
+   $result = $connection->query($query);
+   if($result){
+      return true;
+      addLog($_SERVER['REMOTE_ADDR'], 'deleteOS', $osId, $connection);
+   } else {
+      return false;
+      addLog($_SERVER['REMOTE_ADDR'], 'deleteOS Failed', $osId, $connection);
+   }
+}
+
+function updateOS($osId, $osName, $osStatus, $connection){
+   $query = "UPDATE deploy_os SET os_name = '$osName', os_status = '$osStatus' WHERE id = $osId";
+   $result = $connection->query($query);
+   if($result){
+      return true;
+      addLog($_SERVER['REMOTE_ADDR'], 'updateOS', $osId, $connection);
+   } else {
+      return false;
+      addLog($_SERVER['REMOTE_ADDR'], 'updateOS Failed', $osId, $connection);
+   }
+}
+
 function sendVMList($missionId, $vmList, $connection){
    $json = file_get_contents('php://input');
    $vmList = json_decode($json);
@@ -273,6 +325,43 @@ function getVLAN($connection){
    
    return $vlans;
 }
+
+function deleteVLAN($vlanId, $connection){
+   $query = "DELETE FROM deploy_vlan WHERE id = $vlanId";
+   $result = $connection->query($query);
+   if($result){
+      return true;
+      addLog($_SERVER['REMOTE_ADDR'], 'deleteVLAN', $vlanId, $connection);
+   } else {
+      return false;
+      addLog($_SERVER['REMOTE_ADDR'], 'deleteVLAN Failed', $vlanId, $connection);
+   }
+}
+
+function updateVlan($vlanId, $vlanName, $connection){
+   $query = "UPDATE deploy_vlan SET vlan_name = '$vlanName' WHERE id = $vlanId";
+   $result = $connection->query($query);
+   if($result){
+      return true;
+      addLog($_SERVER['REMOTE_ADDR'], 'updateVlan', $vlanId, $connection);
+   } else {
+      return false;
+      addLog($_SERVER['REMOTE_ADDR'], 'updateVlan Failed', $vlanId, $connection);
+   }
+}
+
+function createVLAN($vlanName, $connection){
+   $query = "INSERT INTO deploy_vlan (vlan_name) VALUES ('$vlanName')";
+   $result = $connection->query($query);
+   if($result){
+      return true;
+      addLog($_SERVER['REMOTE_ADDR'], 'createVLAN', $vlanName, $connection);
+   } else {
+      return false;
+      addLog($_SERVER['REMOTE_ADDR'], 'createVLAN Failed', $vlanName, $connection);
+   }
+}
+
 
 function deleteVM($vmList, $connection){
    if (!empty($vmList)) {
@@ -302,9 +391,16 @@ function updateMission($mysqli, $missionId, $missionData) {
    //$missionData['updated_at'] = date('Y-m-d H:i:s');
 
    foreach ($missionData as $key => $value) {
-       if ($key == 'Id' || $key == 'created_at' || $key == 'updated_at' || $key == 'vm_count') {
+       if ($key == 'Id' || $key == 'created_at' || $key == 'vm_count') {
            continue; // Überspringe das Id-Feld und created_at für Updates
        }
+
+       // updated_at soll die aktuelle zeit sein
+         if ($key == 'updated_at') {
+            $value = date('Y-m-d H:i:s');
+         }
+
+
        
        $sets[] = "$key = ?";
        $params[] = $value;
@@ -357,7 +453,7 @@ function vmListToCreate($missionId, $vmList, $mysqli){
            $missionIdIncluded = false;
 
            foreach ($vm as $key => $value) {
-               if ($key != 'Id' && $key != 'interfaces' && $key != 'status' && $key != 'packages' && $key != 'created_at' && $key != 'updated_at' && $value !== null) {
+               if ($key != 'Id' && $key != 'interfaces' && $key != 'status' && $key != 'packages' && $key != 'Disks' && $key != 'created_at' && $key != 'updated_at' && $value !== null) {
                    if ($key == 'mission_id') {
                        $missionIdIncluded = true; // Markieren, dass mission_id bereits enthalten ist
                    }
@@ -411,6 +507,15 @@ function vmListToCreate($missionId, $vmList, $mysqli){
                            $stmt->bind_param("ii", $vmId, $packageId);
                            $stmt->execute();
                         }
+                     }
+                  }
+
+                  //Diskbeziehungen einfügen
+                  if (!empty($vm->disks)) {
+                     foreach ($vm->disks as $disk) {
+                        $stmt = $mysqli->prepare("INSERT INTO deploy_disks (vm_id, disk_name, disk_size, disk_type) VALUES (?, ?, ?, ?)");
+                        $stmt->bind_param("iss", $vmId, $disk->disk_name, $disk->disk_size, $disk->disk_type);
+                        $stmt->execute();
                      }
                   }
                } else {
@@ -472,7 +577,7 @@ function vmListToUpdate($vmList, $connection) {
 
            // Dynamisch festlegen, welche Felder aktualisiert werden sollen
            foreach ($vm as $key => $value) {
-               if ($key != 'Id' && $key != 'interfaces' && $key != 'packages' && $key != 'created_at' && $key != 'updated_at') {
+               if ($key != 'Id' && $key != 'interfaces' && $key != 'packages' && $key != 'Disks' && $key != 'created_at' && $key != 'updated_at') {
                    $updates[] = "{$key} = ?";
                    $params[] = $value;
                    $types .= is_numeric($value) && !is_string($value) ? 'i' : 's'; // Einfache Typbestimmung
@@ -542,11 +647,30 @@ function vmListToUpdate($vmList, $connection) {
                    }
                }
            }
+
+         // Disks
+         $deleteDisksQuery = "DELETE FROM deploy_disks WHERE vm_id = ?";
+         if ($deleteDisksStmt = $connection->prepare($deleteDisksQuery)) {
+             $deleteDisksStmt->bind_param("i", $vm->Id);
+             $deleteDisksStmt->execute();
+             $deleteDisksStmt->close();
+         }
+
+         // Neue Disks einfügen
+         $insertDiskQuery = "INSERT INTO deploy_disks (vm_id, disk_name, disk_size, disk_type) VALUES (?, ?, ?, ?)";
+         foreach ($vm->Disks as $disk) {
+             if ($insertDiskStmt = $connection->prepare($insertDiskQuery)) {
+                 $insertDiskStmt->bind_param("isis", $vm->Id, $disk->disk_name, $disk->disk_size, $disk->disk_type);
+                 $insertDiskStmt->execute();
+                 $insertDiskStmt->close();
+             }
+         }
+
        } else {
          if (is_writable('logs/fail.log')) {
            file_put_contents('logs/fail.log', json_encode($vm), FILE_APPEND);
          }
-           echo "Nicht alle erforderlichen Daten für das Update sind vorhanden.";
+           //echo "Nicht alle erforderlichen Daten für das Update sind vorhanden.";
        }
    }
    return $successCount;

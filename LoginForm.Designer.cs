@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.chk_loginsave = new System.Windows.Forms.CheckBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.chkbx_tls = new System.Windows.Forms.CheckBox();
             this.comboHostname = new System.Windows.Forms.ComboBox();
@@ -39,7 +40,6 @@
             this.btnLogin = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.chk_loginsave = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -62,6 +62,16 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Anmeldung";
+            // 
+            // chk_loginsave
+            // 
+            this.chk_loginsave.AutoSize = true;
+            this.chk_loginsave.Location = new System.Drawing.Point(142, 253);
+            this.chk_loginsave.Name = "chk_loginsave";
+            this.chk_loginsave.Size = new System.Drawing.Size(74, 17);
+            this.chk_loginsave.TabIndex = 10;
+            this.chk_loginsave.Text = "Speichern";
+            this.chk_loginsave.UseVisualStyleBackColor = true;
             // 
             // pictureBox1
             // 
@@ -145,16 +155,6 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Server:";
             // 
-            // chk_loginsave
-            // 
-            this.chk_loginsave.AutoSize = true;
-            this.chk_loginsave.Location = new System.Drawing.Point(142, 253);
-            this.chk_loginsave.Name = "chk_loginsave";
-            this.chk_loginsave.Size = new System.Drawing.Size(74, 17);
-            this.chk_loginsave.TabIndex = 10;
-            this.chk_loginsave.Text = "Speichern";
-            this.chk_loginsave.UseVisualStyleBackColor = true;
-            // 
             // LoginForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -183,8 +183,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox comboHostname;
-        private System.Windows.Forms.CheckBox chkbx_tls;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.CheckBox chk_loginsave;
+        internal System.Windows.Forms.CheckBox chkbx_tls;
     }
 }

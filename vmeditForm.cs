@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static VirtuSphere.ApiService;
+using static VirtuSphere.apiService;
 using static VirtuSphere.FMmain;
 
 namespace VirtuSphere
@@ -12,8 +12,9 @@ namespace VirtuSphere
     {
         public FMmain Form1; // Referenz auf die Hauptform
         public VM selectedVM;
-        public ApiService ApiService = new ApiService(); // Erstellen Sie eine Instanz der ApiService-Klasse
+        private apiService apiService;
 
+        Disk FormViewDisks = new Disk();
 
 
         public vmeditForm(FMmain mainForm, VM vm)
@@ -31,6 +32,81 @@ namespace VirtuSphere
             // txtType 
             if (txtType.Items.Count > 0) txtType.SelectedIndex = 0;
 
+            // comboHDD_Type füge als Typen hinzu: Thin, Thick, EagerZeroedThick
+            comboHDD_Type.Items.Add("Thin");
+            comboHDD_Type.Items.Add("Thick");
+            comboHDD_Type.Items.Add("EagerZeroedThick");
+
+            // andere auswahlmöglichkeiten sollen nicht möglich sein
+            comboHDD_Type.DropDownStyle = ComboBoxStyle.DropDownList;
+            ComboVLAN.DropDownStyle = ComboBoxStyle.DropDownList;
+
+            //Setzte als Standard Thin
+            comboHDD_Type.SelectedIndex = 0;
+
+
+            // Ereignishandler für jede TextBox in der GroupBox zuweisen
+            foreach (Control c in groupBox2.Controls)
+            {
+                if (c is TextBox)
+                {
+                    // TextChanged-Ereignis mit der Methode TextBox_TextChanged verknüpfen
+                    c.TextChanged += TextBox_TextChanged;
+                }
+            }
+
+            // Wenn selectedVM.vm_disk kein typ long ist, dann setze es auf 0
+            if (!long.TryParse(selectedVM.vm_disk, out long diskSize))
+            {
+                selectedVM.vm_disk = "50";
+            }
+
+            //wenn selectedVM.Disks leer, dann füge eine Disk hinz
+            if (selectedVM.Disks.Count == 0)
+            {
+                Disk newDisk = new Disk
+                {
+                    disk_name = "System",
+                    disk_size = long.Parse(selectedVM.vm_disk),
+                    disk_type = "Thin"
+                };
+                selectedVM.Disks.Add(newDisk);
+            }
+
+
+
+            // standartmäßig soll nichts selected sein
+            listBoxHDDs.SelectedIndex = -1; 
+
+
+            // Lade alle selectedVM.Disks in die FormViewDisks
+            foreach (var disk in selectedVM.Disks)
+            {
+                FormViewDisks = disk;
+                listBoxHDDs.Items.Add(disk);
+            }
+
+            // comboOS mit osItems füllen
+            foreach (OSItem osItem in Form1.osItems)
+            {
+                combo_os.Items.Add(osItem.os_name);
+            }
+
+            // Setze den Wert des ComboBoxes auf den Wert der VM, wenn er existiert sonst auf den ersten Wert   
+            if (selectedVM.vm_os != null)
+            {
+                combo_os.Text = selectedVM.vm_os;
+            }
+            else
+            {
+                combo_os.Text = combo_os.Items[0].ToString();
+            }
+
+            // andere auswahlen sollen nicht möglich sein osItems
+            combo_os.DropDownStyle = ComboBoxStyle.DropDownList;
+
+
+
         }
 
         private void textBox7_TextChanged(object sender, EventArgs e)
@@ -45,6 +121,17 @@ namespace VirtuSphere
 
         private void btnSave_Click(object sender, EventArgs e)
         {
+            //Übertrage von FormDiskView zu selectedVM.Disks
+            selectedVM.Disks.Clear();
+            foreach (var item in listBoxHDDs.Items)
+            {
+                Disk diskToAdd = item as Disk; // Annahme, dass die Items in der ListBox Disk-Objekte sind
+                if (diskToAdd != null)
+                {
+                    selectedVM.Disks.Add(diskToAdd);
+                }
+            }
+
             UpdateVMFromFormFields(selectedVM);
 
         }
@@ -63,7 +150,7 @@ namespace VirtuSphere
                 selectedVM.vm_name = txtd_name.Text;
                 selectedVM.vm_hostname = txtd_hostname.Text;
                 selectedVM.vm_domain = txtd_domain.Text;
-                selectedVM.vm_os = txtd_os.Text;
+                selectedVM.vm_os = combo_os.Text;
                 selectedVM.vm_ram = txtd_ram.Text;
                 selectedVM.vm_cpu = txtd_cpu.Text;
                 selectedVM.vm_disk = txtd_disk.Text;
@@ -74,7 +161,6 @@ namespace VirtuSphere
                 selectedVM.vm_status = "";
                 selectedVM.vm_notes = txtd_notes.Text;
 
-                ApiService apiService = new ApiService(); // Erstellen Sie eine Instanz der ApiService-Klasse
                 selectedVM.packages = await GetSelectedPackages(apiService);
 
                 if (!Form1.vmListToCreate.Contains(selectedVM) && !Form1.vmListToUpdate.Contains(selectedVM))
@@ -113,38 +199,43 @@ namespace VirtuSphere
         }
 
 
-        public void FillListBoxPackages2(List<VirtuSphere.ApiService.Package> packageItems)
+
+        private void TextBox_TextChanged(object sender, EventArgs e)
         {
-            // Sicherstellen, dass die ListBox im UI-Thread aktualisiert wird
-            if (listBoxPackages2.InvokeRequired)
+            // Überprüfen, ob mindestens eine TextBox in der GroupBox Text enthält
+            bool istEineTextBoxGefuellt = false;
+            foreach (Control c in groupBox1.Controls)
             {
-                listBoxPackages2.Invoke(new Action(() => FillListBoxPackages2(packageItems)));
-            }
-            else
-            {
-                listBoxPackages2.Items.Clear(); // Bestehende Einträge löschen
-                foreach (var packageItem in packageItems)
+                if (c is TextBox)
                 {
-                    listBoxPackages2.Items.Add(packageItem.package_name); // Angenommen, Sie möchten den Paketnamen anzeigen
+                    TextBox textBox = (TextBox)c;
+                    if (!string.IsNullOrWhiteSpace(textBox.Text))
+                    {
+                        istEineTextBoxGefuellt = true;
+                        break; // Sobald eine gefüllte TextBox gefunden wird, Abbruch der Schleife
+                    }
                 }
             }
+
+            // Button aktivieren, wenn mindestens eine TextBox gefüllt ist
+            button5.Enabled = istEineTextBoxGefuellt;
         }
 
 
-        private async Task<List<Package>> GetSelectedPackages(ApiService apiService)
+        private async Task<List<Package>> GetSelectedPackages(apiService apiService)
         {
-            string hostname = Form1.hostname;
-            string token = Form1.Token;
+            string apiUrl = Form1.apiUrl;
+            string apiToken = Form1.apiToken;
 
             List<Package> selectedPackages = new List<Package>();
-            var allPackageItems = await apiService.GetPackages(hostname, token); // Warten auf das Task-Ergebnis
+            var packageItems = Form1.packageItems;
 
-            if (allPackageItems != null) // Prüfen, ob das Ergebnis nicht null ist
+            if (packageItems != null) // Prüfen, ob das Ergebnis nicht null ist
             {
                 foreach (var selectedItem in listBoxPackages2.SelectedItems)
                 {
                     // Annahme: 'selectedItem' ist der Name des Pakets, der in der ListBox angezeigt wird.
-                    var packageItem = allPackageItems.FirstOrDefault(p => p.package_name == selectedItem.ToString());
+                    var packageItem = packageItems.FirstOrDefault(p => p.package_name == selectedItem.ToString());
                     if (packageItem != null)
                     {
                         Package package = new Package
@@ -168,7 +259,7 @@ namespace VirtuSphere
             txtd_name.Text = selectedVM.vm_name;
             txtd_hostname.Text = selectedVM.vm_hostname;
             txtd_domain.Text = selectedVM.vm_domain;
-            txtd_os.Text = selectedVM.vm_os;
+            combo_os.Text = selectedVM.vm_os;
             txtd_ram.Text = selectedVM.vm_ram; 
             txtd_cpu.Text = selectedVM.vm_cpu;
             txtd_disk.Text = selectedVM.vm_disk;
@@ -187,15 +278,31 @@ namespace VirtuSphere
             txtd_created_at.Enabled = false;
             txtd_updated_at.Enabled = false;
 
-            // lade packages
-            await GetSelectedPackages(ApiService); // Warten auf das Task-Ergebnis
+            //// lade packages
+            //await GetSelectedPackages(apiService); // Warten auf das Task-Ergebnis
 
-            // lade vlans mit ApiService.GetVLANs in die ComboVLAN
-            List<VLANItem> vlanItems = await ApiService.GetVLANs(Form1.hostname, Form1.Token);
-            foreach (var vlanItem in vlanItems)
+            //// lade vlans mit apiService.GetVLANs in die ComboVLAN
+            //List<VLANItem> vlanItems = await apiService.GetVLANs(Form1.apiUrl, Form1.apiToken);
+            //foreach (var vlanItem in vlanItems)
+            //{
+            //    ComboVLAN.Items.Add(vlanItem.vlan_name);
+            //}
+
+            // Alle VLANItems aus Form1.vLANItems in ComboVLAN.Items hinzufügen
+            foreach (var vlanItem in Form1.vLANItems)
             {
                 ComboVLAN.Items.Add(vlanItem.vlan_name);
             }
+
+            // Alle Packages aus Form1.packageItems in ComboVLAN.Items hinzufügen
+            foreach (var packageItem in Form1.packageItems)
+            {
+                listBoxPackages2.Items.Add(packageItem.package_name);
+            }
+
+            // Lade alle vLANItems in die ComboVLAN.Items
+
+
 
             // wenn ComboVLAN count gößer 0 ist, dann setze den index auf 0
             if (ComboVLAN.Items.Count > 0) ComboVLAN.SelectedIndex = 0;
@@ -319,6 +426,7 @@ namespace VirtuSphere
                 comboMode.Text = selectedInterface.mode;
                 txtType.Text = selectedInterface.type;
                 txtMAC.Text = selectedInterface.mac;
+                Interface_DBID.Text = selectedInterface.id.ToString();
             }
         }
 
@@ -433,6 +541,129 @@ namespace VirtuSphere
                     txtDNS2.Text = "";
                 }
             }
+        }
+
+        private void btnDiskAdd(object sender, EventArgs e)
+        {
+            // prüfe ob disk_size zahl ist 
+            if (!long.TryParse(txtHDD_Size.Text, out long diskSize))
+            {
+                MessageBox.Show("Bitte geben Sie eine gültige Festplattengröße ein.", "Ungültige Eingabe", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // prüfe ob Name ausgefüllt ist
+            if (string.IsNullOrWhiteSpace(txtHDD_Name.Text))
+            {
+                MessageBox.Show("Bitte geben Sie einen Namen für die Festplatte ein.", "Fehlende Eingabe", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // prüfe ob type ausgewählt ist
+            if (string.IsNullOrWhiteSpace(comboHDD_Type.Text))
+            {
+                MessageBox.Show("Bitte wählen Sie einen Festplattentyp aus.", "Fehlende Eingabe", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // txtHDD_Name, txtHDD_Size, txtHDD_Type
+            Disk newDisk = new Disk
+            {
+                disk_name = txtHDD_Name.Text,
+                disk_size = Convert.ToInt64(txtHDD_Size.Text),
+                disk_type = comboHDD_Type.Text
+            };
+
+            listBoxHDDs.Items.Add(newDisk);
+
+            // füge Disk zur FormViewDisks hinzu
+            FormViewDisks = newDisk;
+
+            // Optional: Leeren der Formularfelder nach dem Hinzufügen
+            ClearDiskDetails();
+        }
+
+        private void ClearDiskDetails()
+        {
+            txtHDD_Name.Text = "";
+            txtHDD_Size.Text = "";
+            comboHDD_Type.Text = "";
+        }
+
+        // lade ausgewählte Disk in die Formularfelder
+        private void listBoxHDDs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBoxHDDs.SelectedItem != null)
+            {
+                Disk selectedDisk = (Disk)listBoxHDDs.SelectedItem;
+                txtHDD_Name.Text = selectedDisk.disk_name;
+                txtHDD_Size.Text = selectedDisk.disk_size.ToString();
+                comboHDD_Type.Text = selectedDisk.disk_type;
+                HDD_DBID.Text = selectedDisk.Id.ToString();
+            }
+
+            // aktiviere btnDiskUpdate
+            btnDiskUpdate.Enabled = true;
+            btnDiskDelete.Enabled = true;
+            
+            
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (listBoxHDDs.SelectedItem != null)
+            {
+                listBoxHDDs.Items.Remove(listBoxHDDs.SelectedItem);
+                ClearDiskDetails();
+
+                btnDiskUpdate.Enabled = false;
+                btnDiskDelete.Enabled = false;
+                lbl_status.Text = "Status: Update erforderlich!";
+            }
+            else
+            {
+                MessageBox.Show("Bitte wählen Sie eine Festplatte zum Löschen aus.", "Keine Auswahl", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            // bearbeite disk
+            if (listBoxHDDs.SelectedItem != null)
+            {
+                Disk selectedDisk = (Disk)listBoxHDDs.SelectedItem;
+                selectedDisk.disk_name = txtHDD_Name.Text;
+                selectedDisk.disk_size = Convert.ToInt64(txtHDD_Size.Text);
+                selectedDisk.disk_type = comboHDD_Type.Text;
+
+                // Aktualisieren der ListBox, um die geänderten Daten widerzuspiegeln
+                int selectedIndex = listBoxHDDs.SelectedIndex;
+                listBoxHDDs.Items[selectedIndex] = listBoxHDDs.Items[selectedIndex]; // Trigger the ListBox to refresh
+
+                // Speichere änderung in VM
+                FormViewDisks = selectedDisk;
+
+                lbl_status.Text = "Status: Update erforderlich!";
+
+                // Entferne Selektion
+                listBoxHDDs.SelectedIndex = -1;
+
+                // Optional: Leeren der Formularfelder nach der Bearbeitung
+                ClearDiskDetails();
+
+                btnDiskUpdate.Enabled = false;
+                btnDiskDelete.Enabled = false;
+            }
+            else
+            {
+                MessageBox.Show("Bitte wählen Sie eine Festplatte aus der Liste aus, bevor Sie versuchen, sie zu bearbeiten.");
+            }
+        }
+
+        private void txtd_datastore_TextChanged(object sender, EventArgs e)
+        {
+            
+            this.Enabled = true;
         }
     }
 }

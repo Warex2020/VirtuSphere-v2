@@ -135,12 +135,14 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="LogForm.cs">
+    <Compile Include="ErrorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LogForm.Designer.cs">
-      <DependentUpon>LogForm.cs</DependentUpon>
+    <Compile Include="ErrorForm.Designer.cs">
+      <DependentUpon>ErrorForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormPositionManager.cs" />
+    <Compile Include="FormPositions.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -168,6 +170,7 @@
     <Compile Include="vmeditForm.Designer.cs">
       <DependentUpon>vmeditForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="VMManager.cs" />
     <Content Include="Ansible\upload_mac_list.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -192,8 +195,8 @@
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LogForm.resx">
-      <DependentUpon>LogForm.cs</DependentUpon>
+    <EmbeddedResource Include="ErrorForm.resx">
+      <DependentUpon>ErrorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>

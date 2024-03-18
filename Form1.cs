@@ -7,9 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static VirtuSphere.ApiService;
+using static VirtuSphere.apiService;
 using System.Security.Cryptography;
 using static VirtuSphere.FMmain;
+using System.Windows.Forms.Design;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 
 
@@ -18,37 +21,51 @@ namespace VirtuSphere
     public partial class FMmain : Form
     {
 
-        public ApiService ApiService = new ApiService();
+        private apiService apiService;
+        private VMManager vmManager = new VMManager();
 
-        public string hostname { get; set; }
-        public string Token { get; set; }
+
+        internal string apiToken;
+        internal string apiUrl;
+        internal int temp_vlanId;
+        internal int temp_osId;
+
         public int missionId { get; set; }
         public string missionName { get; set; }
         public List<VM> vms = new List<VM>();
+        public List<VM> vmsToCopy = new List<VM>();
         public List<VM> vmListToDelete = new List<VM>();
         public List<VM> vmListToCreate = new List<VM>();
         public List<VM> vmListToUpdate = new List<VM>();
         public List<Package> packageItems = new List<Package>();
         public List<MissionItem> missionsList; // Liste der Missionen
         public List<VLANItem> vLANItems = new List<VLANItem>();
+        public List<OSItem> osItems = new List<OSItem>();
 
 
 
         public object JsonConvert { get; private set; }
 
-        public FMmain()
+        public FMmain(string apiToken, string apiUrl)
         {
-
+            apiService = new apiService(apiToken, apiUrl);
             InitializeComponent();
+            FormPositionManager.LoadFormPosition(this);
             DisableInputFields();
+            LoadDefaultSettings();
+            
+            this.Load += async (sender, e) => await InitializeAsync();
+
+        }
+
+
+        private void LoadDefaultSettings()
+        {
 
             string LocalUserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             string LocalAnsiblePath = LocalUserProfile + "\\ansible-playbooks";
             txtAnsibleLocal.Text = LocalAnsiblePath;
             comboAnsibleRemote.SelectedIndex = 0;
-
-
-            
 
             // befülle mit Properties.Settings, sofern vorhanden
             if (Properties.Settings.Default.txt_ssh_ip != "") { txt_ssh_ip.Text = Properties.Settings.Default.txt_ssh_ip; }
@@ -62,6 +79,26 @@ namespace VirtuSphere
 
             if (Properties.Settings.Default.chk_ansible_credssave) { chk_ansible_credssave.Checked = true; } else { chk_ansible_credssave.Checked = false; }
             if (Properties.Settings.Default.chk_hypervisor_credssave) { chk_hypervisor_credssave.Checked = true; } else { chk_hypervisor_credssave.Checked = false; }
+
+        }
+
+        public async Task InitializeAsync()
+        {
+            missionsList = await apiService.GetMissions();
+            ShowMissions(missionsList);
+
+            // getpackages
+            packageItems = await apiService.GetPackages();
+            ShowPackages(packageItems);
+
+            //VLANs
+            vLANItems = await apiService.GetVLANs();
+            ShowVLANs(vLANItems);
+
+            //OS
+            osItems = await apiService.GetOS();
+            ShowOS(osItems);
+
         }
 
 
@@ -72,13 +109,7 @@ namespace VirtuSphere
                 MissionItem selectedItem = missionBox.SelectedItem as MissionItem;
                 if (selectedItem != null)
                 {
-                    //MessageBox.Show($"Die ID der ausgewählten Mission ist: {selectedItem.Id}");
 
-                    // DialogResult result = MessageBox.Show("Möchten Sie die Liste der VMs aus der Datenbank laden?", "Bestätigung", MessageBoxButtons.YesNo);
-
-                    //  if (result == DialogResult.Yes)
-                    // {
-                    // leere listView1 und fülle sie mit den VMs aus der Datenbank
                     listView1.Items.Clear();
                     ClearTextBoxes();
 
@@ -93,7 +124,7 @@ namespace VirtuSphere
 
                     // leere vms 
                     vms.Clear();
-                    vms = await ApiService.GetVMs(hostname, Token, missionId);
+                    vms = await apiService.GetVMs(missionId);
 
                     if (vms != null && vms.Count > 0)
                     {
@@ -192,6 +223,13 @@ namespace VirtuSphere
                 mode = "DHCP"
             };
 
+            Disk disk = new Disk
+            {
+                disk_name = "System",
+                disk_size = long.Parse(txtHDD.Text),
+                disk_type = "thin"
+            };
+
             // Ausgabe der Console mit den Eigenschaften des neuen Interface
             Console.WriteLine("Neues Interface: IP: " + newInterface.ip + " Subnet: " + newInterface.subnet + " Gateway: " + newInterface.gateway + " DNS1: " + newInterface.dns1 + " DNS2: " + newInterface.dns2 + " VLAN: " + newInterface.vlan + " Mode: " + newInterface.mode);
 
@@ -208,9 +246,9 @@ namespace VirtuSphere
                 vm_os = listBoxOS.Text,
                 vm_status = "",
                 vm_cpu = txtCPU.Text,
-                vm_disk = txtHDD.Text,
                 vm_ram = txtRAM.Text,
-                vm_creator = ApiService.globalusername,
+                vm_disk = txtHDD.Text,
+                vm_creator = apiService.globalusername,
                 vm_datacenter = "",
                 vm_datastore = "",
                 vm_guest_id = "windows2019srv_64Guest",
@@ -358,7 +396,7 @@ namespace VirtuSphere
 
                     //selectedVM.packages = packages;
 
-                    selectedVM.packages = await GetSelectedPackages(ApiService); // Warten auf das Task-Ergebnis
+                    selectedVM.packages = await GetSelectedPackages(apiService); // Warten auf das Task-Ergebnis
 
                     if (selectedVM.Id != 0)
                     {
@@ -376,11 +414,11 @@ namespace VirtuSphere
 
         }
 
-        private async Task<List<Package>> GetSelectedPackages(ApiService apiService)
+        private async Task<List<Package>> GetSelectedPackages(apiService apiService)
         {
 
             List<Package> selectedPackages = new List<Package>();
-            var allPackageItems = await apiService.GetPackages(hostname, Token); // Warten auf das Task-Ergebnis
+            var allPackageItems = await apiService.GetPackages(); // Warten auf das Task-Ergebnis
 
             if (allPackageItems != null) // Prüfen, ob das Ergebnis nicht null ist
             {
@@ -530,15 +568,13 @@ namespace VirtuSphere
                     DialogResult result = MessageBox.Show("Möchten Sie die Mission " + missionName + " wirklich löschen?", "Bestätigung", MessageBoxButtons.YesNo);
                     if (result == DialogResult.No) { return; }
 
-                    DialogResult result2 = MessageBox.Show("Ganz Sicher?", "Bestätigung", MessageBoxButtons.YesNo);
+                    DialogResult result2 = MessageBox.Show("Es werden alle zugehörigen VMs entfernt. Sicher?", "Bestätigung", MessageBoxButtons.YesNo);
                     if (result2 == DialogResult.No) { return; }
 
-                    DialogResult result3 = MessageBox.Show("Gannnnnz Sicher?", "Bestätigung", MessageBoxButtons.YesNo);
 
-
-                    if (result == DialogResult.Yes && result2 == DialogResult.Yes && result3 == DialogResult.Yes)
+                    if (result == DialogResult.Yes && result2 == DialogResult.Yes)
                     {
-                        bool isSuccess = await ApiService.DeleteMission(hostname, Token, missionId);
+                        bool isSuccess = await apiService.DeleteMission(missionId);
 
                         if (isSuccess)
                         {
@@ -547,12 +583,17 @@ namespace VirtuSphere
                             // missionBox leeren und neu laden
                             missionBox.Items.Clear();
                             missionBox.Text = "";
-                            missionsList = await ApiService.GetMissions(hostname, Token);
+                            missionsList = await apiService.GetMissions();
 
-                            ShowMissions(missionsList);
+                            if (chk_showTemplates.Checked)
+                            {
+                                ShowTemplates(missionsList);
+                            }
+                            else
+                            {
+                                ShowMissions(missionsList);
+                            }
 
-                            //listView1.Clear();
-                            //vms.Clear();
 
                         }
                         else
@@ -560,6 +601,10 @@ namespace VirtuSphere
                             MessageBox.Show("Fehler beim Löschen der Mission.");
                         }
                     }
+                }
+                else
+                {
+                    MessageBox.Show("Zum Löschen eine Mission/Vorlage auswählen.");
                 }
             }
         }
@@ -685,6 +730,8 @@ namespace VirtuSphere
         public void ShowOS(List<OSItem> osList)
         {
             listBoxOS.Items.Clear();
+            comboOS_Name.Items.Clear();
+
 
             if (osList != null && osList.Any())
             {
@@ -692,6 +739,10 @@ namespace VirtuSphere
                 {
 
                     listBoxOS.Items.Add(os); // Fügt das OSItem direkt hinzu
+                    comboOS_Name.Items.Add(os.os_name);
+
+                    // Füge os_status zur ComboOS_Status hinzu, wenn noch nicht vorhanden
+                    if (!comboOS_Status.Items.Contains(os.os_status)) comboOS_Status.Items.Add(os.os_status);
                 }
 
                 // wähle den ersten wert aus
@@ -712,7 +763,32 @@ namespace VirtuSphere
             {
                 foreach (var mission in missionsList)
                 {
-                    missionBox.Items.Add(new MissionItem(mission.Id, mission.mission_name, mission.vm_count));
+                    // wenn mission.mission_name NICHT mit "_" beginnt, dann füge es hinzu
+                    if (!mission.mission_name.StartsWith("_"))
+                    {
+                        missionBox.Items.Add(new MissionItem(mission.Id, mission.mission_name, mission.vm_count));
+                    }
+                }
+            }
+            else
+            {
+                missionBox.Items.Add("Keine Missionen verfügbar.");
+            }
+        }
+        public void ShowTemplates(List<MissionItem> missionsList)
+        {
+            // Stelle sicher, dass listBoxMissions die ListBox ist, die du in deiner Form hast.
+            missionBox.Items.Clear(); // Bestehende Einträge löschen
+
+            if (missionsList != null && missionsList.Any())
+            {
+                foreach (var mission in missionsList)
+                {
+                    // wenn mission.mission_name mit "_" beginnt, dann füge es hinzu
+                    if (mission.mission_name.StartsWith("_"))
+                    {
+                        missionBox.Items.Add(new MissionItem(mission.Id, mission.mission_name, mission.vm_count));
+                    }
 
                 }
             }
@@ -721,6 +797,7 @@ namespace VirtuSphere
                 missionBox.Items.Add("Keine Missionen verfügbar.");
             }
         }
+
         public void ShowVLANs(List<VLANItem> vlanList)
         {
             //comboVLAN.Items.Clear();
@@ -739,6 +816,17 @@ namespace VirtuSphere
             }
 
             comboWDSVlan.SelectedIndex = 0;
+
+            // comboPortgruppe_Name leeren
+            comboPortgruppe_Name.Items.Clear();
+
+            // Zeige alle vLANItems in der Konsole an mit Status und Name
+            foreach (VLANItem vlan in vLANItems)
+            {
+                Console.WriteLine("VLAN ID: " + vlan.Id + " VLAN Name: " + vlan.vlan_name);
+                // Füge vlan.vlan_name zu comboPortgruppe_Name hinzu
+                comboPortgruppe_Name.Items.Add(vlan.vlan_name);
+            }
         }
         private async void SaveVMsinMission_Click(object sender, EventArgs e)
         {
@@ -767,9 +855,9 @@ namespace VirtuSphere
                 bool isSuccess2 = true;
                 bool isSuccess3 = true;
 
-                if (vmListToCreate.Count > 0) { isSuccess = await ApiService.VmListToWebAPI("vmListToCreate", hostname, Token, missionId, vmListToCreate); }
-                if (vmListToDelete.Count > 0) { isSuccess2 = await ApiService.VmListToWebAPI("vmListToDelete", hostname, Token, missionId, vmListToDelete); }
-                if (vmListToUpdate.Count > 0) { isSuccess3 = await ApiService.VmListToWebAPI("vmListToUpdate", hostname, Token, missionId, vmListToUpdate); }
+                if (vmListToCreate.Count > 0) { isSuccess = await apiService.VmListToWebAPI("vmListToCreate", missionId, vmListToCreate); }
+                if (vmListToDelete.Count > 0) { isSuccess2 = await apiService.VmListToWebAPI("vmListToDelete", missionId, vmListToDelete); }
+                if (vmListToUpdate.Count > 0) { isSuccess3 = await apiService.VmListToWebAPI("vmListToUpdate", missionId, vmListToUpdate); }
 
 
                 if (isSuccess && isSuccess2 && isSuccess3)
@@ -786,15 +874,22 @@ namespace VirtuSphere
                     // lad missionbox neu
                     missionBox.Text = "";
                     missionBox.Items.Clear();
-                    missionsList = await ApiService.GetMissions(hostname, Token);
-                    ShowMissions(missionsList);
+                    missionsList = await apiService.GetMissions();
+
+                    if (chk_showTemplates.Checked)
+                    {
+                        ShowTemplates(missionsList);
+                    }else
+                    {
+                        ShowMissions(missionsList);
+                    }
 
                     // entferne aktuelle auswahl und wähle neu aus
                     selectMission(missionName + " (" + vms.Count + ")");
 
                     // Lade ListView1 neu
                     vms.Clear();
-                    vms = await ApiService.GetVMs(hostname, Token, missionId);
+                    vms = await apiService.GetVMs(missionId);
 
                     if (vms != null && vms.Count > 0)
                     {
@@ -811,48 +906,9 @@ namespace VirtuSphere
 
 
             }
-            else if (missionBox.Text != "")
-            {
-                // Prüfe ob missionBox.Text Leerzeichen beinhaltet und breche ab
-                if (missionBox.Text.Contains(" "))
-                {
-                    MessageBox.Show("Der Name darf keine Leerzeichen enthalten.");
-                    return;
-                }
-
-                string missionName2 = missionBox.Text;
-                CreateMission(missionName2);
-
-                // lade die Missionen neu und wähle neu erstellte Mission aus
-                missionBox.Items.Clear();
-                missionsList = await ApiService.GetMissions(hostname, Token);
-
-                // wähle die neu erstellte Mission aus
-                ShowMissions(missionsList);
-                selectMission(missionName2 + " (0)");
-
-                // Übertrage das ausgewählte Mission-Objekt von der Liste missionBox an das Formular MissionDetails
-                MessageBox.Show("Neue Mission " + missionId + " erstellt und ausgewählt.");
-
-                MissionItem selectedMission = missionsList.FirstOrDefault(m => m.Id == missionId);
-
-                if (selectedMission != null)
-                {
-                    MissionDetails missionDetails = new MissionDetails(this, selectedMission);
-
-                    // Zeige das Formular an
-                    missionDetails.ShowDialog();
-                }
-                else
-                {
-                    MessageBox.Show("Bitte wählen Sie eine Mission aus.");
-                }
-
-                EnableInputFields();
-            }
             else
             {
-                MessageBox.Show("Bitte wählen Sie eine Mission aus oder geben Sie einen Namen ein.");
+                MessageBox.Show("Bitte wähl eine Mission aus oder leg eine neue an");
             }
         }
 
@@ -865,6 +921,7 @@ namespace VirtuSphere
             {
                 missionBox.SelectedItem = obj;
                 missionId = ((MissionItem)obj).Id;
+                btnMissionNew.Enabled = false;
             }
             else
             {
@@ -881,26 +938,37 @@ namespace VirtuSphere
 
             }
         }
-        private async void CreateMission(string missionName)
+        private async Task<bool> CreateMission(string missionName)
         {
-            bool isSuccess = await ApiService.CreateMission(hostname, Token, missionName);
+            bool isSuccess = await apiService.CreateMission(missionName);
 
             if (isSuccess)
             {
-                MessageBox.Show("Mission erfolgreich erstellt.");
                 // missionBox leeren und neu laden
                 missionBox.Items.Clear();
-                missionsList = await ApiService.GetMissions(hostname, Token);
+                missionsList = await apiService.GetMissions();
 
-                ShowMissions(missionsList);
+                // wenn mit _ beginnt dann füge es zu den Templates hinzu
+                if (missionName.StartsWith("_"))
+                {
+                    MessageBox.Show("Template "+ missionName + " erfolgreich erstellt.");
+                    ShowTemplates(missionsList);
+                }
+                else
+                {
+                    MessageBox.Show("Mission "+ missionName + " erfolgreich erstellt.");
+                    ShowMissions(missionsList);
+
+                }
 
                 selectMission(missionName + " (0)");
-
+                return true;
 
             }
             else
             {
                 MessageBox.Show("Fehler beim Speichern der Mission.");
+                return false;
 
             }
         }
@@ -919,7 +987,7 @@ namespace VirtuSphere
                 // prüfe ob vm.packages gefüllt ist und gebe die namen der Packages aus
                 // BUG 
                 //                Funktion UpdateListView: name
-                //Packages für name: System.Collections.Generic.List`1[VirtuSphere.ApiService + Package]
+                //Packages für name: System.Collections.Generic.List`1[VirtuSphere.apiService + Package]
 
                 if (vm.packages != null)
                 {
@@ -995,11 +1063,11 @@ namespace VirtuSphere
                 // Das updated_at-Feld sollte idealerweise direkt von der Datenbank beim Update gesetzt werden
 
                 // Update in Datenbank
-                bool isSuccess = await ApiService.UpdateMission(hostname, Token, updatedMission);
+                bool isSuccess = await apiService.UpdateMission(updatedMission);
                 if (isSuccess)
                 {
 
-                    missionsList = await ApiService.GetMissions(hostname, Token);
+                    missionsList = await apiService.GetMissions();
                     ShowMissions(missionsList);
 
                     // Erneutes Auswählen der aktualisierten Mission in der UI
@@ -1065,6 +1133,7 @@ namespace VirtuSphere
         public class OSItem
         {
             public string os_name { get; set; }
+            public string os_status { get; set; }
             public int Id { get; set; }
 
             public OSItem(string name, int id)
@@ -1175,10 +1244,27 @@ namespace VirtuSphere
             }
             else
             {
+                MissionItem selectedItem = missionBox.SelectedItem as MissionItem;
+                if(selectedItem.Id == missionId)
+                {
+                    return;
+                }
+
                 DialogResult result = MessageBox.Show("Möchten Sie die Mission wechseln?", "Bestätigung", MessageBoxButtons.YesNo);
 
                 if (result == DialogResult.Yes)
                 {
+                    if (vmListToCreate.Count > 0 || vmListToDelete.Count > 0 || vmListToUpdate.Count > 0)
+                    {
+                        DialogResult result2 = MessageBox.Show("Es gibt ungespeicherte Änderungen. Wollen Sie fortfahren?", "Bestätigung", MessageBoxButtons.YesNo);
+                        if (result2 == DialogResult.No)
+                        {
+                            selectMission(missionName + " (" + vms.Count + ")");
+                            return;
+                        }
+
+                    }
+
                     btn_loadVMsfromDB(sender, e);
                 }
                 else
@@ -1356,7 +1442,7 @@ namespace VirtuSphere
             {
                 MessageBox.Show("Bitte füllen Sie alle Felder unter Umgebung aus.");
                 // öffne Tab Umgebung
-                tabControl2.SelectedTab = tabControl2.TabPages["Umgebung"];
+                VirtuSphere.SelectedTab = VirtuSphere.TabPages["Umgebung"];
 
                 return;
             }
@@ -1365,6 +1451,27 @@ namespace VirtuSphere
             if (missionName == null)
             {
                 MessageBox.Show("Bitte wählen Sie eine Mission aus.");
+                return;
+            }
+
+            // wenn vmListToCreate nicht leer ist Abbruch
+            if (vmListToCreate.Count > 0)
+            {
+                MessageBox.Show("Es gibt noch nicht gespeicherte VMs. Bitte speichern Sie diese zuerst.");
+                return;
+            }
+
+            // wenn vmListToDelete nicht leer ist Abbruch
+            if (vmListToDelete.Count > 0)
+            {
+                MessageBox.Show("Es gibt noch nicht gelöschte VMs. Bitte löschen Sie diese zuerst.");
+                return;
+            }
+
+            // wenn vmListToUpdate nicht leer ist Abbruch
+            if (vmListToUpdate.Count > 0)
+            {
+                MessageBox.Show("Es gibt noch nicht aktualisierte VMs. Bitte aktualisieren Sie diese zuerst.");
                 return;
             }
 
@@ -1394,17 +1501,17 @@ namespace VirtuSphere
 
             Console.WriteLine("ProjecttempPath: " + ProjecttempPath);
 
-            // Öffne unter ProjecttempPath die Datei upload_mac_list.py und ersetze {{WEBAPI}}  zu hostname
+            // Öffne unter ProjecttempPath die Datei upload_mac_list.py und ersetze {{WEBAPI}}  zu apiUrl
             string upload_mac_list = Path.Combine(ProjecttempPath, "upload_mac_list.py");
             string text = File.ReadAllText(upload_mac_list);
-            text = text.Replace("{{WEBAPI}}", hostname);
+            text = text.Replace("{{WEBAPI}}", apiUrl);
             File.WriteAllText(upload_mac_list, text);
 
 
 
             try
             {
-                AnsibleForm ansibleForm = new AnsibleForm(vms, ProjecttempPath);
+                AnsibleForm ansibleForm = new AnsibleForm(vms, ProjecttempPath, apiToken, apiUrl);
 
                 // createVMs-ESXi
                 String TargetFile = Path.Combine(ProjecttempPath, "createVMs-ESXi.yml");
@@ -1441,8 +1548,8 @@ namespace VirtuSphere
                 ansibleForm.ssh_checkSSHKey = checkSSHKey.Checked;
                 ansibleForm.ProjecttempPath = ProjecttempPath;
                 ansibleForm.ssh_port = txt_ssh_port.Text;
-                ansibleForm.hostname = hostname;
-                ansibleForm.Token = Token;
+                ansibleForm.hostname = apiUrl;
+                ansibleForm.Token = apiToken;
                 ansibleForm.missionId = missionId;
                 ansibleForm.ssh_port2 = ssh_port2;
                 ansibleForm.SetMissionName(missionName);
@@ -1466,7 +1573,7 @@ namespace VirtuSphere
             if (selectedVM != null)
             {
                 vmeditForm editForm = new vmeditForm(this, selectedVM);
-                editForm.FillListBoxPackages2(this.packageItems);
+                //editForm.FillListBoxPackages2(this.packageItems);
 
                 // Zeige das Formular an
                 editForm.ShowDialog();
@@ -1541,7 +1648,7 @@ namespace VirtuSphere
 
             if (selectedMission != null)
             {
-                MissionDetails missionDetails = new MissionDetails(this, selectedMission);             
+                MissionDetails missionDetails = new MissionDetails(this, selectedMission, apiToken, apiUrl);             
 
                 // Zeige das Formular an
                 missionDetails.ShowDialog();
@@ -1598,17 +1705,548 @@ namespace VirtuSphere
 
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox3.Checked)
+            chk_showTemplates.CheckedChanged -= checkBox3_CheckedChanged;
+            try
             {
-                label14.Text = "Vorlage:";
-                button11.Text = "Neue Vorlage";
+
+                if (vmListToCreate.Count > 0 || vmListToDelete.Count > 0 || vmListToUpdate.Count > 0)
+                {
+                    DialogResult result2 = MessageBox.Show("Es gibt ungespeicherte Änderungen. Wollen Sie fortfahren?", "Bestätigung", MessageBoxButtons.YesNo);
+                    if (result2 == DialogResult.No)
+                    {
+                        vmListToCreate.Clear();
+                        vmListToDelete.Clear();
+                        vmListToUpdate.Clear();
+                        chk_showTemplates.Checked = !chk_showTemplates.Checked;
+                        return;
+                    }
+
+                }
+
+                vms.Clear();
+                listView1.Items.Clear();
+
+                if (chk_showTemplates.Checked)
+                {
+                    label14.Text = "Vorlage:";
+                    btnMissionNew.Text = "Neue Vorlage";
+
+                    ShowTemplates(missionsList);
+                    missionBox.Text = "";
+
+                    missionId = 0;
+                }
+                else
+                {
+                    label14.Text = "Mission:";
+                    btnMissionNew.Text = "Neue Mission";
+                    ShowMissions(missionsList);
+                    missionBox.Text = "";
+
+                    missionId = 0;
+                }
+
+            }
+            finally
+            {
+                // Den Event-Handler wieder aktivieren
+                chk_showTemplates.CheckedChanged += checkBox3_CheckedChanged;
+            }
+            
+            
+        }
+
+        private async void button11_Click(object sender, EventArgs e)
+        {
+            // darf nicht leer sein
+            if (missionBox.Text == "")
+            {
+                MessageBox.Show("Bitte wählen Sie eine Vorlage aus.");
+                return;
+            }
+
+            string missionName2 = missionBox.Text;
+
+            if (chk_showTemplates.Checked)
+            {
+                missionName2 = "_" + missionName2;
+            }
+
+            bool success = await CreateMission(missionName2);
+
+            if (success) { 
+
+                MissionItem selectedMission = missionsList.FirstOrDefault(m => m.Id == missionId);
+
+                if (selectedMission != null)
+                {
+                    MissionDetails missionDetails = new MissionDetails(this, selectedMission, apiToken, apiUrl);
+
+                    // Zeige das Formular an
+                    missionDetails.ShowDialog();
+                }
+                else
+                {
+                    MessageBox.Show("Bitte wählen Sie eine Mission aus.");
+                }
+
+                EnableInputFields();
+             }
+        }
+
+        private void activateButtons(object sender, EventArgs e)
+        {
+            btnPortgruppeRemove.Enabled = true;
+            btnPortgruppeAdd.Enabled = false;
+            btnPortgruppeEdit.Enabled = true;
+        }
+
+        private void CheckexistingPortgroup(object sender, KeyEventArgs e)
+        {
+
+            // wenn leer dann leere felder
+            if (comboPortgruppe_Name.Text == "")
+            {
+                btnPortgruppeAdd.Enabled = false;
+                btnPortgruppeEdit.Enabled = false;
+                btnPortgruppeRemove.Enabled = false;
+                return;
             }
             else
             {
-                label14.Text = "Mission:";
-                button11.Text = "Neue Mission";
+                btnPortgruppeAdd.Enabled = true;
             }
+
+            // prüfe ob comboPortgruppe_Name.Text in vLANItems ist
+            if (vLANItems.Any(x => x.vlan_name == comboPortgruppe_Name.Text))
+            {
+                btnPortgruppeAdd.Enabled = false;
+                btnPortgruppeEdit.Enabled = true;
+                btnPortgruppeRemove.Enabled = true;
+                
+                // suche in vLANItems nach comboPortgruppe_Name.Text und schreibe die Id in temp_vlanId
+                temp_vlanId = vLANItems.FirstOrDefault(x => x.vlan_name == comboPortgruppe_Name.Text).Id;
+            }
+          
+        }
+
+        private async void btnPortgruppeRemove_Click(object sender, EventArgs e)
+        {
+            // Wirklich löschen?
+            DialogResult dialogResult = MessageBox.Show("Wirklich löschen?", "Löschen", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                // console
+                 Console.WriteLine("Lösche Portgruppe: " + comboPortgruppe_Name.SelectedItem.ToString());
+
+                // Lösche ausgewähle comboPortgruppe_Name
+                //comboPortgruppe_Name.Items.Remove(comboPortgruppe_Name.SelectedItem);
+
+                // Prüfe ob comboPortgruppe_Name in vLANItems ist und lösche es per API
+                if (vLANItems.Any(x => x.vlan_name == comboPortgruppe_Name.SelectedItem.ToString()))
+                {
+
+
+                    // schreib Id von VLAN in console
+                    int vlanId = vLANItems.FirstOrDefault(x => x.vlan_name == comboPortgruppe_Name.SelectedItem.ToString()).Id;
+
+                    Console.WriteLine("VLAN ID: " + vlanId);
+                    bool success = await apiService.RemoveVLAN(vlanId);
+
+                    if (success)
+                    {
+                        MessageBox.Show("Portgruppe gelöscht.");
+                        // Lösche comboPortgruppe_Name.SelectedItem aus vLANItems
+                        vLANItems.RemoveAll(x => x.vlan_name == comboPortgruppe_Name.SelectedItem.ToString());
+                        // entferne select
+                        comboPortgruppe_Name.SelectedIndex = -1;
+
+                        ShowVLANs(vLANItems);
+
+                        btnPortgruppeRemove.Enabled = false;
+                        btnPortgruppeEdit.Enabled = false;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Fehler beim Löschen der Portgruppe.");
+                    }
+                }
+
+
+
+            }
+
+
+        }
+
+        private async void btnPortgruppeEdit_Click(object sender, EventArgs e)
+        {
             
+            // wenn temp_vlanId nicht leer ist, dann berabeite die Portgruppe in vLANItems
+            if (temp_vlanId != 0)
+            {
+                string newVlanName = comboPortgruppe_Name.Text;
+                Console.WriteLine("VLAN ändere ID: " + temp_vlanId + " Neuer Name: " + newVlanName);
+
+                // suche vlan in vLANItems und ändere den Namen
+                vLANItems.FirstOrDefault(x => x.Id == temp_vlanId).vlan_name = newVlanName;
+
+                // entferne select
+                comboPortgruppe_Name.SelectedIndex = -1;
+                comboPortgruppe_Name.Text = "";
+
+                ShowVLANs(vLANItems);
+              
+                bool success = await apiService.UpdateVLAN(temp_vlanId, newVlanName);
+
+                if(success)
+                {
+                    MessageBox.Show("Portgruppe geändert.");
+                    btnPortgruppeRemove.Enabled = false;
+                    btnPortgruppeEdit.Enabled = false;
+                    comboPortgruppe_Name.SelectedIndex = -1;
+                }
+                else
+                {
+                    MessageBox.Show("Fehler beim Ändern der Portgruppe.");
+                }
+
+
+            }
+        }
+
+        private void ProtgroupSelectedChangeCommitted(object sender, EventArgs e)
+        {
+            temp_vlanId = vLANItems.FirstOrDefault(x => x.vlan_name == comboPortgruppe_Name.SelectedItem.ToString()).Id;
+
+
+        }
+
+        private async void btnPortgruppeAdd_Click(object sender, EventArgs e)
+        {
+            // prüfe ob comboPortgruppe_Name.Text in vLANItems ist
+            if (vLANItems.Any(x => x.vlan_name == comboPortgruppe_Name.Text))
+            {
+                MessageBox.Show("Portgruppe existiert bereits.");
+                return;
+            }
+
+            // rufe apiService.CreateVLAN(vlanName)
+            // 
+            bool success = await apiService.CreateVLAN(comboPortgruppe_Name.Text);
+
+            if(success)
+            {
+                MessageBox.Show("Portgruppe hinzugefügt.");
+                //lade vLANItems neu
+                vLANItems = await apiService.GetVLANs();
+
+                ShowVLANs(vLANItems);
+
+                // entferne select
+                comboPortgruppe_Name.SelectedIndex = -1;
+                comboPortgruppe_Name.Text = "";
+
+            }
+
+        }
+
+        private void comboOS_Name_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // prüfe ob comboOS_Name.Text in osItems ist und fülle dann comboOS_Status mit den Werten aus osItems
+            if (osItems.Any(x => x.os_name == comboOS_Name.Text))
+            {
+                // gehe alle einträge comboOS_Status durch und selecte os_status
+                for (int i = 0; i < comboOS_Status.Items.Count; i++)
+                {
+                    if (comboOS_Status.Items[i].ToString() == osItems.FirstOrDefault(x => x.os_name == comboOS_Name.Text).os_status)
+                    {
+                        comboOS_Status.SelectedIndex = i;
+                    }
+                }
+
+            }
+        }
+
+        private async void btnOScreate_Click(object sender, EventArgs e)
+        {
+            // prüfe ob comboOS_Name.Text in osItems ist
+            if (osItems.Any(x => x.os_name == comboOS_Name.Text))
+            {
+                MessageBox.Show("OS existiert bereits.");
+                return;
+            }
+
+            // prüfe ob comboOS_Name.Text leer ist
+            if (comboOS_Name.Text == "")
+            {
+                MessageBox.Show("Bitte geben Sie einen Namen ein.");
+                return;
+            }
+
+            // prüfe ob comboOS_Status.Text leer ist
+            if (comboOS_Status.Text == "")
+            {
+                MessageBox.Show("Bitte geben Sie einen Status ein.");
+                return;
+            }
+
+            // apiService.CreateOS(osName, osStatus)
+            bool success = await apiService.CreateOS(comboOS_Name.Text, comboOS_Status.Text);
+
+            if(success)
+            {
+                MessageBox.Show("OS hinzugefügt.");
+                //lade osItems neu
+                osItems = await apiService.GetOS();
+
+                ShowOS(osItems);
+
+                // entferne select
+                comboOS_Name.SelectedIndex = -1;
+                comboOS_Status.SelectedIndex = -1;
+                comboOS_Name.Text = "";
+                comboOS_Status.Text = "";
+            }
+
+        }
+
+        private void CheckexistingOS(object sender, KeyEventArgs e)
+        {
+            // das gleiche wie CheckexistingPortgroup
+            if (comboOS_Name.Text == "")
+            {
+                btnOScreate.Enabled = false;
+                btnOSedit.Enabled = false;
+                btnOSremove.Enabled = false;
+                return;
+            }
+            else
+            {
+
+                // wenn comboOS_Name in osItems ist
+                if (osItems.Any(x => x.os_name == comboOS_Name.Text))
+                {
+                    btnOScreate.Enabled = false;
+                    btnOSedit.Enabled = true;
+                    btnOSremove.Enabled = true;
+
+                    // suche in osItems nach comboOS_Name.Text und schreibe die Id in temp_osId
+                    temp_osId = osItems.FirstOrDefault(x => x.os_name == comboOS_Name.Text).Id;
+                }
+                else
+                {
+                    btnOScreate.Enabled = true;
+                }
+
+            }
+        }
+
+        private async void btnOSremove_Click(object sender, EventArgs e)
+        {
+            // Wirklich löschen?
+            DialogResult dialogResult = MessageBox.Show("Wirklich löschen?", "Löschen", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                // console
+                Console.WriteLine("Lösche OS: " + comboOS_Name.SelectedItem.ToString());
+
+                // Prüfe ob comboOS_Name in osItems ist und lösche es per API
+                if (osItems.Any(x => x.os_name == comboOS_Name.SelectedItem.ToString()))
+                {
+                    // schreib Id von OS in console
+                    int osId = osItems.FirstOrDefault(x => x.os_name == comboOS_Name.SelectedItem.ToString()).Id;
+
+                    Console.WriteLine("OS ID: " + osId);
+                    bool success = await apiService.RemoveOS(osId);
+
+                    if (success)
+                    {
+                        MessageBox.Show("OS gelöscht.");
+                        // Lösche comboOS_Name.SelectedItem aus osItems
+                        osItems.RemoveAll(x => x.os_name == comboOS_Name.SelectedItem.ToString());
+                        // entferne select
+                        comboOS_Name.SelectedIndex = -1;
+                        comboOS_Status.SelectedIndex = -1;
+
+                        ShowOS(osItems);
+
+                        btnOSremove.Enabled = false;
+                        btnOSedit.Enabled = false;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Fehler beim Löschen des OS.");
+                    }
+                }
+            }
+        }
+
+        private async void btnOSedit_Click(object sender, EventArgs e)
+        {
+            // wenn temp_osId nicht leer ist, dann berabeite das OS in osItems
+            if (temp_osId != 0)
+            {
+                string newOSName = comboOS_Name.Text;
+                string newOSStatus = comboOS_Status.Text;
+                Console.WriteLine("OS ändere ID: " + temp_osId + " Neuer Name: " + newOSName + " Neuer Status: " + newOSStatus);
+
+                // suche os in osItems und ändere den Namen und Status
+                osItems.FirstOrDefault(x => x.Id == temp_osId).os_name = newOSName;
+                osItems.FirstOrDefault(x => x.Id == temp_osId).os_status = newOSStatus;
+
+                // UpdateOS(int osId, string osName, string osStatus)
+                bool success = await apiService.UpdateOS(temp_osId, newOSName, newOSStatus);
+
+                if (success)
+                {
+                    MessageBox.Show("OS geändert.");
+
+                    // lade osItems neu
+                    osItems = await apiService.GetOS();
+
+                    ShowOS(osItems);
+
+                    // entferne select
+                    comboOS_Name.SelectedIndex = -1;
+                    comboOS_Status.SelectedIndex = -1;
+
+                    comboOS_Name.Text = "";
+                    comboOS_Status.Text = "";
+
+                    btnOSremove.Enabled = false;
+                    btnOSedit.Enabled = false;
+                    btnOScreate.Enabled = false;
+
+                }
+            }
+
+        }
+
+        private void OSSelectedChangeCommitted(object sender, EventArgs e)
+        {
+            temp_osId = osItems.FirstOrDefault(x => x.os_name == comboOS_Name.SelectedItem.ToString()).Id;
+
+            if(temp_osId != 0)
+            {
+                // gehe alle einträge comboOS_Status durch und selecte os_status
+                for (int i = 0; i < comboOS_Status.Items.Count; i++)
+                {
+                    if (comboOS_Status.Items[i].ToString() == osItems.FirstOrDefault(x => x.Id == temp_osId).os_status)
+                    {
+                        comboOS_Status.SelectedIndex = i;
+                    }
+                }
+
+                btnOSedit.Enabled = true;
+                btnOSremove.Enabled = true;
+            }
+        }
+
+        private void FMmain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Speichere die Formposition
+            FormPositionManager.SaveFormPosition(this);
+        }
+
+        private void missionBoxKeyUp(object sender, KeyEventArgs e)
+        {
+            string missionName = missionBox.Text;
+
+
+            if (missionName.Contains(" ("))
+            {
+                try
+                {
+
+                    missionName = missionName.Substring(0, missionName.IndexOf("(") - 1);
+                }
+                catch (Exception ex)
+                {
+                    // Handle the exception here
+                }
+            }
+
+                if (missionsList.Any(x => x.mission_name == missionName))
+                {
+                    missionId = missionsList.FirstOrDefault(x => x.mission_name == missionName).Id;
+                    btnMissionNew.Enabled = false;
+                    btnMissionDelete.Enabled = true;
+                    btnMissionEdit.Enabled = true;
+                }
+                else
+                {
+                    missionId = 0;
+                    btnMissionNew.Enabled = true;
+                    btnMissionDelete.Enabled = false;
+                    btnMissionEdit.Enabled = false;
+            }
+
+        }
+
+        private void missionBoxSelectedIndex(object sender, EventArgs e)
+        {
+            string missionName = missionBox.Text;
+
+
+            if (missionName.Contains(" ("))
+            {
+                try
+                {
+
+                    missionName = missionName.Substring(0, missionName.IndexOf("(") - 1);
+                }
+                catch (Exception ex)
+                {
+                    // Handle the exception here
+                }
+            }
+
+            if (missionsList.Any(x => x.mission_name == missionName))
+            {
+                missionId = missionsList.FirstOrDefault(x => x.mission_name == missionName).Id;
+                btnMissionNew.Enabled = false;
+                btnMissionDelete.Enabled = true;
+                btnMissionEdit.Enabled = true;
+            }
+            else
+            {
+                missionId = 0;
+                btnMissionNew.Enabled = true;
+                btnMissionDelete.Enabled = false;
+                btnMissionEdit.Enabled = false;
+            }
+        }
+
+        public async void CopyVMsToNewMission(int fromMissionId, int toMissionId)
+        {
+            // leere vmsToCopy
+            vmsToCopy.Clear();
+            vmsToCopy = await apiService.GetVMs(fromMissionId);
+
+
+            // Zähle die anzahl der VMs mit mission_id = fromMissionId
+            int count = vmsToCopy.Count;
+            if(count == 0) MessageBox.Show("Anzahl der zu kopierenden VMs: " + count);
+
+            foreach (var vm in vmsToCopy)
+            {
+                //MessageBox.Show($"VM Name: {vm.vm_name}, Mission ID: {vm.mission_id}");
+
+                VM copiedVm = vm.DeepClone();
+                copiedVm.mission_id = toMissionId;
+                copiedVm.Id = 0;
+
+                // füge zu vms hinzu, wenn noch nicht (vm_name)
+                if (!vms.Any(x => x.vm_name == copiedVm.vm_name))
+                {
+                    vms.Add(copiedVm);
+                    vmListToCreate.Add(copiedVm);
+                }
+                
+            }
+
+            UpdateListView(vms);
         }
     }
 }

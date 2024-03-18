@@ -14,3 +14,19 @@ UPDATE deploy_missions SET mission_name = ?, mission_status = ?, mission_notes =
 Params: 'Mosel', '', '', '100', 'asd', 'asd', '2'
 UPDATE deploy_missions SET mission_name = ?, mission_status = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 2
 Params: 'Mosel', '', '', '100', 'asd', 'asd', '2'
+UPDATE deploy_missions SET mission_name = ?, mission_status = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 26
+Params: 'asdasd', '', '', '100', 'asd', 'asd', '26'
+UPDATE deploy_missions SET mission_name = ?, mission_status = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 26
+Params: 'asdasd', '', '', '100', 'asd', 'asd', '26'
+UPDATE deploy_missions SET mission_name = ?, mission_status = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 26
+Params: 'asdasd', '', '', '100', 'asd', 'asd', '26'
+UPDATE deploy_missions SET mission_name = ?, mission_status = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 26
+Params: 'asdasd', '', '', '100', 'asd', 'asd', '26'
+UPDATE deploy_missions SET mission_name = ?, mission_status = ?, updated_at = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 2
+Params: 'Mission1', '', '2024-03-18 11:07:45', '', '1300', 'ss', 'ss', '2'
+UPDATE deploy_missions SET mission_name = ?, mission_status = ?, updated_at = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 4
+Params: 'Mission3', '', '2024-03-18 11:08:21', '', '1300', 'dd', 'dd', '4'
+UPDATE deploy_missions SET mission_name = ?, mission_status = ?, updated_at = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 4
+Params: 'Mission3', '', '2024-03-18 11:09:30', '', '1300', 'dd', 'dd', '4'
+UPDATE deploy_missions SET mission_name = ?, mission_status = ?, updated_at = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 9
+Params: 'Mission 6', '', '2024-03-18 11:10:02', '', '1300', 'vv', 'vv', '9'

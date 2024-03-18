@@ -25,7 +25,6 @@ C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSphere.csproj
 C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSphere.AnsibleForm.resources
 C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSphere.DeployForm.resources
 C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSphere.FMmain.resources
-C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSphere.LogForm.resources
 C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSphere.LoginForm.resources
 C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSphere.MissionDetails.resources
 C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSphere.Properties.Resources.resources
@@ -39,3 +38,4 @@ C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSphere.exe
 C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSphere.pdb
 C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\bin\Debug\Ansible\upload_mac_list.py
 C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\bin\Debug\Ansible\exportVMs-Informations-ESXi_playbook.yml
+C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSphere.ErrorForm.resources

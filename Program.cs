@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static VirtuSphere.ApiService;
+using static VirtuSphere.apiService;
 using static VirtuSphere.FMmain;
 
 
@@ -20,8 +22,6 @@ namespace VirtuSphere
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            ApiService apiService = new ApiService(); // Erstellen Sie eine Instanz der ApiService-Klasse
-
             // Erstelle eine Instanz deines LoginForms
             LoginForm loginForm = new LoginForm();
 
@@ -33,33 +33,19 @@ namespace VirtuSphere
             }
             else
             {
-                //gib token an das Hauptformular weiter
-                //MessageBox.Show("Login an " + loginForm.hostname + " erfolgreich. `nToken: " + loginForm.Token);
-
-                // Hole die Daten, die du benötigst
-                List<OSItem> osList = await apiService.GetOS(loginForm.hostname, loginForm.Token);
-                List<MissionItem> missionsList = await apiService.GetMissions(loginForm.hostname, loginForm.Token);
-                List<Package> PackagesList = await apiService.GetPackages(loginForm.hostname, loginForm.Token);
-                List<VLANItem> VlanList = await apiService.GetVLANs(loginForm.hostname, loginForm.Token);
 
 
-                // Erstelle eine Instanz deines MainForm
-                FMmain mainForm = new FMmain();
+                FMmain mainForm = new FMmain(loginForm.ApiToken, loginForm.ApiUrl);
+                if (loginForm.chkbx_tls.Checked)
+                {
+                    mainForm.label_secureconnection.Text = "Verbindung: Verschlüsselt";
+                }
+                else
+                {
+                    mainForm.label_secureconnection.Text = "Verbindung: Unverschlüsselt";
+                }
 
-                //Variablen übergaben
-                String Token = loginForm.Token;
-                String hostname = loginForm.hostname;
-                mainForm.hostname = hostname;
-                mainForm.Token = Token;
-                mainForm.ShowOS(osList);
-                mainForm.ShowMissions(missionsList);
-                mainForm.missionsList = missionsList; // wird in Form1 gemacht
 
-                mainForm.ShowPackages(PackagesList);
-                mainForm.ShowVLANs(VlanList);
-                mainForm.vLANItems = VlanList;
-                mainForm.ApiService = new ApiService(); // oder übergebe eine existierende Instanz
-                mainForm.packageItems = PackagesList;
                 Application.Run(mainForm);
 
 

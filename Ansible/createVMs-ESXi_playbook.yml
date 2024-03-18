@@ -19,19 +19,14 @@
         guest_id: "{{ item.guest_id }}"
         datacenter: "{{ item.datacenter_name }}"
         datastore: "{{ item.datastore_name }}"
-        disk:
-          - size_gb: "{{ item.disk_size }}"
-            type: thin
-            datastore: "{{ item.datastore_name }}"
+        disk: "{{ item.disks }}"
         hardware:
           memory_mb: "{{ item.memory }}"
           num_cpus: "{{ item.vcpus }}"
           scsi: lsilogicsas
           secure_boot: true
           boot_firmware: "efi"
-        networks:
-          - name: "{{ item.network[0].name }}"
-            device_type: e1000e
+        networks: "{{ item.network }}"
       delegate_to: localhost
       loop: "{{ vm_configurations }}"
       when: vm_configurations | length > 0

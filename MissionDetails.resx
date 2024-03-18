@@ -151,16 +151,13 @@
     <value>26, 358</value>
   </data>
   <data name="label11.Size" type="System.Drawing.Size, System.Drawing">
-    <value>73, 13</value>
+    <value>111, 13</value>
   </data>
   <data name="label11.TabIndex" type="System.Int32, mscorlib">
     <value>22</value>
   </data>
   <data name="label11.Text" xml:space="preserve">
-    <value>Kopieren von:</value>
-  </data>
-  <data name="label11.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
+    <value>Vorlage kopieren von:</value>
   </data>
   <data name="&gt;&gt;label11.Name" xml:space="preserve">
     <value>label11</value>
@@ -334,13 +331,13 @@
     <value>26, 279</value>
   </data>
   <data name="label8.Size" type="System.Drawing.Size, System.Drawing">
-    <value>64, 13</value>
+    <value>71, 13</value>
   </data>
   <data name="label8.TabIndex" type="System.Int32, mscorlib">
     <value>15</value>
   </data>
   <data name="label8.Text" xml:space="preserve">
-    <value>updated_at:</value>
+    <value>Geändert am:</value>
   </data>
   <data name="&gt;&gt;label8.Name" xml:space="preserve">
     <value>label8</value>
@@ -385,13 +382,13 @@
     <value>26, 253</value>
   </data>
   <data name="label7.Size" type="System.Drawing.Size, System.Drawing">
-    <value>61, 13</value>
+    <value>58, 13</value>
   </data>
   <data name="label7.TabIndex" type="System.Int32, mscorlib">
     <value>13</value>
   </data>
   <data name="label7.Text" xml:space="preserve">
-    <value>created_at:</value>
+    <value>Erstellt am:</value>
   </data>
   <data name="&gt;&gt;label7.Name" xml:space="preserve">
     <value>label7</value>
@@ -532,13 +529,13 @@
     <value>26, 175</value>
   </data>
   <data name="label4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>95, 13</value>
+    <value>91, 13</value>
   </data>
   <data name="label4.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
   </data>
   <data name="label4.Text" xml:space="preserve">
-    <value>Standard Interface</value>
+    <value>WDS Portgruppe:</value>
   </data>
   <data name="&gt;&gt;label4.Name" xml:space="preserve">
     <value>label4</value>
@@ -583,13 +580,13 @@
     <value>26, 87</value>
   </data>
   <data name="label3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>76, 13</value>
+    <value>46, 13</value>
   </data>
   <data name="label3.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
   </data>
   <data name="label3.Text" xml:space="preserve">
-    <value>mission_notes:</value>
+    <value>Notizen:</value>
   </data>
   <data name="&gt;&gt;label3.Name" xml:space="preserve">
     <value>label3</value>
@@ -631,13 +628,13 @@
     <value>26, 61</value>
   </data>
   <data name="label2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>76, 13</value>
+    <value>38, 13</value>
   </data>
   <data name="label2.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
   </data>
   <data name="label2.Text" xml:space="preserve">
-    <value>mission_name:</value>
+    <value>Name:</value>
   </data>
   <data name="&gt;&gt;label2.Name" xml:space="preserve">
     <value>label2</value>
@@ -706,13 +703,13 @@
     <value>26, 35</value>
   </data>
   <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>15, 13</value>
+    <value>70, 13</value>
   </data>
   <data name="label1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
   <data name="label1.Text" xml:space="preserve">
-    <value>id</value>
+    <value>Database ID:</value>
   </data>
   <data name="&gt;&gt;label1.Name" xml:space="preserve">
     <value>label1</value>

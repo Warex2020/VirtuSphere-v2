@@ -15,6 +15,24 @@ if (!verifyToken($token, $connection)) {
 ### Ab hier ausgabe nur noch in Json
 header('Content-Type: application/json');
 
+// Prüfe ob Tabelle deploy_hdds existiert
+if (!($connection->query("DESCRIBE deploy_disks"))) {
+    // Tabelle deploy_hdds existiert nicht, erstelle sie
+    $query = "CREATE TABLE deploy_disks (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        vm_id INT NOT NULL,
+        disk_name VARCHAR(255) NOT NULL,
+        disk_size BIGINT NOT NULL,
+        disk_type VARCHAR(255) NOT NULL
+    )";
+    $result = $connection->query($query);
+    if (!$result) {
+        echo "Fehler: " . $connection->error;
+    }
+  
+}
+
+
 
 # Wenn action = addVM dann rufe createVM($vmName, $vmHostname, $vmIP, $vmSubnet, $vmGateway, $vmDNS1, $vmDNS2, $vmDomain, $vmVLAN, $vmRole, $vmStatus, $connection) auf
 if (isset($_POST['action']) && $_POST['action'] == 'addVM') {
@@ -100,6 +118,51 @@ if (isset($_GET['action']) && $_GET['action'] == 'getOS') {
     echo json_encode($result);
 }
 
+## createOS($osName, $osStatus, $connection)
+if (isset($_GET['action']) && $_GET['action'] == 'createOS') {
+    $osName = isset($_GET['osName']) ? htmlspecialchars($_GET['osName']) : '';
+    $osStatus = isset($_GET['osStatus']) ? htmlspecialchars($_GET['osStatus']) : '';
+    $result = createOS($osName, $osStatus, $connection);
+    if( $result){
+        header('HTTP/1.1 200 OK');
+        echo json_encode($result);
+    } else {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo json_encode($result);
+    
+    }
+}
+
+## updateOS($osId, $osName, $osStatus, $connection)
+if (isset($_GET['action']) && $_GET['action'] == 'updateOS') {
+    $osId = isset($_GET['osId']) ? htmlspecialchars($_GET['osId']) : '';
+    $osName = isset($_GET['osName']) ? htmlspecialchars($_GET['osName']) : '';
+    $osStatus = isset($_GET['osStatus']) ? htmlspecialchars($_GET['osStatus']) : '';
+    $result = updateOS($osId, $osName, $osStatus, $connection);
+    if( $result){
+        header('HTTP/1.1 200 OK');
+        echo json_encode($result);
+    } else {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo json_encode($result);
+    
+    }
+}
+
+## deleteOS($osId, $connection)
+if (isset($_GET['action']) && $_GET['action'] == 'deleteOS') {
+    $osId = isset($_GET['osId']) ? htmlspecialchars($_GET['osId']) : '';
+    $result = deleteOS($osId, $connection);
+    if( $result){
+        header('HTTP/1.1 200 OK');
+        echo json_encode($result);
+    } else {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo json_encode($result);
+    
+    }
+}
+
 # schreibe import json vmlist function
 if (isset($_GET['action']) && $_GET['action'] == 'sendVMList') {
 
@@ -139,6 +202,49 @@ echo json_encode($vmList);
 if (isset($_GET['action']) && $_GET['action'] == 'getVLANs') {
     $result = getVLAN($connection);
     echo json_encode($result);
+}
+
+##deleteVLAN($vlanId, $connection)
+if (isset($_GET['action']) && $_GET['action'] == 'deleteVLAN') {
+    $vlanId = isset($_GET['vlanId']) ? htmlspecialchars($_GET['vlanId']) : '';
+    $result = deleteVLAN($vlanId, $connection);
+    if( $result){
+        header('HTTP/1.1 200 OK');
+        echo json_encode($result);
+    } else {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo json_encode($result);
+    
+    }
+}
+
+## createVLAN($vlanName, $connection)
+if (isset($_GET['action']) && $_GET['action'] == 'createVLAN') {
+    $vlanName = isset($_GET['vlanName']) ? htmlspecialchars($_GET['vlanName']) : '';
+    $result = createVLAN($vlanName, $connection);
+    if( $result){
+        header('HTTP/1.1 200 OK');
+        echo json_encode($result);
+    } else {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo json_encode($result);
+    
+    }
+}
+
+## updateVlan($vlanId, $vlanName, $connection) $"http://{apiUrl}/access.php?action=updateVLAN&token={apiToken}&vlanId={vlanId}&vlanName={vlanName}";
+if (isset($_GET['action']) && $_GET['action'] == 'updateVLAN') {
+    $vlanId = isset($_GET['vlanId']) ? htmlspecialchars($_GET['vlanId']) : '';
+    $vlanName = isset($_GET['vlanName']) ? htmlspecialchars($_GET['vlanName']) : '';
+    $result = updateVlan($vlanId, $vlanName, $connection);
+    if( $result){
+        header('HTTP/1.1 200 OK');
+        echo json_encode($result);
+    } else {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo json_encode($result);
+    
+    }
 }
 
 

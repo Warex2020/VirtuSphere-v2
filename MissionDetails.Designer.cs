@@ -30,6 +30,9 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MissionDetails));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.comboCopyMission = new System.Windows.Forms.ComboBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.comboMissionWDS = new System.Windows.Forms.ComboBox();
             this.txtMissionStatus = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.txtMissionCount = new System.Windows.Forms.TextBox();
@@ -51,9 +54,6 @@
             this.btn_save = new System.Windows.Forms.Button();
             this.txtMissionId = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.comboMissionWDS = new System.Windows.Forms.ComboBox();
-            this.comboCopyMission = new System.Windows.Forms.ComboBox();
-            this.label11 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -86,6 +86,23 @@
             resources.ApplyResources(this.groupBox1, "groupBox1");
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.TabStop = false;
+            // 
+            // comboCopyMission
+            // 
+            this.comboCopyMission.FormattingEnabled = true;
+            resources.ApplyResources(this.comboCopyMission, "comboCopyMission");
+            this.comboCopyMission.Name = "comboCopyMission";
+            // 
+            // label11
+            // 
+            resources.ApplyResources(this.label11, "label11");
+            this.label11.Name = "label11";
+            // 
+            // comboMissionWDS
+            // 
+            this.comboMissionWDS.FormattingEnabled = true;
+            resources.ApplyResources(this.comboMissionWDS, "comboMissionWDS");
+            this.comboMissionWDS.Name = "comboMissionWDS";
             // 
             // txtMissionStatus
             // 
@@ -196,23 +213,6 @@
             // 
             resources.ApplyResources(this.label1, "label1");
             this.label1.Name = "label1";
-            // 
-            // comboMissionWDS
-            // 
-            this.comboMissionWDS.FormattingEnabled = true;
-            resources.ApplyResources(this.comboMissionWDS, "comboMissionWDS");
-            this.comboMissionWDS.Name = "comboMissionWDS";
-            // 
-            // comboCopyMission
-            // 
-            this.comboCopyMission.FormattingEnabled = true;
-            resources.ApplyResources(this.comboCopyMission, "comboCopyMission");
-            this.comboCopyMission.Name = "comboCopyMission";
-            // 
-            // label11
-            // 
-            resources.ApplyResources(this.label11, "label11");
-            this.label11.Name = "label11";
             // 
             // MissionDetails
             // 

@@ -7,8 +7,8 @@ namespace VirtuSphere
     public partial class LoginForm : Form
     {
 
-        public string hostname { get; set; }
-        public string Token { get; set; }
+        public string ApiUrl { get; set; }
+        public string ApiToken { get; set; }
 
         public LoginForm()
         {
@@ -61,15 +61,15 @@ namespace VirtuSphere
             string hostname = comboHostname.Text;
             bool usetls = chkbx_tls.Checked;
 
-            // ApiService-Instanz sollte bereits verfügbar sein, z.B. über Dependency Injection
-            ApiService apiService = new ApiService(); // Erstellen Sie eine Instanz der ApiService-Klasse
+            // apiService-Instanz sollte bereits verfügbar sein, z.B. über Dependency Injection
+            apiService apiService = new apiService(hostname, "0"); 
             string token = await apiService.IsValidLogin(username, password, hostname, usetls);
 
 
             if (!string.IsNullOrEmpty(token))
             {
-                this.Token = token; // Speichere den Token
-                this.hostname = hostname; // Speichere den Hostnamen
+                this.ApiToken = token; // Speichere den ApiToken
+                this.ApiUrl = hostname; // Speichere den Hostnamen
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }

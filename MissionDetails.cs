@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static VirtuSphere.ApiService;
+using static VirtuSphere.apiService;
 using static VirtuSphere.FMmain;
 
 namespace VirtuSphere
@@ -16,12 +16,19 @@ namespace VirtuSphere
     {
 
         private FMmain _mainForm;
+        private apiService apiService;
+        private string apiToken;
+        private string apiUrl;
 
-        public MissionDetails(FMmain mainForm, MissionItem mission)
+        public MissionDetails(FMmain mainForm, MissionItem mission, string apiToken, string apiUrl)
         {
             InitializeComponent();
             _mainForm = mainForm;
             fillForms(mission);
+
+            this.apiToken = apiToken;
+            this.apiUrl = apiUrl;
+
         }
 
         private void fillForms(MissionItem mission)
@@ -38,6 +45,16 @@ namespace VirtuSphere
             Console.WriteLine("Mission Status: " + mission.mission_status);
             Console.WriteLine("Mission Count: " + mission.vm_count);
 
+            // Wenn mission_name mit _ beginnt, dann disable Datastorage und Datacenter
+            if (mission.mission_name.StartsWith("_"))
+            {
+                txtMissionDatastorage.Enabled = false;
+                txtMissionDatacenter.Enabled = false;
+                comboCopyMission.Visible = false;
+                label11.Visible = false;
+                mission.mission_status = "Template";
+            }
+
             txtMissionId.Text = mission.Id.ToString();
             txtMissionName.Text = mission.mission_name;
             txtMissionNotes.Text = mission.mission_notes;
@@ -45,7 +62,11 @@ namespace VirtuSphere
             // Lade alle Missionen in comboCopyMission
             foreach (MissionItem missionItem in _mainForm.missionsList)
             {
-                comboCopyMission.Items.Add(missionItem.mission_name);
+                // wenn missionItem.mission_name beginnt mit _ dann füge es nicht in die comboCopyMission ein
+                if (missionItem.mission_name.StartsWith("_"))
+                {
+                    comboCopyMission.Items.Add(missionItem.mission_name);
+                }
             }
 
 
@@ -90,15 +111,9 @@ namespace VirtuSphere
             string MissionStatus = txtMissionStatus.Text;
             int MissionCount = Convert.ToInt32(txtMissionCount.Text);
 
-            // Abbrech wenn missionName leerzeichen beinhaltet
-            if (missionName.Contains(" "))
-            {
-                MessageBox.Show("Mission Name darf keine Leerzeichen enthalten");
-                return;
-            }
-            
-            // missionDatastorage und MissionDatacenter dürfen nicht leer sein
-            if (MissionDatastorage == "" || MissionDatacenter == "")
+
+            // missionDatastorage und MissionDatacenter dürfen nicht leer sein ausser missionName beginnt mit _
+            if ((!missionName.StartsWith("_")) && (MissionDatastorage == "" || MissionDatacenter == ""))
             {
                 MessageBox.Show("Datastorage und Datacenter dürfen nicht leer sein");
                 return;
@@ -120,19 +135,21 @@ namespace VirtuSphere
             };
 
             // Gib die Daten an das Hauptformular zurück
-            _mainForm.UpdateMission(mission);
+            _ = _mainForm.UpdateMission(mission);
 
             // Wenn comboCopyMission nicht leer ist, dann kopiere die die ausgewählte Mission in die neue Mission und speichere sie
             if (comboCopyMission.Text != "")
             {
-                MessageBox.Show("Mission wurde kopiert");
+                string selectedTemplate = comboCopyMission.Text;
 
+                // gib Id von selectedTemplate aus missionList zurück
+                int selectedTemplateId = _mainForm.missionsList.Find(x => x.mission_name == selectedTemplate).Id;
 
-                MissionItem copyMission = _mainForm.missionsList[comboCopyMission.SelectedIndex];
-                MessageBox.Show("kopie erstellen von: "+copyMission.mission_name);
+                //MessageBox.Show("Kopiere von Mission ID: " + selectedTemplateId + " ("+selectedTemplate+") zu Mission ID: " + missionId+ " ("+ missionName+")");
 
                 // Kopiere alle VMs mit der alten Mission ID in die neue Mission ID
-                _mainForm.CopyVMs(copyMission.Id, mission.Id);
+                _mainForm.CopyVMsToNewMission(selectedTemplateId, mission.Id);
+
 
             }
 
