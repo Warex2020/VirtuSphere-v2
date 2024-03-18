@@ -49,12 +49,12 @@ function updateInterface($db) {
 
 
                     // Finde vm_id mit vm_name heraus
-                    $stmt = $db->prepare("SELECT vm_id FROM deploy_vms WHERE vm_name = ? LIMIT 1");
+                    $stmt = $db->prepare("SELECT id FROM deploy_vms WHERE vm_name = ? LIMIT 1");
                     $stmt->bind_param("s", $vm_name);
                     $stmt->execute();
                     $result = $stmt->get_result();
                     if ($result->num_rows > 0) {
-                        $vm_id = $result->fetch_assoc()['vm_id'];
+                        $vm_id = $result->fetch_assoc()['id'];
 
                         // Update interfaces with mac_address and summary
                         $sql_query = "UPDATE deploy_interfaces SET mac = ? WHERE vm_id = ? AND vlan = ?";
