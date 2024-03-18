@@ -19,7 +19,7 @@
       loop: "{{ vm_configurations }}"
       register: vm_info
 
-    - name: Speichere gesammelte Informationen in einer temporären Datei
+    - name: Speichere gesammelte Informationen in einer temporaeren Datei
       copy:
         dest: "/tmp/vm_infos.json"
         content: "{{ vm_info.results | to_nice_json }}"

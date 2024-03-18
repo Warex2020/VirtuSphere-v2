@@ -1,43 +1,46 @@
 import json
 import csv
 
-input_file_path = '/tmp/vm_infos.json'
-output_file_path = '/tmp/vm_network_details.csv'
-# URL der WebAPI
+# Pfad zur JSON-Datei
+file_path = '/tmp/vm_infos.json'
+
+
 api_url = 'http://{{apiUrl}}/db_importMAC.php?action=updateInterface'
 
+import requests
+import json
 
-with open(input_file_path, 'r') as json_file:
-    vm_infos = json.load(json_file)
+def send_data_to_server(file_path, api_url):
+    # Versuche, die Datei zu oeffnen und den Inhalt zu lesen
+    try:
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+    except Exception as e:
+        print(f"Fehler beim Lesen der Datei: {e}")
+        return
 
-with open(output_file_path, 'w', newline='') as csv_file:
-    csv_writer = csv.writer(csv_file)
-    csv_writer.writerow(['VM Name', 'Interface', 'MAC Address'])
-
-    for vm_info in vm_infos:
-        if 'instance' in vm_info and 'guest' in vm_info['instance'] and 'net' in vm_info['instance']['guest']:
-            for net_info in vm_info['instance']['guest']['net']:
-                csv_writer.writerow([vm_info['item']['vm_name'], net_info.get('network'), net_info.get('macAddress')])
-
-
-def read_file_and_send_data(file_path, api_url):
-    # Datei lesen
-    with open(file_path, 'r') as file:
-        data = json.load(file)  # JSON-Daten direkt einlesen
-
-    # Jedes Element in 'data' ist bereits ein passendes Dictionary,
-    # also können wir die Daten direkt konvertieren
+    # Konvertiere die Daten in einen JSON-String
     json_data = json.dumps(data)
-    
-    # Daten an die WebAPI senden
+
+    # Setze die HTTP Headers für die POST-Anfrage
     headers = {'Content-Type': 'application/json'}
-    response = requests.post(api_url, data=json_data, headers=headers)
-    
-    # Antwort ausgeben
-    print(f"Status Code: {response.status_code}")
-    print(f"Response Body: {response.text}")
+
+    # Versuche, die Daten an die WebAPI zu senden
+    try:
+        response = requests.post(api_url, data=json_data, headers=headers)
+        
+        # Überprüfe den Statuscode der Antwort
+        if response.status_code == 200:
+            print("Daten erfolgreich gesendet.")
+        else:
+            print(f"Fehler beim Senden der Daten: {response.status_code}")
+        
+        # Gib den Antworttext aus (optional)
+        print(f"Antwort vom Server: {response.text}")
+        
+    except Exception as e:
+        print(f"Fehler beim Senden der Daten: {e}")
 
 
-
-# Funktion ausführen
-read_file_and_send_data(output_file_path, api_url)
+# Funktion ausfuehren
+send_data_to_server(file_path, api_url)

@@ -11,7 +11,7 @@ import requests
 import json
 
 def send_data_to_server(file_path, api_url):
-    # Versuche, die Datei zu öffnen und den Inhalt zu lesen
+    # Versuche, die Datei zu oeffnen und den Inhalt zu lesen
     try:
         with open(file_path, 'r') as file:
             data = json.load(file)
@@ -42,5 +42,5 @@ def send_data_to_server(file_path, api_url):
         print(f"Fehler beim Senden der Daten: {e}")
 
 
-# Funktion ausführen
+# Funktion ausfuehren
 send_data_to_server(file_path, api_url)
