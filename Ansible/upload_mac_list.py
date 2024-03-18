@@ -4,19 +4,10 @@ import json
 def read_file_and_send_data(file_path, api_url):
     # Datei lesen
     with open(file_path, 'r') as file:
-        lines = file.readlines()
-    
-    # Datenstruktur fuer JSON vorbereiten
-    data = []
-    for line in lines:
-        vm_name, interface, mac_address = line.strip().split(';')
-        data.append({
-            "vm_name": vm_name,
-            "interface": interface,
-            "mac_address": mac_address
-        })
-    
-    # Daten als JSON konvertieren
+        data = json.load(file)  # JSON-Daten direkt einlesen
+
+    # Jedes Element in 'data' ist bereits ein passendes Dictionary,
+    # also können wir die Daten direkt konvertieren
     json_data = json.dumps(data)
     
     # Daten an die WebAPI senden

@@ -11,7 +11,6 @@ $sql->bind_param("s", $clientIP);
 $sql->execute();
 $result = $sql->get_result();
 
-
 if ($result->num_rows == 0) {
     // IP nicht gefunden, Zugriff verweigert
     http_response_code(403);
@@ -19,14 +18,12 @@ if ($result->num_rows == 0) {
     exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_GET["action"] == "updateInterface") {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET["action"]) && $_GET["action"] == "updateInterface") {
     updateInterface($connection);
 } else {
     http_response_code(405);
     echo json_encode(['error' => 'Method not allowed']);
 }
-
-## Hier soll die MAC Adresse ins Interface eingetragen werden. Gesucht wird VM_Name und Interface_Name
 
 function updateInterface($db) {
     $input = file_get_contents('php://input');
@@ -48,13 +45,35 @@ function updateInterface($db) {
                 throw new Exception('Invalid data format');
             }
 
-            $sql = "UPDATE deploy_interfaces SET mac = ? WHERE vm_id = (SELECT id FROM deploy_vms WHERE vm_name = ?) AND vlan = ?";
+            // finde vm_id für die vm_name
+            $sql = "SELECT vm_id FROM deploy_vms WHERE vm_name = ?";
             $stmt = $db->prepare($sql);
             if (!$stmt) {
                 throw new Exception("Prepare statement failed: " . $db->error);
             }
 
-            $stmt->bind_param("sss", $vm['mac_address'], $vm['vm_name'], $vm['interface']);
+            $stmt->bind_param("s", $vm['vm_name']);
+            if (!$stmt->execute()) {
+                throw new Exception("Execute statement failed: " . $stmt->error);
+            }
+
+            $result = $stmt->get_result();
+            if ($result->num_rows == 0) {
+                throw new Exception("VM not found: " . $vm['vm_name']);
+            }
+
+            $vm_id = $result->fetch_assoc()['vm_id'];
+
+
+            // Nehme an, dass 'interface' der Netzwerkname ist und 'vlan' das Feld in der DB darstellt, das aktualisiert werden soll
+            // Diese Annahme basiert auf Ihrer ursprünglichen Anweisung. Passen Sie die Feldnamen ggf. an Ihre Datenbankstruktur an.
+            $sql = "UPDATE deploy_interfaces SET mac = ? WHERE vm_id = ? AND vlan = ?";
+            $stmt = $db->prepare($sql);
+            if (!$stmt) {
+                throw new Exception("Prepare statement failed: " . $db->error);
+            }
+
+            $stmt->bind_param("sss", $vm['mac_address'], $vm_id, $vm['interface']);
             if (!$stmt->execute()) {
                 // Wirf eine Exception, wenn das Ausführen fehlschlägt
                 throw new Exception("Execute statement failed: " . $stmt->error);

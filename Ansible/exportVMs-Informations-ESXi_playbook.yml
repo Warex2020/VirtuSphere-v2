@@ -5,6 +5,8 @@
   vars_files:
     - ./serverlist.yml
     - ./accounts.yml
+  vars:
+    vm_lines: []
 
   tasks:
     - name: Sammle Informationen aller VMs
@@ -19,34 +21,21 @@
       register: vm_infos
       loop: "{{ vm_configurations }}"
 
-    - name: Initialisiere vm_lines
+    - name: Verarbeite jede VM
       set_fact:
-        vm_lines: []
-
-    - name: Sammle Hostnamen und MAC-Adressen fuer jede Netzwerkschnittstelle
-      set_fact:
-        vm_lines: "{{ vm_lines + [ guest_name + ';' + network['label'] + ';' + network['mac_address'] ] }}"
-      loop: "{{ item.instance.network }}"
-      loop_control:
-        loop_var: network
+        vm_lines: "{{ vm_lines + [ vm_info | combine({'network_info': networks}) ] }}"
+      loop: "{{ vm_infos.results }}"
       vars:
-        guest_name: "{{ item.instance.guest_name }}"
-      when: item.instance.network is defined
-      with_items: "{{ vm_infos.results }}"
-      loop_control:
-        loop_var: item
+        vm_info: "{{ item.item }}"
+        networks: "{{ item.instance.guest.net | default([]) | map(attribute='network') | list }}"
+      when: item.instance.guest.net is defined
 
-    - name: Show VM lines
+    - name: Debug VM lines
       debug:
         var: vm_lines
 
-    - name: Speichere Hostnamen und MAC-Adressen in eine Datei
+    - name: Speichere VM-Informationen und Netzwerkdetails in eine Datei
       copy:
         dest: "/tmp/vm_mac_list.csv"
-        content: "{{ vm_lines | join('\n') }}"
-        owner: "{{ ansible_env.USER }}"
-        group: "{{ ansible_env.USER }}"
+        content: "{{ vm_lines | map('to_nice_json') | join('\n') }}"
         mode: '0666'
-
-    - name: Run Python for upload CSV to web
-      ansible.builtin.command: python3 ./upload_mac_list.py
