@@ -56,6 +56,8 @@ function updateInterface($db) {
                     if ($result->num_rows > 0) {
                         $vm_id = $result->fetch_assoc()['id'];
 
+                        echo $vm_id;
+
                         // Update interfaces with mac_address and summary
                         $sql_query = "UPDATE deploy_interfaces SET mac = ? WHERE vm_id = ? AND vlan = ?";
                         $stmt = $db->prepare($sql_query);
