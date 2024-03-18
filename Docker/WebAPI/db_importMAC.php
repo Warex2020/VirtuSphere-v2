@@ -39,50 +39,32 @@ function updateInterface($db) {
     $db->begin_transaction();
 
     try {
-        foreach ($data as $vm) {
-            if (!isset($vm['mac_address'], $vm['vm_name'], $vm['interface'])) {
-                // Wirf eine Exception, um in den Catch-Block zu gelangen
-                throw new Exception('Invalid data format');
-            }
+        foreach ($data as $entry) {
+            foreach ($entry['network_info'] as $network) {
+                $mac_address = $network['mac_address'];
+                $interface = $network['network'];
+                $vm_name = $entry['vm_name'];
 
-            // finde vm_id für die vm_name
-            $sql = "SELECT vm_id FROM deploy_vms WHERE vm_name = ?";
-            $stmt = $db->prepare($sql);
-            if (!$stmt) {
-                throw new Exception("Prepare statement failed: " . $db->error);
-            }
+                $sql = "UPDATE deploy_interfaces di 
+                        JOIN deploy_vms dv ON di.vm_id = dv.id 
+                        SET di.mac = ? 
+                        WHERE dv.vm_name = ? AND di.interface_name = ?";
+                $stmt = $db->prepare($sql);
+                if (!$stmt) {
+                    throw new Exception("Prepare statement failed: " . $db->error);
+                }
 
-            $stmt->bind_param("s", $vm['vm_name']);
-            if (!$stmt->execute()) {
-                throw new Exception("Execute statement failed: " . $stmt->error);
-            }
-
-            $result = $stmt->get_result();
-            if ($result->num_rows == 0) {
-                throw new Exception("VM not found: " . $vm['vm_name']);
-            }
-
-            $vm_id = $result->fetch_assoc()['vm_id'];
-
-
-            // Nehme an, dass 'interface' der Netzwerkname ist und 'vlan' das Feld in der DB darstellt, das aktualisiert werden soll
-            // Diese Annahme basiert auf Ihrer ursprünglichen Anweisung. Passen Sie die Feldnamen ggf. an Ihre Datenbankstruktur an.
-            $sql = "UPDATE deploy_interfaces SET mac = ? WHERE vm_id = ? AND vlan = ?";
-            $stmt = $db->prepare($sql);
-            if (!$stmt) {
-                throw new Exception("Prepare statement failed: " . $db->error);
-            }
-
-            $stmt->bind_param("sss", $vm['mac_address'], $vm_id, $vm['interface']);
-            if (!$stmt->execute()) {
-                // Wirf eine Exception, wenn das Ausführen fehlschlägt
-                throw new Exception("Execute statement failed: " . $stmt->error);
+                $stmt->bind_param("sss", $mac_address, $vm_name, $interface);
+                if (!$stmt->execute()) {
+                    // Wirf eine Exception, wenn das Ausführen fehlschlägt
+                    throw new Exception("Execute statement failed: " . $stmt->error);
+                }
             }
         }
 
         // Commit der Transaktion
         $db->commit();
-        echo json_encode(['success' => 'Data updated successfully']);
+        echo json_encode(['success' => 'MAC addresses updated successfully']);
 
     } catch (Exception $e) {
         // Rollback, falls ein Fehler auftritt
