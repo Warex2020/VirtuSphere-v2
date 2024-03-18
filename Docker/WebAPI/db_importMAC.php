@@ -50,29 +50,22 @@ function updateInterface($db) {
                 $mac_address = $data[0]["instance"][$hwname]["macaddress"];
                 $summary = $data[0]["instance"][$hwname]["summary"];
                 
-                echo $vm_name . " " .$hwname . " " .$summary . " ".$networkAdapter." ".$mac_address."          ";
+                echo $vm_name . " " .$hwname . " " .$summary . " ".$value." ".$mac_address."          ";
             }
 
-            foreach ($entry['network_info'] as $network) {
-                $mac_address = $network['mac_address'];
-                $interface = $network['network'];
-                $vm_name = $entry['vm_name'];
+            // finde vm_id mit vm_name heraus
+            $sql = $db->prepare("SELECT vm_id FROM vm WHERE vm_name = ?");
+            $sql->bind_param("s", $vm_name);
+            $sql->execute();
+            $result = $sql->get_result();
+            $row = $result->fetch_assoc();
+            $vm_id = $row["vm_id"];
 
-                $sql = "UPDATE deploy_interfaces di 
-                        JOIN deploy_vms dv ON di.vm_id = dv.id 
-                        SET di.mac = ? 
-                        WHERE dv.vm_name = ? AND di.vlan = ?";
-                $stmt = $db->prepare($sql);
-                if (!$stmt) {
-                    throw new Exception("Prepare statement failed: " . $db->error);
-                }
+            // update interfaces mit mac_address und summary
+            $sql = $db->prepare("UPDATE interfaces SET mac = ? WHERE vm_id = ? AND vlan = ?");
+            $sql->bind_param("ssis", $mac_address, $vm_id, $summary);
+            $sql->execute();
 
-                $stmt->bind_param("sss", $mac_address, $vm_name, $interface);
-                if (!$stmt->execute()) {
-                    // Wirf eine Exception, wenn das Ausführen fehlschlägt
-                    throw new Exception("Execute statement failed: " . $stmt->error);
-                }
-            }
         }
 
         // Commit der Transaktion
