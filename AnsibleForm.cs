@@ -524,13 +524,13 @@ WaitingTime: ""{txtWaitTime.Text}""
                 {
                     string networktype = string.IsNullOrEmpty(network.type) ? "vmxnet3" : network.type;
                     interfaces += $"      - name: \"{network.vlan}\"\n"; // YAML-Liste formatieren
-                    interfaces += $"      - type: {networktype}\n"; // YAML-Liste formatieren
+                    interfaces += $"        device_type: {networktype}\n"; // YAML-Liste formatieren
                 }
 
                 foreach (Disk disk in vm.Disks)
                 {
                     disks += $"      - size_gb: {disk.disk_size}\n";
-                    disks += $"      - type: {disk.disk_type}\n";
+                    disks += $"        type: {disk.disk_type}\n";
                 }
 
                 // Default Werte für Datastore und Datacenter aus missionList
