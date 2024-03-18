@@ -1,15 +1,13 @@
 ---
-- name: Erstellen von VMs auf einem ESXi-Host
+- name: Sammle Informationen aller VMs
   hosts: localhost
   gather_facts: false
   vars_files:
     - ./serverlist.yml
     - ./accounts.yml
-  vars:
-    vm_lines: []
 
   tasks:
-    - name: Sammle Informationen aller VMs
+    - name: Sammle VM-Informationen
       community.vmware.vmware_guest_info:
         hostname: "{{ esxi_hostname }}"
         username: "{{ esxi_username }}"
@@ -18,24 +16,10 @@
         datacenter: "{{ item.datacenter_name }}"
         name: "{{ item.vm_name }}"
       delegate_to: localhost
-      register: vm_infos
       loop: "{{ vm_configurations }}"
+      register: vm_info
 
-    - name: Verarbeite jede VM
-      set_fact:
-        vm_lines: "{{ vm_lines + [ vm_info | combine({'network_info': networks}) ] }}"
-      loop: "{{ vm_infos.results }}"
-      vars:
-        vm_info: "{{ item.item }}"
-        networks: "{{ item.instance.guest.net | default([]) | map(attribute='network') | list }}"
-      when: item.instance.guest.net is defined
-
-    - name: Debug VM lines
-      debug:
-        var: vm_lines
-
-    - name: Speichere VM-Informationen und Netzwerkdetails in eine Datei
+    - name: Speichere gesammelte Informationen in einer temporären Datei
       copy:
-        dest: "/tmp/vm_mac_list.csv"
-        content: "{{ vm_lines | map('to_nice_json') | join('\n') }}"
-        mode: '0666'
+        dest: "/tmp/vm_infos.json"
+        content: "{{ vm_info.results | to_nice_json }}"

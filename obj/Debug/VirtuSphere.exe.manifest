@@ -183,13 +183,13 @@
       <dsig:DigestValue>McbalO16xcgEFJc3o5G/c3UJ2NsaMcVisPW+RJgOBRY=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="Ansible\exportVMs-Informations-ESXi_playbook.yml" size="1273">
+  <file name="Ansible\exportVMs-Informations-ESXi_playbook.yml" size="754">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>isZgr/F5sgFHTKMDfPVy0OqEBFIstnVPRTK6Ia52J18=</dsig:DigestValue>
+      <dsig:DigestValue>lQ8LmrMIY6Grfyy7qquL7qbr0xEMQPhYXoH7FnhSaxw=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Ansible\startVMs-ESXi_playbook.yml" size="758">
@@ -210,13 +210,13 @@
       <dsig:DigestValue>4MKLuF5X6te688Ur87h/JminN81Ol976BZSkEAMX6QM=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="Ansible\upload_mac_list.py" size="864">
+  <file name="Ansible\upload_mac_list.py" size="1492">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>3fJLk2aEDbmdcCGYwjY4yxfUWACvE38RTfeeGevgNQk=</dsig:DigestValue>
+      <dsig:DigestValue>3t7lLPC9AWub5+9mkwodXp6HLe4Sa8XGbPWApES4D4A=</dsig:DigestValue>
     </hash>
   </file>
   <file name="banner_3I7_icon.ico" size="151492">
