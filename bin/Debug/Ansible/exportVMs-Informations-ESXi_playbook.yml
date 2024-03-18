@@ -14,16 +14,21 @@
         password: "{{ esxi_password }}"
         validate_certs: no
         datacenter: "{{ item.datacenter_name }}"
-        name: "{{ item.vm_name}}"
+        name: "{{ item.vm_name }}"
       delegate_to: localhost
       register: vm_infos
       loop: "{{ vm_configurations }}"
 
-    - name: Sammle Hostnamen und MAC-Adressen fuer die Datei
+    - name: Sammle Hostnamen und MAC-Adressen für die Datei
       set_fact:
-        vm_lines: "{{ vm_lines | default([]) + [ item.instance.hw_name + ';' + item.instance.hw_eth0.summary + ';' + item.instance.hw_eth0.macaddress ] }}"
+        vm_lines: >-
+          {{
+            vm_lines | default([]) +
+            [item.instance.guest_name + ';' + network.label + ';' + network.mac_address
+            for network in item.instance.network]
+          }}
       loop: "{{ vm_infos.results }}"
-      when: item.instance.hw_eth0.macaddress is defined
+      when: item.instance.network | default([])
 
     - name: Show VM lines
       debug:
@@ -37,5 +42,5 @@
         group: "{{ ansible_username }}"
         mode: '0666'
 
-    - name: run Python for upload csv to webi
-      ansible.builtin.command: python3 ./upload_mac_list.py 
+    - name: Run Python for upload CSV to web
+      ansible.builtin.command: python3 ./upload_mac_list.py
