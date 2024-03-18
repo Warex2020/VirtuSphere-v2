@@ -28,7 +28,7 @@
             for network in item.instance.network]
           }}
       loop: "{{ vm_infos.results }}"
-      when: item.instance.network | default([])
+      when: item.instance.hw_eth0.macaddress is defined
 
     - name: Show VM lines
       debug:
