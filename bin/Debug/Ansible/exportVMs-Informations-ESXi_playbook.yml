@@ -21,9 +21,9 @@
 
     - name: Speichere gesammelte Informationen in einer temporaeren Datei
       copy:
-        dest: "/tmp/vm_infos.json"
+        dest: "./vm_infos.json"
         content: "{{ vm_info.results | to_nice_json }}"
 
-    - name: Führe Python-Skript aus, um Daten zu verarbeiten und in CSV umzuwandeln
-      ansible.builtin.command: python3 /tmp/upload_mac_list.py
+    - name: Fuehre Python-Skript aus, um Daten zu verarbeiten und in CSV umzuwandeln
+      ansible.builtin.command: python3 ./upload_mac_list.py
       delegate_to: localhost

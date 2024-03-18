@@ -2,7 +2,7 @@ import json
 import csv
 
 # Pfad zur JSON-Datei
-file_path = '/tmp/vm_infos.json'
+file_path = './vm_infos.json'
 
 
 api_url = 'http://{{apiUrl}}/db_importMAC.php?action=updateInterface'

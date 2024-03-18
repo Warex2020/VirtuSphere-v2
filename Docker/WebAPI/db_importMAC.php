@@ -40,6 +40,8 @@ function updateInterface($db) {
 
     try {
         foreach ($data as $entry) {
+
+            echo $data;
             foreach ($entry['network_info'] as $network) {
                 $mac_address = $network['mac_address'];
                 $interface = $network['network'];
