@@ -37,11 +37,5 @@
         group: "{{ ansible_username }}"
         mode: '0666'
 
-    - name: replace ApiUrl in file upload_mac_list.py
-      replace:
-        path: ./upload_mac_list.py 
-        regexp: '{{apiUrl}}'
-        replace: "{{ apiUrl }}"
-
     - name: run Python for upload csv to webi
       ansible.builtin.command: python3 ./upload_mac_list.py 

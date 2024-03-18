@@ -1504,7 +1504,7 @@ namespace VirtuSphere
             // Öffne unter ProjecttempPath die Datei upload_mac_list.py und ersetze {{WEBAPI}}  zu apiUrl
             string upload_mac_list = Path.Combine(ProjecttempPath, "upload_mac_list.py");
             string text = File.ReadAllText(upload_mac_list);
-            text = text.Replace("{{WEBAPI}}", apiUrl);
+            text = text.Replace("{{apiUrl}}", apiService.apiUrl);
             File.WriteAllText(upload_mac_list, text);
 
 
