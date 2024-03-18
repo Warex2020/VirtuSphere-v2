@@ -41,7 +41,18 @@ function updateInterface($db) {
     try {
         foreach ($data as $entry) {
 
-            echo $data;
+            $networkAdapters = $data[0]["instance"]["hw_interfaces"];
+
+            $vm_name = $data[0]["instance"]["hw_name"];
+
+            foreach($networkAdapters  as $key => $value){
+                $hwname = "hw_".$value;
+                $mac_address = $data[0]["instance"][$hwname]["macaddress"];
+                $summary = $data[0]["instance"][$hwname]["summary"];
+                
+                echo $vm_name . " " .$hwname . " " .$summary . " ".$networkAdapter." ".$mac_address."          ";
+            }
+
             foreach ($entry['network_info'] as $network) {
                 $mac_address = $network['mac_address'];
                 $interface = $network['network'];
