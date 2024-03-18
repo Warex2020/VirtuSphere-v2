@@ -6,15 +6,15 @@ header('Content-Type: application/json');
 $clientIP = $_SERVER['REMOTE_ADDR'];
 
 // Prüfe, ob die Client-IP in der Datenbank vorhanden ist
-$accessCheck = $connection->prepare("SELECT * FROM deploy_accessToWebAPI WHERE ipAddress = ?");
-$accessCheck->bind_param("s", $clientIP);
-$accessCheck->execute();
-$result = $accessCheck->get_result();
+$sql = $connection->prepare("SELECT * FROM deploy_accessToWebAPI WHERE ipAddress = ?");
+$sql->bind_param("s", $clientIP);
+$sql->execute();
+$result = $sql->get_result();
 
 if ($result->num_rows == 0) {
     // IP nicht gefunden, Zugriff verweigert
     http_response_code(403);
-    echo json_encode(['error' => 'Access denied. Your IP: ' . $clientIP]);
+    echo json_encode(['error' => 'Zugriff verweigert. Ihre IP: ' . $clientIP]);
     exit();
 }
 
@@ -36,45 +36,33 @@ function updateInterface($db) {
     }
 
     $db->begin_transaction();
+
     try {
-print_r($data);
+        foreach ($data as $vm) {
+            $vm_name = $vm['instance']['hw_name'];
 
-        foreach ($data as $entry) {
-            print_r($entry);
-            // Stellen Sie sicher, dass 'instance' und 'network_info' existieren und korrekt formatiert sind
-            if (!isset($entry['instance'], $entry['instance']['network_info'])) {
-                throw new Exception('Invalid data structure');
-            }
+            foreach ($vm['instance'] as $key => $value) {
+                if (strpos($key, 'hw_eth') !== false) {
+                    $mac_address = $value['macaddress'];
+                    $summary = $value['summary'];
 
-            $vm_name = $entry['instance']['hw_name'];
-            $networkAdapters = $entry['instance']['network_info'];
+                    // Finde vm_id mit vm_name heraus
+                    $stmt = $db->prepare("SELECT id FROM deploy_vms WHERE vm_name = ? LIMIT 1");
+                    $stmt->bind_param("s", $vm_name);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    if ($result->num_rows > 0) {
+                        $vm_id = $result->fetch_assoc()['id'];
 
-            // Überprüfen Sie, ob $networkAdapters tatsächlich ein Array ist
-            if (!is_array($networkAdapters)) {
-                throw new Exception('Network information is not in expected array format');
-            }
-
-            foreach ($networkAdapters as $adapter) {
-                if (!isset($adapter['mac_address'], $adapter['network'])) {
-                    throw new Exception('Missing network adapter details');
-                }
-
-                $mac_address = $adapter['mac_address'];
-                $summary = $adapter['network']; 
-
-                $vmIdQuery = $db->prepare("SELECT id FROM deploy_vms WHERE vm_name = ? ORDER BY id DESC LIMIT 1");
-                $vmIdQuery->bind_param("s", $vm_name);
-                $vmIdQuery->execute();
-                $vmIdResult = $vmIdQuery->get_result();
-                if ($vmIdRow = $vmIdResult->fetch_assoc()) {
-                    $vm_id = $vmIdRow['id'];
-
-                    $updateQuery = $db->prepare("UPDATE deploy_interfaces SET mac = ? WHERE vm_id = ? AND vlan = ?");
-                    $updateQuery->bind_param("sis", $mac_address, $vm_id, $summary);
-                    $updateQuery->execute();
+                        // Update interfaces mit mac_address und summary
+                        $stmt = $db->prepare("UPDATE deploy_interfaces SET mac = ? WHERE vm_id = ? AND vlan = ?");
+                        $stmt->bind_param("sis", $mac_address, $vm_id, $summary);
+                        $stmt->execute();
+                    }
                 }
             }
         }
+
         $db->commit();
         echo json_encode(['success' => 'MAC addresses updated successfully']);
     } catch (Exception $e) {
