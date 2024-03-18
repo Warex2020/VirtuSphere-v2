@@ -48,7 +48,7 @@ function updateInterface($db) {
                 $sql = "UPDATE deploy_interfaces di 
                         JOIN deploy_vms dv ON di.vm_id = dv.id 
                         SET di.mac = ? 
-                        WHERE dv.vm_name = ? AND di.interface_name = ?";
+                        WHERE dv.vm_name = ? AND di.vlan = ?";
                 $stmt = $db->prepare($sql);
                 if (!$stmt) {
                     throw new Exception("Prepare statement failed: " . $db->error);
