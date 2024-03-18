@@ -38,13 +38,26 @@ function updateInterface($db) {
     $db->begin_transaction();
     try {
         foreach ($data as $entry) {
-            // Nehme an, dass jeder Eintrag korrekt formatierte VM-Informationen enthält
+            // Stellen Sie sicher, dass 'instance' und 'network_info' existieren und korrekt formatiert sind
+            if (!isset($entry['instance'], $entry['instance']['network_info'])) {
+                throw new Exception('Invalid data structure');
+            }
+
             $vm_name = $entry['instance']['hw_name'];
-            $networkAdapters = $entry['instance']['network_info']; // Angenommen, dies ist die korrekte Struktur
+            $networkAdapters = $entry['instance']['network_info'];
+
+            // Überprüfen Sie, ob $networkAdapters tatsächlich ein Array ist
+            if (!is_array($networkAdapters)) {
+                throw new Exception('Network information is not in expected array format');
+            }
 
             foreach ($networkAdapters as $adapter) {
+                if (!isset($adapter['mac_address'], $adapter['network'])) {
+                    throw new Exception('Missing network adapter details');
+                }
+
                 $mac_address = $adapter['mac_address'];
-                $summary = $adapter['network']; // Hier ist unklar, was genau 'summary' sein soll
+                $summary = $adapter['network']; 
 
                 $vmIdQuery = $db->prepare("SELECT id FROM deploy_vms WHERE vm_name = ? ORDER BY id DESC LIMIT 1");
                 $vmIdQuery->bind_param("s", $vm_name);
