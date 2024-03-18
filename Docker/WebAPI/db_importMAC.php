@@ -54,7 +54,7 @@ function updateInterface($db) {
             }
 
             // finde vm_id mit vm_name heraus
-            $sql = $db->prepare("SELECT vm_id FROM vm WHERE vm_name = ?");
+            $sql = $db->prepare("SELECT vm_id FROM depoly_vms WHERE vm_name = ? LIMIT 1 order by vm_id desc");
             $sql->bind_param("s", $vm_name);
             $sql->execute();
             $result = $sql->get_result();
@@ -62,8 +62,8 @@ function updateInterface($db) {
             $vm_id = $row["vm_id"];
 
             // update interfaces mit mac_address und summary
-            $sql = $db->prepare("UPDATE interfaces SET mac = ? WHERE vm_id = ? AND vlan = ?");
-            $sql->bind_param("ssis", $mac_address, $vm_id, $summary);
+            $sql = $db->prepare("UPDATE deploy_interfaces SET mac = ? WHERE vm_id = ? AND vlan = ?");
+            $sql->bind_param("sis", $mac_address, $vm_id, $summary);
             $sql->execute();
 
         }
