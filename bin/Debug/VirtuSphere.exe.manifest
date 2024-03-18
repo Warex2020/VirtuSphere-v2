@@ -170,7 +170,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>9aoqkpU6tFXCzLkyPRiA56ZAMBHvhQRsz7VxFDqT57c=</dsig:DigestValue>
+        <dsig:DigestValue>k+SV/Yix9WVuiC7KnTlWfHU2gEItjuheME200ggbfes=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -183,13 +183,13 @@
       <dsig:DigestValue>McbalO16xcgEFJc3o5G/c3UJ2NsaMcVisPW+RJgOBRY=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="Ansible\exportVMs-Informations-ESXi_playbook.yml" size="1363">
+  <file name="Ansible\exportVMs-Informations-ESXi_playbook.yml" size="1536">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>n5uuJbqLaHCjrxOLjzE5UjliFOtqYP4HoczGD1Uf1p4=</dsig:DigestValue>
+      <dsig:DigestValue>suZOTqqlTFMP471BOaLx4RBfMaC1hiYJfDFRlHbx+5o=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Ansible\startVMs-ESXi_playbook.yml" size="758">
@@ -216,7 +216,7 @@
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>LOXZb1Th1/XILiSnnpa5ZlJuKmH6PkLFkWBmFP82FYY=</dsig:DigestValue>
+      <dsig:DigestValue>TIdyIjAGbF01KCNkf5M3EGCN7QhFESZN1IfS6B03yhs=</dsig:DigestValue>
     </hash>
   </file>
   <file name="banner_3I7_icon.ico" size="151492">

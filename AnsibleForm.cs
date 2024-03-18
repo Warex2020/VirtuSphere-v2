@@ -493,6 +493,7 @@ esxi_username: {esxi_username}
 esxi_password: ""{esxi_password}""
 ansible_username: ""{ansible_username}""
 WaitingTime: ""{txtWaitTime.Text}""
+apiUrl: ""{apiUrl}""
 ";
 
 

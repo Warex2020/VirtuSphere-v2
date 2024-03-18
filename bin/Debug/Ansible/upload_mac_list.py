@@ -30,7 +30,7 @@ def read_file_and_send_data(file_path, api_url):
 # Pfad zur Datei
 file_path = '/tmp/vm_mac_list.csv'
 # URL der WebAPI
-api_url = 'http://{{WEBAPI}}/db_importMAC.php?action=updateInterface'
+api_url = 'http://{{apiUrl}}/db_importMAC.php?action=updateInterface'
 
 # Funktion ausführen
 read_file_and_send_data(file_path, api_url)
