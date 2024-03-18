@@ -55,8 +55,16 @@ while($true){
         Write-Host " Device $deviceName with MAC $deviceMAC" -ForegroundColor Green
         Write-Host "##########################################################################################################" -ForegroundColor Green
         
+        $mecmmacaddr = $null
+
         if ($MECMDeviceList.Name -contains $deviceName) {
             Write-Host "$deviceName, bereits in MECM DB vorhanden." -ForegroundColor Cyan
+            $mecmmacaddr = ($MECMDeviceList | where {$_.name -eq "Test-Miss-FS01"}).MACAddress
+            if($null -ne $mecmmacaddr -AND $mecmmacaddr -ne $deviceMAC){
+                write-host "`tMAC-Adressen stimmen nicht ueberein! $mecmmacaddr (MECM) $deviceMAC (ESXi)" -ForegroundColor Red
+                write-host "`tlösche $deviceName ($mecmmacaddr)"
+                Remove-CMDevice -Name $deviceName -Force
+            }
         }
 
         if (-not $deviceMAC) {
@@ -71,24 +79,38 @@ while($true){
             try {
                 Import-CMComputerInformation -ComputerName $deviceName -MacAddress $deviceMAC -CollectionName "All Systems"
             } catch {
-                Write-Host "$deviceName konnte nicht hinzugefügt werden. Versuche es später noch einmal!" -ForegroundColor Red
-                continue
+                if ($_ -match "An object with the specified name already exists") {
+                    Write-Host "Ein Objekt mit dem Namen $deviceName existiert bereits." -ForegroundColor Yellow
+                } else{
+
+                    Write-Host "$deviceName konnte nicht hinzugefügt werden. Versuche es später noch einmal!" -ForegroundColor Red
+                    continue
+                }
             }
         }
-
-        $deviceResourceID = (Get-CMDevice -Name $deviceName).ResourceID
+    
+        
 
         # Prüfe ob zu jeder Task Seq eine DeviceCollection existiert
         foreach($task in $alltaskSequences){
-            if($null -eq (Get-CMDeviceCollection -Name $($task.Name))){
+            if($null -eq (Get-CMDeviceCollection -Name "$($task.Name)")){
                 try{
-                New-CMDeviceCollection -Comment "Autogeneriert by VirtuSphere" -name $($task.Name)  -LimitingCollectionName "All Systems"
-                Get-CMDeviceCollection -Name $($task.Name)  | Move-CMObject -FolderPath "$($VirtuSphere_Folder_Collections)\VirtuSphere"
+                New-CMDeviceCollection -Comment "Autogeneriert by VirtuSphere" -name "$($task.Name)"  -LimitingCollectionName "All Systems"
+                Start-Sleep 10
+                $resourceID = (Get-CMDeviceCollection -Name "$($task.Name)").CollectionID
+                Get-CMDeviceCollection -resourceID $resourceID  | Move-CMObject -FolderPath "$($VirtuSphere_Folder_Collections)\VirtuSphere"
                 Write-host "CollectionGroup für Task Sequence \"$($task.Name)\" erstellt!" -ForegroundColor green
                 }catch{
                     Write-host "Fehler beim erstellen: CollectionGroup für Task Sequence \"$($task.Name)\"!" -ForegroundColor red
                 }
             }
+        }
+
+        $deviceResourceID = (Get-CMDevice -Name $deviceName).ResourceID
+
+        if($null -eq $deviceResourceID){
+            write-host "`t$deviceName hat noch keine ID von MECM. Bitte warten..." -ForegroundColor Yellow
+            continue
         }
 
         # Betriebssystem-Collection
