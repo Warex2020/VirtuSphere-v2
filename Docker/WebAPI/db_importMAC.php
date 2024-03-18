@@ -49,7 +49,7 @@ function updateInterface($db) {
 
 
                     // Finde vm_id mit vm_name heraus
-                    $stmt = $db->prepare("SELECT id FROM deploy_vms WHERE vm_name = ? LIMIT 1 order by id desc");
+                    $stmt = $db->prepare("SELECT id FROM deploy_vms WHERE vm_name = ? ORDER BY id DESC LIMIT 1");
                     $stmt->bind_param("s", $vm_name);
                     $stmt->execute();
                     $result = $stmt->get_result();
