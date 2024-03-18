@@ -183,13 +183,13 @@
       <dsig:DigestValue>McbalO16xcgEFJc3o5G/c3UJ2NsaMcVisPW+RJgOBRY=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="Ansible\exportVMs-Informations-ESXi_playbook.yml" size="1426">
+  <file name="Ansible\exportVMs-Informations-ESXi_playbook.yml" size="1427">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>Sp6XP9Ma6LeszMoGbjCGTYFJQRxXWeLQzc7avaQA+wo=</dsig:DigestValue>
+      <dsig:DigestValue>DazjjsRMg5oFfrFLlexw7Mvmybx0FFXNj4rklYmyGuk=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Ansible\startVMs-ESXi_playbook.yml" size="758">
