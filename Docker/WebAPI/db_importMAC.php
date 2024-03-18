@@ -56,14 +56,16 @@ function updateInterface($db) {
                     if ($result->num_rows > 0) {
                         $vm_id = $result->fetch_assoc()['id'];
 
-                        // Update interfaces mit mac_address und summary
-                        $stmt = $db->prepare("UPDATE deploy_interfaces SET mac = ? WHERE vm_id = ? AND vlan = ?");
+                        // Update interfaces with mac_address and summary
+                        $sql_query = "UPDATE deploy_interfaces SET mac = ? WHERE vm_id = ? AND vlan = ?";
+                        $stmt = $db->prepare($sql_query);
                         $stmt->bind_param("sis", $mac_address, $vm_id, $summary);
                         $stmt->execute();
 
-                        // gib im Json aus, welche netzwerkkarte aktualisiert wurde
-                        echo json_encode(['success' => 'MAC address updated for ' . $vm_name . ' on VLAN ' . $summary]);
-                        
+                        // Show the executed SQL command
+                        $executed_sql = str_replace(array('?', '?', '?'), array($mac_address, $vm_id, $summary), $sql_query);
+                        echo json_encode(['success' => 'MAC address updated for ' . $vm_name . ' on VLAN ' . $summary, 'executed_sql' => $executed_sql]);
+
                     }
 
 
