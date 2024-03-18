@@ -529,9 +529,8 @@ WaitingTime: ""{txtWaitTime.Text}""
 
                 foreach (Disk disk in vm.Disks)
                 {
-                    disks += $"      - disk_name: \"{disk.disk_name}\"\n"; 
-                    disks += $"      - disk_size: {disk.disk_size}\n";
-                    disks += $"      - disk_type: {disk.disk_type}\n";
+                    disks += $"      - size_gb: {disk.disk_size}\n";
+                    disks += $"      - type: {disk.disk_type}\n";
                 }
 
                 // Default Werte für Datastore und Datacenter aus missionList
