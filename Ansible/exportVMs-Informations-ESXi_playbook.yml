@@ -19,16 +19,22 @@
       register: vm_infos
       loop: "{{ vm_configurations }}"
 
-    - name: Sammle Hostnamen und MAC-Adressen fuer die Datei
+    - name: Initialisiere vm_lines
       set_fact:
-        vm_lines: >-
-          {{
-            vm_lines | default([]) +
-            [item.instance.guest_name + ';' + network.label + ';' + network.mac_address
-            for network in item.instance.network]
-          }}
-      loop: "{{ vm_infos.results }}"
-      when: item.instance.hw_eth0.macaddress is defined
+        vm_lines: []
+
+    - name: Sammle Hostnamen und MAC-Adressen fuer jede Netzwerkschnittstelle
+      set_fact:
+        vm_lines: "{{ vm_lines + [ guest_name + ';' + network['label'] + ';' + network['mac_address'] ] }}"
+      loop: "{{ item.instance.network }}"
+      loop_control:
+        loop_var: network
+      vars:
+        guest_name: "{{ item.instance.guest_name }}"
+      when: item.instance.network is defined
+      with_items: "{{ vm_infos.results }}"
+      loop_control:
+        loop_var: item
 
     - name: Show VM lines
       debug:
@@ -38,8 +44,8 @@
       copy:
         dest: "/tmp/vm_mac_list.csv"
         content: "{{ vm_lines | join('\n') }}"
-        owner: "{{ ansible_username }}"
-        group: "{{ ansible_username }}"
+        owner: "{{ ansible_env.USER }}"
+        group: "{{ ansible_env.USER }}"
         mode: '0666'
 
     - name: Run Python for upload CSV to web
