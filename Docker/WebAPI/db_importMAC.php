@@ -6,15 +6,15 @@ header('Content-Type: application/json');
 $clientIP = $_SERVER['REMOTE_ADDR'];
 
 // Prüfe, ob die Client-IP in der Datenbank vorhanden ist
-$sql = $connection->prepare("SELECT * FROM deploy_accessToWebAPI WHERE ipAddress = ?");
-$sql->bind_param("s", $clientIP);
-$sql->execute();
-$result = $sql->get_result();
+$accessCheck = $connection->prepare("SELECT * FROM deploy_accessToWebAPI WHERE ipAddress = ?");
+$accessCheck->bind_param("s", $clientIP);
+$accessCheck->execute();
+$result = $accessCheck->get_result();
 
 if ($result->num_rows == 0) {
     // IP nicht gefunden, Zugriff verweigert
     http_response_code(403);
-    echo json_encode(['error' => 'Zugriff verweigert. Ihre IP: ' . $clientIP]);
+    echo json_encode(['error' => 'Access denied. Your IP: ' . $clientIP]);
     exit();
 }
 
@@ -35,45 +35,33 @@ function updateInterface($db) {
         return;
     }
 
-    // Beginne eine Transaktion
     $db->begin_transaction();
-
     try {
         foreach ($data as $entry) {
+            // Nehme an, dass jeder Eintrag korrekt formatierte VM-Informationen enthält
+            $vm_name = $entry['instance']['hw_name'];
+            $networkAdapters = $entry['instance']['network_info']; // Angenommen, dies ist die korrekte Struktur
 
-            $networkAdapters = $data[0]["instance"]["hw_interfaces"];
+            foreach ($networkAdapters as $adapter) {
+                $mac_address = $adapter['mac_address'];
+                $summary = $adapter['network']; // Hier ist unklar, was genau 'summary' sein soll
 
-            $vm_name = $data[0]["instance"]["hw_name"];
+                $vmIdQuery = $db->prepare("SELECT id FROM deploy_vms WHERE vm_name = ? ORDER BY id DESC LIMIT 1");
+                $vmIdQuery->bind_param("s", $vm_name);
+                $vmIdQuery->execute();
+                $vmIdResult = $vmIdQuery->get_result();
+                if ($vmIdRow = $vmIdResult->fetch_assoc()) {
+                    $vm_id = $vmIdRow['id'];
 
-            foreach($networkAdapters  as $key => $value){
-                $hwname = "hw_".$value;
-                $mac_address = $data[0]["instance"][$hwname]["macaddress"];
-                $summary = $data[0]["instance"][$hwname]["summary"];
-                
-                echo $vm_name . " " .$hwname . " " .$summary . " ".$value." ".$mac_address."          ";
+                    $updateQuery = $db->prepare("UPDATE deploy_interfaces SET mac = ? WHERE vm_id = ? AND vlan = ?");
+                    $updateQuery->bind_param("sis", $mac_address, $vm_id, $summary);
+                    $updateQuery->execute();
+                }
             }
-
-            // finde vm_id mit vm_name heraus
-            $connection = $db->prepare("SELECT vm_id FROM depoly_vms WHERE vm_name = ? LIMIT 1 order by vm_id desc");
-            $connection->bind_param("s", $vm_name);
-            $connection->execute();
-            $result = $connection->get_result();
-            $row = $result->fetch_assoc();
-            $vm_id = $row["vm_id"];
-
-            // update interfaces mit mac_address und summary
-            $connection = $db->prepare("UPDATE deploy_interfaces SET mac = ? WHERE vm_id = ? AND vlan = ?");
-            $connection->bind_param("sis", $mac_address, $vm_id, $summary);
-            $connection->execute();
-
         }
-
-        // Commit der Transaktion
         $db->commit();
         echo json_encode(['success' => 'MAC addresses updated successfully']);
-
     } catch (Exception $e) {
-        // Rollback, falls ein Fehler auftritt
         $db->rollback();
         http_response_code(500);
         echo json_encode(['error' => $e->getMessage()]);
