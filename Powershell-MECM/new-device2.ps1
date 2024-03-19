@@ -78,6 +78,7 @@ while($true){
         if (!(Get-CMDevice -Name $deviceName)) {
             try {
                 Import-CMComputerInformation -ComputerName $deviceName -MacAddress $deviceMAC -CollectionName "All Systems"
+                write-host "Lege Objekt $deviceName mit $deviceMAC an" -foregroundcolor green
             } catch {
                 if ($_ -match "An object with the specified name already exists") {
                     Write-Host "Ein Objekt mit dem Namen $deviceName existiert bereits." -ForegroundColor Yellow
@@ -109,7 +110,7 @@ while($true){
         $deviceResourceID = (Get-CMDevice -Name $deviceName).ResourceID
 
         if($null -eq $deviceResourceID){
-            write-host "`t$deviceName hat noch keine ID von MECM. Bitte warten..." -ForegroundColor Yellow
+            write-host "`t$deviceName hat noch keine ResourceID von MECM. Bitte warten..." -ForegroundColor Yellow
             continue
         }
 
