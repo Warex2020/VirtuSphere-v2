@@ -453,7 +453,7 @@ function vmListToCreate($missionId, $vmList, $mysqli){
            $missionIdIncluded = false;
 
            foreach ($vm as $key => $value) {
-               if ($key != 'Id' && $key != 'interfaces' && $key != 'status' && $key != 'packages' && $key != 'Disks' && $key != 'created_at' && $key != 'updated_at' && $value !== null) {
+               if ($key != 'Id' && $key != 'interfaces' && $key != 'vm_status' && $key != 'packages' && $key != 'Disks' && $key != 'created_at' && $key != 'updated_at' && $value !== null) {
                    if ($key == 'mission_id') {
                        $missionIdIncluded = true; // Markieren, dass mission_id bereits enthalten ist
                    }
@@ -461,6 +461,14 @@ function vmListToCreate($missionId, $vmList, $mysqli){
                    $placeholders[] = '?';
                    $params[] = $value;
                    $types .= is_numeric($value) && !is_string($value) ? 'i' : 's';
+               }
+
+               // wenn status dann setzte auf created
+               if ($key == 'vm_status') {
+                  $columns[] = 'vm_status';
+                  $placeholders[] = '?';
+                  $params[] = '2/5 Registered';
+                  $types .= 's';
                }
            }
 
@@ -471,6 +479,7 @@ function vmListToCreate($missionId, $vmList, $mysqli){
                array_unshift($params, $missionId);
                $types = 'i' . $types;
            }
+
 
            $query = "INSERT INTO deploy_vms (" . implode(", ", $columns) . ") VALUES (" . implode(", ", $placeholders) . ")";
 
@@ -577,10 +586,17 @@ function vmListToUpdate($vmList, $connection) {
 
            // Dynamisch festlegen, welche Felder aktualisiert werden sollen
            foreach ($vm as $key => $value) {
-               if ($key != 'Id' && $key != 'interfaces' && $key != 'packages' && $key != 'Disks' && $key != 'created_at' && $key != 'updated_at') {
+               if ($key != 'Id' && $key != 'interfaces' && $key != 'vm_status' && $key != 'packages' && $key != 'Disks' && $key != 'created_at' && $key != 'updated_at') {
                    $updates[] = "{$key} = ?";
                    $params[] = $value;
                    $types .= is_numeric($value) && !is_string($value) ? 'i' : 's'; // Einfache Typbestimmung
+               }
+
+               // wenn status dann 2/5 Registered
+               if ($key == 'vm_status') {
+                  $updates[] = "vm_status = ?";
+                  $params[] = '2/5 Registered';
+                  $types .= 's';
                }
            }
 

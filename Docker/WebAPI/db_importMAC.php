@@ -66,6 +66,11 @@ function updateInterface($db) {
                         $executed_sql = str_replace(array('?', '?', '?'), array($mac_address, $vm_id, $summary), $sql_query);
                         echo json_encode(['success' => 'MAC address updated for ' . $vm_name . ' on VLAN ' . $summary, 'executed_sql' => $executed_sql]);
 
+                        // update vm_status to "3/5 Deployed"
+                        $sql_query = "UPDATE deploy_vms SET vm_status = '3/5 Deployed' WHERE id = ?";
+                        $stmt = $db->prepare($sql_query);
+                        $stmt->bind_param("i", $vm_id);
+                        $stmt->execute();
                     }
 
 

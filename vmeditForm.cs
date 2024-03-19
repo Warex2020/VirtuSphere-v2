@@ -166,7 +166,13 @@ namespace VirtuSphere
                 selectedVM.vm_datastore = txtd_datastore.Text;
                 selectedVM.vm_guest_id = txtd_guest_id.Text;
                 selectedVM.vm_creator = txtd_creator.Text;
-                selectedVM.vm_status = "";
+
+                if(id == 0)
+                {
+                    selectedVM.vm_status = "1/5 Initializing";
+                }
+
+                
                 selectedVM.vm_notes = txtd_notes.Text;
 
                 // wenn selectedVM.vm_domain leer dann nimm missionItem.domain

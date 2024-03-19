@@ -31,7 +31,7 @@ function updateDevice($db) {
 
     if (!empty($data)) {
         if (isset($data['deviceResourceID'], $data['deviceid'])) {
-            $sql = "UPDATE deploy_vms SET mecm_id = ? WHERE id = ?";
+            $sql = "UPDATE deploy_vms SET mecm_id = ?, vm_status = '4/5 OS Installing' WHERE id = ?";
             $stmt = $db->prepare($sql);
             $stmt->bind_param("ss", $data['deviceResourceID'], $data['deviceid']);
             if ($stmt->execute()) {

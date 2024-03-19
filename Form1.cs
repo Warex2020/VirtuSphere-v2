@@ -243,7 +243,7 @@ namespace VirtuSphere
                 vm_hostname = txtHostname.Text,
                 vm_domain = txtDomain.Text,
                 vm_os = listBoxOS.Text,
-                vm_status = "nicht ausgerollt",
+                vm_status = "1/5 Initializing",
                 vm_cpu = txtCPU.Text,
                 vm_ram = txtRAM.Text,
                 vm_disk = txtHDD.Text,
@@ -387,7 +387,6 @@ namespace VirtuSphere
                     selectedVM.vm_hostname = txtHostname.Text;
                     selectedVM.vm_domain = txtDomain.Text;
                     selectedVM.vm_os = listBoxOS.Text;
-                    selectedVM.vm_status = "geändert - DB Sync!";
                     selectedVM.vm_ram = txtRAM.Text;
                     selectedVM.vm_disk = txtHDD.Text;
                     selectedVM.vm_cpu = txtCPU.Text;
