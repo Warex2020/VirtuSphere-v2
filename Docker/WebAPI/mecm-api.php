@@ -37,6 +37,9 @@ if(isset($_GET["action"]) && $_GET["action"] == "getDeviceList"){
             $interfacesResult = $interfacesSql->get_result();
             $vm['interfaces'] = $interfacesResult->fetch_all(MYSQLI_ASSOC);
 
+            // skip vms with no mac in interfaces
+            if(!$vm['interfaces']) continue;
+
             // get mission for this vm
             $missionSql = $connection->prepare("SELECT * FROM deploy_missions WHERE id = ?");
             $missionSql->bind_param("i", $vm['mission_id']);
