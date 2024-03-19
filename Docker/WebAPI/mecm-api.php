@@ -35,12 +35,14 @@ if(isset($_GET["action"]) && $_GET["action"] == "getDeviceList"){
 
 
             // Get interfaces for this VM
-            $interfacesSql = $connection->prepare("SELECT * FROM deploy_interfaces WHERE (mac is not '' and mac is not null) AND vm_id = ?");
+            $interfacesSql = $connection->prepare("SELECT * FROM deploy_interfaces WHERE `mac` != '' AND `mac` IS NOT NULL AND vm_id = ?");
             $interfacesSql->bind_param("i", $vm_id);
             $interfacesSql->execute();
             $interfacesResult = $interfacesSql->get_result();
             $vm['interfaces'] = $interfacesResult->fetch_all(MYSQLI_ASSOC);
 
+            // skipt with no interfaces
+            if(!$vm['interfaces']) continue;
 
             // get mission for this vm
             $missionSql = $connection->prepare("SELECT * FROM deploy_missions WHERE id = ?");
