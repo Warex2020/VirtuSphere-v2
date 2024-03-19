@@ -16,6 +16,15 @@ if ($connection->connect_error) {
 }
 
 
+// prüfe ob in der Datenbanktabelle deploy_mission die Spalte domain existiert.
+// Wenn nicht, dann füge die Spalte hinzu
+if (!$connection->query("SELECT domain FROM deploy_missions")) {
+    $connection->query("ALTER TABLE deploy_missions ADD domain VARCHAR(255)");
+}
+
+
+
+
 // include initial.php 
 //require_once 'initial.php';
 //require_once 'testdata.php';

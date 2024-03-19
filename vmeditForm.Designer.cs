@@ -167,7 +167,7 @@
             this.combo_os.Location = new System.Drawing.Point(108, 134);
             this.combo_os.Name = "combo_os";
             this.combo_os.Size = new System.Drawing.Size(128, 21);
-            this.combo_os.TabIndex = 49;
+            this.combo_os.TabIndex = 4;
             // 
             // chkStartafterDeploy
             // 
@@ -220,15 +220,15 @@
             // 
             // txtd_status
             // 
-            this.txtd_status.Location = new System.Drawing.Point(109, 407);
+            this.txtd_status.Location = new System.Drawing.Point(108, 380);
             this.txtd_status.Name = "txtd_status";
             this.txtd_status.Size = new System.Drawing.Size(127, 20);
-            this.txtd_status.TabIndex = 44;
+            this.txtd_status.TabIndex = 13;
             // 
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(22, 410);
+            this.label24.Location = new System.Drawing.Point(21, 383);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(37, 13);
             this.label24.TabIndex = 43;
@@ -236,16 +236,16 @@
             // 
             // txtd_cpu
             // 
-            this.txtd_cpu.Location = new System.Drawing.Point(108, 217);
+            this.txtd_cpu.Location = new System.Drawing.Point(107, 190);
             this.txtd_cpu.Name = "txtd_cpu";
             this.txtd_cpu.Size = new System.Drawing.Size(128, 20);
-            this.txtd_cpu.TabIndex = 42;
+            this.txtd_cpu.TabIndex = 6;
             this.txtd_cpu.Text = "2";
             // 
             // label23
             // 
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(21, 220);
+            this.label23.Location = new System.Drawing.Point(20, 193);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(35, 13);
             this.label23.TabIndex = 41;
@@ -253,15 +253,15 @@
             // 
             // txtd_updated_at
             // 
-            this.txtd_updated_at.Location = new System.Drawing.Point(108, 381);
+            this.txtd_updated_at.Location = new System.Drawing.Point(107, 354);
             this.txtd_updated_at.Name = "txtd_updated_at";
             this.txtd_updated_at.Size = new System.Drawing.Size(128, 20);
-            this.txtd_updated_at.TabIndex = 40;
+            this.txtd_updated_at.TabIndex = 12;
             // 
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(21, 384);
+            this.label22.Location = new System.Drawing.Point(20, 357);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(71, 13);
             this.label22.TabIndex = 39;
@@ -277,17 +277,17 @@
             // 
             // txtd_created_at
             // 
-            this.txtd_created_at.Location = new System.Drawing.Point(108, 352);
+            this.txtd_created_at.Location = new System.Drawing.Point(107, 325);
             this.txtd_created_at.Name = "txtd_created_at";
             this.txtd_created_at.Size = new System.Drawing.Size(128, 20);
-            this.txtd_created_at.TabIndex = 36;
+            this.txtd_created_at.TabIndex = 11;
             // 
             // txtd_creator
             // 
-            this.txtd_creator.Location = new System.Drawing.Point(108, 323);
+            this.txtd_creator.Location = new System.Drawing.Point(107, 296);
             this.txtd_creator.Name = "txtd_creator";
             this.txtd_creator.Size = new System.Drawing.Size(128, 20);
-            this.txtd_creator.TabIndex = 35;
+            this.txtd_creator.TabIndex = 10;
             // 
             // label21
             // 
@@ -301,7 +301,7 @@
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(21, 355);
+            this.label20.Location = new System.Drawing.Point(20, 328);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(55, 13);
             this.label20.TabIndex = 33;
@@ -310,7 +310,7 @@
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(21, 326);
+            this.label19.Location = new System.Drawing.Point(20, 299);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(44, 13);
             this.label19.TabIndex = 32;
@@ -318,7 +318,7 @@
             // 
             // txtd_notes
             // 
-            this.txtd_notes.Location = new System.Drawing.Point(23, 461);
+            this.txtd_notes.Location = new System.Drawing.Point(25, 459);
             this.txtd_notes.Multiline = true;
             this.txtd_notes.Name = "txtd_notes";
             this.txtd_notes.Size = new System.Drawing.Size(213, 96);
@@ -353,50 +353,51 @@
             // 
             // txtd_guest_id
             // 
-            this.txtd_guest_id.Location = new System.Drawing.Point(108, 296);
+            this.txtd_guest_id.Location = new System.Drawing.Point(107, 269);
             this.txtd_guest_id.Name = "txtd_guest_id";
             this.txtd_guest_id.Size = new System.Drawing.Size(128, 20);
-            this.txtd_guest_id.TabIndex = 27;
+            this.txtd_guest_id.TabIndex = 9;
             // 
             // txtd_datacenter
             // 
             this.txtd_datacenter.Enabled = false;
-            this.txtd_datacenter.Location = new System.Drawing.Point(108, 270);
+            this.txtd_datacenter.Location = new System.Drawing.Point(107, 243);
             this.txtd_datacenter.Name = "txtd_datacenter";
             this.txtd_datacenter.Size = new System.Drawing.Size(128, 20);
-            this.txtd_datacenter.TabIndex = 26;
+            this.txtd_datacenter.TabIndex = 8;
             this.txtd_datacenter.MouseClick += new System.Windows.Forms.MouseEventHandler(this.txtd_datacenter_Click);
             // 
             // txtd_datastore
             // 
             this.txtd_datastore.Enabled = false;
-            this.txtd_datastore.Location = new System.Drawing.Point(108, 244);
+            this.txtd_datastore.Location = new System.Drawing.Point(107, 217);
             this.txtd_datastore.Name = "txtd_datastore";
             this.txtd_datastore.Size = new System.Drawing.Size(128, 20);
-            this.txtd_datastore.TabIndex = 25;
+            this.txtd_datastore.TabIndex = 7;
             this.txtd_datastore.Click += new System.EventHandler(this.txtd_datastore_Click);
             this.txtd_datastore.TextChanged += new System.EventHandler(this.txtd_datastore_TextChanged);
             // 
             // txtd_disk
             // 
-            this.txtd_disk.Location = new System.Drawing.Point(108, 188);
+            this.txtd_disk.Location = new System.Drawing.Point(107, 406);
             this.txtd_disk.Name = "txtd_disk";
             this.txtd_disk.Size = new System.Drawing.Size(128, 20);
-            this.txtd_disk.TabIndex = 24;
+            this.txtd_disk.TabIndex = 14;
             this.txtd_disk.Text = "40";
+            this.txtd_disk.Visible = false;
             // 
             // txtd_ram
             // 
             this.txtd_ram.Location = new System.Drawing.Point(108, 161);
             this.txtd_ram.Name = "txtd_ram";
             this.txtd_ram.Size = new System.Drawing.Size(128, 20);
-            this.txtd_ram.TabIndex = 23;
+            this.txtd_ram.TabIndex = 5;
             this.txtd_ram.Text = "8";
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(20, 299);
+            this.label14.Location = new System.Drawing.Point(19, 272);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(44, 13);
             this.label14.TabIndex = 22;
@@ -405,7 +406,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(20, 273);
+            this.label13.Location = new System.Drawing.Point(19, 246);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(60, 13);
             this.label13.TabIndex = 21;
@@ -414,7 +415,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(20, 247);
+            this.label12.Location = new System.Drawing.Point(19, 220);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(53, 13);
             this.label12.TabIndex = 20;
@@ -423,11 +424,12 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(20, 191);
+            this.label11.Location = new System.Drawing.Point(22, 406);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(28, 13);
             this.label11.TabIndex = 19;
             this.label11.Text = "Disk";
+            this.label11.Visible = false;
             // 
             // label10
             // 
@@ -462,7 +464,7 @@
             this.txtd_domain.Location = new System.Drawing.Point(108, 108);
             this.txtd_domain.Name = "txtd_domain";
             this.txtd_domain.Size = new System.Drawing.Size(128, 20);
-            this.txtd_domain.TabIndex = 12;
+            this.txtd_domain.TabIndex = 3;
             this.txtd_domain.TextChanged += new System.EventHandler(this.textBox7_TextChanged);
             // 
             // txtd_hostname
@@ -470,7 +472,7 @@
             this.txtd_hostname.Location = new System.Drawing.Point(108, 82);
             this.txtd_hostname.Name = "txtd_hostname";
             this.txtd_hostname.Size = new System.Drawing.Size(128, 20);
-            this.txtd_hostname.TabIndex = 7;
+            this.txtd_hostname.TabIndex = 2;
             // 
             // label5
             // 
@@ -502,7 +504,7 @@
             this.button1.Location = new System.Drawing.Point(863, 594);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(99, 23);
-            this.button1.TabIndex = 1;
+            this.button1.TabIndex = 32;
             this.button1.Text = "Übernehmen";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.btnSave_Click);
@@ -512,7 +514,7 @@
             this.button2.Location = new System.Drawing.Point(758, 594);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(99, 23);
-            this.button2.TabIndex = 2;
+            this.button2.TabIndex = 31;
             this.button2.Text = "Abbruch";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.btn_close);
@@ -540,14 +542,14 @@
             this.txtSub.Location = new System.Drawing.Point(115, 377);
             this.txtSub.Name = "txtSub";
             this.txtSub.Size = new System.Drawing.Size(115, 20);
-            this.txtSub.TabIndex = 8;
+            this.txtSub.TabIndex = 17;
             // 
             // txtGateway
             // 
             this.txtGateway.Location = new System.Drawing.Point(115, 403);
             this.txtGateway.Name = "txtGateway";
             this.txtGateway.Size = new System.Drawing.Size(115, 20);
-            this.txtGateway.TabIndex = 9;
+            this.txtGateway.TabIndex = 18;
             // 
             // groupBox2
             // 
@@ -664,7 +666,7 @@
             this.txtMAC.Location = new System.Drawing.Point(115, 482);
             this.txtMAC.Name = "txtMAC";
             this.txtMAC.Size = new System.Drawing.Size(115, 20);
-            this.txtMAC.TabIndex = 41;
+            this.txtMAC.TabIndex = 21;
             // 
             // label18
             // 
@@ -680,7 +682,7 @@
             this.button5.Location = new System.Drawing.Point(75, 536);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(80, 23);
-            this.button5.TabIndex = 39;
+            this.button5.TabIndex = 23;
             this.button5.Text = "Hinzufügen";
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.btn_addInterface);
@@ -690,7 +692,7 @@
             this.button4.Location = new System.Drawing.Point(4, 536);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(65, 23);
-            this.button4.TabIndex = 38;
+            this.button4.TabIndex = 22;
             this.button4.Text = "Löschen";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.btn_deleteInterface_Click);
@@ -701,7 +703,7 @@
             this.btnEdit.Location = new System.Drawing.Point(161, 536);
             this.btnEdit.Name = "btnEdit";
             this.btnEdit.Size = new System.Drawing.Size(69, 23);
-            this.btnEdit.TabIndex = 4;
+            this.btnEdit.TabIndex = 24;
             this.btnEdit.Text = "Bearbeiten";
             this.btnEdit.UseVisualStyleBackColor = true;
             this.btnEdit.Click += new System.EventHandler(this.btn_editInterface_Click);
@@ -711,7 +713,7 @@
             this.txtIP.Location = new System.Drawing.Point(115, 352);
             this.txtIP.Name = "txtIP";
             this.txtIP.Size = new System.Drawing.Size(115, 20);
-            this.txtIP.TabIndex = 37;
+            this.txtIP.TabIndex = 16;
             // 
             // label16
             // 
@@ -736,14 +738,14 @@
             this.txtDNS1.Location = new System.Drawing.Point(115, 430);
             this.txtDNS1.Name = "txtDNS1";
             this.txtDNS1.Size = new System.Drawing.Size(115, 20);
-            this.txtDNS1.TabIndex = 32;
+            this.txtDNS1.TabIndex = 19;
             // 
             // txtDNS2
             // 
             this.txtDNS2.Location = new System.Drawing.Point(115, 456);
             this.txtDNS2.Name = "txtDNS2";
             this.txtDNS2.Size = new System.Drawing.Size(115, 20);
-            this.txtDNS2.TabIndex = 33;
+            this.txtDNS2.TabIndex = 20;
             // 
             // label2
             // 
@@ -807,7 +809,7 @@
             this.txtHDD_Name.Location = new System.Drawing.Point(100, 273);
             this.txtHDD_Name.Name = "txtHDD_Name";
             this.txtHDD_Name.Size = new System.Drawing.Size(114, 20);
-            this.txtHDD_Name.TabIndex = 54;
+            this.txtHDD_Name.TabIndex = 25;
             // 
             // label27
             // 
@@ -841,7 +843,7 @@
             this.button3.Location = new System.Drawing.Point(76, 353);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(80, 23);
-            this.button3.TabIndex = 50;
+            this.button3.TabIndex = 29;
             this.button3.Text = "Hinzufügen";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.btnDiskAdd);
@@ -860,7 +862,7 @@
             this.btnDiskUpdate.Location = new System.Drawing.Point(162, 353);
             this.btnDiskUpdate.Name = "btnDiskUpdate";
             this.btnDiskUpdate.Size = new System.Drawing.Size(69, 23);
-            this.btnDiskUpdate.TabIndex = 48;
+            this.btnDiskUpdate.TabIndex = 30;
             this.btnDiskUpdate.Text = "Bearbeiten";
             this.btnDiskUpdate.UseVisualStyleBackColor = true;
             this.btnDiskUpdate.Click += new System.EventHandler(this.button7_Click);
@@ -870,7 +872,7 @@
             this.txtHDD_Size.Location = new System.Drawing.Point(100, 326);
             this.txtHDD_Size.Name = "txtHDD_Size";
             this.txtHDD_Size.Size = new System.Drawing.Size(114, 20);
-            this.txtHDD_Size.TabIndex = 49;
+            this.txtHDD_Size.TabIndex = 26;
             // 
             // btnDiskDelete
             // 
@@ -878,7 +880,7 @@
             this.btnDiskDelete.Location = new System.Drawing.Point(5, 353);
             this.btnDiskDelete.Name = "btnDiskDelete";
             this.btnDiskDelete.Size = new System.Drawing.Size(65, 23);
-            this.btnDiskDelete.TabIndex = 49;
+            this.btnDiskDelete.TabIndex = 28;
             this.btnDiskDelete.Text = "Löschen";
             this.btnDiskDelete.UseVisualStyleBackColor = true;
             // 

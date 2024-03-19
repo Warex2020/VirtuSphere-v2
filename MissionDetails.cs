@@ -124,6 +124,7 @@ namespace VirtuSphere
             string MissionCreated = txtMissionCreated.Text;
             string MissionUpdated = txtMissionUpdated.Text;
             string MissionStatus = txtMissionStatus.Text;
+            string MissionDomain = txtMissionDomain.Text;
             int MissionCount = Convert.ToInt32(txtMissionCount.Text);
 
 
@@ -146,7 +147,8 @@ namespace VirtuSphere
                 hypervisor_datacenter = MissionDatacenter,
                 created_at = MissionCreated,
                 updated_at = MissionUpdated,
-                vm_count = MissionCount
+                vm_count = MissionCount,
+                domain = MissionDomain
             };
 
             // Gib die Daten an das Hauptformular zurück

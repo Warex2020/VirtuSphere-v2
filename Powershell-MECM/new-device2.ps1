@@ -26,7 +26,7 @@ while($true){
 
     foreach ($device in $MySQLDeviceList) {
         $deviceName = $device.vm_name
-        $deviceMAC = ($device.interfaces | Where-Object { $_.mode -eq 'DHCP' }).macy<
+        $deviceMAC = ($device.interfaces | Where-Object { $_.mode -eq 'DHCP' }).mac
         $deviceOS = $device.vm_os
         $devicePackages = $device.packages
         $mission_id = $device.mission_id
@@ -62,8 +62,8 @@ while($true){
             $mecmmacaddr = ($MECMDeviceList | where {$_.name -eq "Test-Miss-FS01"}).MACAddress
             if($null -ne $mecmmacaddr -AND $mecmmacaddr -ne $deviceMAC){
                 write-host "`tMAC-Adressen stimmen nicht ueberein! $mecmmacaddr (MECM) $deviceMAC (ESXi)" -ForegroundColor Red
-                write-host "`tlösche $deviceName ($mecmmacaddr)"
-                Remove-CMDevice -Name $deviceName -Force
+                write-host "Lege weiteres Konto an" -ForegroundColor yellow
+                Import-CMComputerInformation -ComputerName $deviceName -MacAddress $deviceMAC -CollectionName "All Systems"
             }
         }
 

@@ -222,7 +222,7 @@ namespace VirtuSphere
                 mode = "DHCP"
             };
 
-            Disk disk = new Disk
+            Disk newdisk = new Disk
             {
                 disk_name = "System",
                 disk_size = long.Parse(txtHDD.Text),
@@ -253,7 +253,8 @@ namespace VirtuSphere
                 vm_guest_id = "windows2019srv_64Guest",
                 created_at = created_at,
                 updated_at = "",
-                interfaces = new List<Interface> { newInterface }
+                interfaces = new List<Interface> { newInterface },
+                Disks = new List<Disk> { newdisk }
             };
 
             // Consolenausgabe mit allen Eigenschaften der VM bisschen detailierter und besser formatiert
@@ -390,6 +391,12 @@ namespace VirtuSphere
                     selectedVM.vm_ram = txtRAM.Text;
                     selectedVM.vm_disk = txtHDD.Text;
                     selectedVM.vm_cpu = txtCPU.Text;
+
+                    // wenn selectedVM.vm_disk nicht selectedVM.Disks[0].disk_size entspricht, dann ändere es
+                    if (selectedVM.Disks[0].disk_size != long.Parse(txtHDD.Text))
+                    {
+                        selectedVM.Disks[0].disk_size = long.Parse(txtHDD.Text);
+                    }
 
                     // Ausgewählte listBoxPackages Objekte sollen mit Semikolon getrennt in packages gespeichert werden
 
@@ -1165,6 +1172,7 @@ namespace VirtuSphere
             public string hypervisor_datastorage { get; set; }
             public string hypervisor_datacenter { get; set; }
             public int vm_count { get; set; } // Angenommen, du möchtest auch die Anzahl der VMs speichern
+            public string domain { get; set; }
 
             // Konstruktor
             public MissionItem(int id, string missionName, int vmCount)
@@ -1691,6 +1699,8 @@ namespace VirtuSphere
                     missionBox.Text = "";
 
                     missionId = 0;
+
+                    button3.Enabled = false;
                 }
                 else
                 {
@@ -1700,6 +1710,7 @@ namespace VirtuSphere
                     missionBox.Text = "";
 
                     missionId = 0;
+                    button3.Enabled = true;
                 }
 
             }
@@ -2137,6 +2148,12 @@ namespace VirtuSphere
                     btnMissionEdit.Enabled = false;
             }
 
+                // wenn missionName leer ist, dann deaktiviere btnMissionNew
+                if(missionName == "")
+                {
+                    btnMissionNew.Enabled = false;
+                }
+
         }
 
         private void missionBoxSelectedIndex(object sender, EventArgs e)
@@ -2160,6 +2177,9 @@ namespace VirtuSphere
             if (missionsList.Any(x => x.mission_name == missionName))
             {
                 missionId = missionsList.FirstOrDefault(x => x.mission_name == missionName).Id;
+                string missionDomain = missionsList.FirstOrDefault(x => x.mission_name == missionName).domain;
+
+                txtDomain.Text = missionDomain;
                 btnMissionNew.Enabled = false;
                 btnMissionDelete.Enabled = true;
                 btnMissionEdit.Enabled = true;

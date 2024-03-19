@@ -74,6 +74,7 @@ CREATE TABLE IF NOT EXISTS deploy_missions (
     wds_vlan VARCHAR(255),
     hypervisor_datastorage VARCHAR(255),
     hypervisor_datacenter VARCHAR(255),
+    domain VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     );

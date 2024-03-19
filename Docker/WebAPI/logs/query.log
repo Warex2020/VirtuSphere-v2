@@ -42,3 +42,5 @@ UPDATE deploy_missions SET mission_name = ?, mission_status = ?, updated_at = ?,
 Params: 'neue Mission', '', '2024-03-19 08:07:57', '', '1300', 'asdads', 'ha-datacenter', '18'
 UPDATE deploy_missions SET mission_name = ?, mission_status = ?, updated_at = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ? WHERE id = 18
 Params: 'neue Mission', '', '2024-03-19 08:08:08', '', '1300', 'asdads', 'ha-datacenter', '18'
+UPDATE deploy_missions SET mission_name = ?, mission_status = ?, updated_at = ?, mission_notes = ?, wds_vlan = ?, hypervisor_datastorage = ?, hypervisor_datacenter = ?, domain = ? WHERE id = 20
+Params: 'asasd', '', '2024-03-19 15:48:09', '', '1300', 'sadasd', 'ha-datacenter', 'asdasd.local', '20'

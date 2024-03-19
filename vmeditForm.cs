@@ -169,6 +169,18 @@ namespace VirtuSphere
                 selectedVM.vm_status = "";
                 selectedVM.vm_notes = txtd_notes.Text;
 
+                // wenn selectedVM.vm_domain leer dann nimm missionItem.domain
+                if (selectedVM.vm_domain == "")
+                {
+                    foreach (MissionItem missionItem in Form1.missionsList)
+                    {
+                        if (missionItem.Id == selectedVM.mission_id)
+                        {
+                            txtd_domain.Text = missionItem.domain;
+                        }
+                    }
+                }
+
                 selectedVM.packages = await GetSelectedPackages(apiService);
 
                 if (!Form1.vmListToCreate.Contains(selectedVM) && !Form1.vmListToUpdate.Contains(selectedVM))
@@ -608,13 +620,23 @@ namespace VirtuSphere
                 txtHDD_Size.Text = selectedDisk.disk_size.ToString();
                 comboHDD_Type.Text = selectedDisk.disk_type;
                 HDD_DBID.Text = selectedDisk.Id.ToString();
+                // aktiviere btnDiskUpdate
+                btnDiskUpdate.Enabled = false;
+                btnDiskDelete.Enabled = false;
+                btnDiskUpdate.Enabled = true;
+
+            }
+            else
+            {
+                // aktiviere btnDiskUpdate
+                btnDiskUpdate.Enabled = true;
+                btnDiskDelete.Enabled = true;
+                btnDiskUpdate.Enabled = false;
+
             }
 
-            // aktiviere btnDiskUpdate
-            btnDiskUpdate.Enabled = true;
-            btnDiskDelete.Enabled = true;
-            
-            
+
+
         }
 
         private void button6_Click(object sender, EventArgs e)
