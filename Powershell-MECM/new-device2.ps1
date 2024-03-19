@@ -26,7 +26,7 @@ while($true){
 
     foreach ($device in $MySQLDeviceList) {
         $deviceName = $device.vm_name
-        $deviceMAC = ($device.interfaces | Where-Object { $_.mode -eq 'DHCP' }).mac
+        $deviceMAC = ($device.interfaces | Where-Object { $_.mode -eq 'DHCP' }).macy<
         $deviceOS = $device.vm_os
         $devicePackages = $device.packages
         $mission_id = $device.mission_id

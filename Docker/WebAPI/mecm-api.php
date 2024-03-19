@@ -37,6 +37,16 @@ if(isset($_GET["action"]) && $_GET["action"] == "getDeviceList"){
             $interfacesResult = $interfacesSql->get_result();
             $vm['interfaces'] = $interfacesResult->fetch_all(MYSQLI_ASSOC);
 
+            // get mission for this vm
+            $missionSql = $connection->prepare("SELECT * FROM deploy_missions WHERE id = ?");
+            $missionSql->bind_param("i", $vm['mission_id']);
+            $missionSql->execute();
+            $missionResult = $missionSql->get_result();
+            $vm['mission'] = $missionResult->fetch_assoc();
+
+            // when missionsname beginns with _ then skip this vm
+            if(substr($vm['mission']['mission_name'], 0, 1) == "_") continue;
+
             // Get packages for this VM
             $packagesSql = $connection->prepare("SELECT dp.* FROM deploy_packages dp JOIN deploy_vm_packages dvp ON dp.id = dvp.package_id WHERE dvp.vm_id = ?");
             $packagesSql->bind_param("i", $vm_id);
