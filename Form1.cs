@@ -584,6 +584,9 @@ namespace VirtuSphere
                             missionBox.Text = "";
                             missionsList = await apiService.GetMissions();
 
+                            vms.Clear();
+                            listView1.Items.Clear();
+
                             if (chk_showTemplates.Checked)
                             {
                                 ShowTemplates(missionsList);
@@ -1197,42 +1200,6 @@ namespace VirtuSphere
             }
         }
 
-        private void btnVergleich_Click(object sender, EventArgs e)
-        {
-
-
-            // messagebox
-            MessageBox.Show("Vergleiche die VM-Objekte mit der Liste vms.");
-
-
-            // Vergleiche die VM-Objekte mit der Liste vms
-            foreach (VM vm in vms)
-            {
-                bool found = false;
-
-                // Überprüfe, ob das VM-Objekt in der Liste vms vorhanden ist
-                foreach (ListViewItem item in listView1.Items)
-                {
-                    if (vm.vm_name == item.SubItems[0].Text &&
-                        vm.vm_domain == item.SubItems[6].Text &&
-                        vm.vm_os == item.SubItems[8].Text)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-
-                string vmname = vm.vm_name;
-
-                // Wenn das VM-Objekt nicht in der Liste vms gefunden wurde, gib es in der Konsole aus
-                if (!found)
-                {
-                    Console.WriteLine($"Das VM-Objekt mit den Eigenschaften: {vm.vm_name}  fehlt in der Liste listView1.");
-                }
-                else { Console.WriteLine(vm.vm_name + " passt."); }
-            }
-        }
-
         private void MissionChange(object sender, EventArgs e)
         {
             var aktuelleAuswahl = missionBox.Text;
@@ -1260,6 +1227,14 @@ namespace VirtuSphere
                         {
                             selectMission(missionName + " (" + vms.Count + ")");
                             return;
+                        }
+                        else
+                        {
+                            vmListToCreate.Clear();
+                            vmListToDelete.Clear();
+                            vmListToUpdate.Clear();
+                            txtStatus.Text = "Status: OK";
+
                         }
 
                     }
@@ -1682,24 +1657,6 @@ namespace VirtuSphere
             }
         }
 
-        internal void CopyVMs(int quellid, int zielid)
-        {
-
-            //alle VMs aus der Liste vms, die die Quellid haben, in die Liste vmListToCreate kopieren
-            foreach (var vm in vms)
-            {
-                if (vm.mission_id == quellid)
-                {
-                    Console.WriteLine("Kopiere zu neuer Mission: "+vm.vm_name);
-                    MessageBox.Show("Kopiere zu neuer Mission: " + vm.vm_name);
-
-                    // kopiere VM zu neuer Mission
-                    vm.mission_id = zielid;
-                    vmListToCreate.Add(vm);
-                }
-            }
-
-        }
 
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
         {
@@ -1715,6 +1672,7 @@ namespace VirtuSphere
                         vmListToCreate.Clear();
                         vmListToDelete.Clear();
                         vmListToUpdate.Clear();
+                        txtStatus.Text = "Status: OK";
                         chk_showTemplates.Checked = !chk_showTemplates.Checked;
                         return;
                     }
@@ -2242,8 +2200,50 @@ namespace VirtuSphere
                 }
                 
             }
+            bool isSuccess = false;
+            if (vmListToCreate.Count > 0) { isSuccess = await apiService.VmListToWebAPI("vmListToCreate", missionId, vmListToCreate); }
 
-            UpdateListView(vms);
+
+            if (isSuccess)
+            {
+                txtStatus.Text = "Status: OK";
+                UpdateListView(vms);
+            }
+
+            // reload missions
+            missionsList = await apiService.GetMissions();
+            ShowMissions(missionsList);
+
+            // select Missions
+            selectMission(missionName + " (" + vms.Count + ")");
+
+            vmListToCreate.Clear();
+        }
+
+        private void txtStatusTextChanged(object sender, EventArgs e)
+        {
+            // wenn txtStatus.Text = "Status: OK" dann deaktiviere btn_save
+            if (txtStatus.Text == "Status: OK")
+            {
+                saveVMsinMission.Enabled = false;
+            }
+            else
+            {
+                saveVMsinMission.Enabled = true;
+            }
+        }
+
+        private void saveVMsinMissionEnabledChanged(object sender, EventArgs e)
+        {
+            // wenn enabled deaktiviere button5
+            if (saveVMsinMission.Enabled)
+            {
+                button5.Enabled = false;
+            }
+            else
+            {
+                button5.Enabled = true;
+            }
         }
     }
 }

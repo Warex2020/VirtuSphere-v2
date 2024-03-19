@@ -149,11 +149,11 @@
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.button8 = new System.Windows.Forms.Button();
             this.listView4 = new System.Windows.Forms.ListView();
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.button8 = new System.Windows.Forms.Button();
+            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBox1.SuspendLayout();
             this.VirtuSphere.SuspendLayout();
             this.Liste.SuspendLayout();
@@ -305,12 +305,14 @@
             // 
             // saveVMsinMission
             // 
+            this.saveVMsinMission.Enabled = false;
             this.saveVMsinMission.Location = new System.Drawing.Point(877, 688);
             this.saveVMsinMission.Name = "saveVMsinMission";
             this.saveVMsinMission.Size = new System.Drawing.Size(108, 43);
             this.saveVMsinMission.TabIndex = 16;
             this.saveVMsinMission.Text = "Speichern";
             this.saveVMsinMission.UseVisualStyleBackColor = true;
+            this.saveVMsinMission.EnabledChanged += new System.EventHandler(this.saveVMsinMissionEnabledChanged);
             this.saveVMsinMission.Click += new System.EventHandler(this.SaveVMsinMission_Click);
             // 
             // missionBox
@@ -332,6 +334,7 @@
             this.txtStatus.Size = new System.Drawing.Size(58, 13);
             this.txtStatus.TabIndex = 12;
             this.txtStatus.Text = "Status: OK";
+            this.txtStatus.TextChanged += new System.EventHandler(this.txtStatusTextChanged);
             // 
             // btnLoad
             // 
@@ -1390,6 +1393,15 @@
             this.groupBox11.TabStop = false;
             this.groupBox11.Text = "Microsoft Configuration Manager";
             // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(332, 217);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(75, 23);
+            this.button8.TabIndex = 1;
+            this.button8.Text = "Verbinden";
+            this.button8.UseVisualStyleBackColor = true;
+            // 
             // listView4
             // 
             this.listView4.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -1408,23 +1420,14 @@
             // 
             this.columnHeader6.Text = "Service";
             // 
-            // columnHeader7
-            // 
-            this.columnHeader7.Text = "Status";
-            // 
             // columnHeader8
             // 
             this.columnHeader8.Text = "File";
             this.columnHeader8.Width = 83;
             // 
-            // button8
+            // columnHeader7
             // 
-            this.button8.Location = new System.Drawing.Point(332, 217);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(75, 23);
-            this.button8.TabIndex = 1;
-            this.button8.Text = "Verbinden";
-            this.button8.UseVisualStyleBackColor = true;
+            this.columnHeader7.Text = "Status";
             // 
             // FMmain
             // 
