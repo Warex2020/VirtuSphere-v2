@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FMmain));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label_secureconnection = new System.Windows.Forms.Label();
             this.chk_showTemplates = new System.Windows.Forms.CheckBox();
             this.btnMissionNew = new System.Windows.Forms.Button();
             this.btnMissionEdit = new System.Windows.Forms.Button();
@@ -146,7 +147,13 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.label_secureconnection = new System.Windows.Forms.Label();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.listView4 = new System.Windows.Forms.ListView();
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.button8 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.VirtuSphere.SuspendLayout();
             this.Liste.SuspendLayout();
@@ -162,6 +169,8 @@
             this.tabPage2.SuspendLayout();
             this.groupBox10.SuspendLayout();
             this.groupBox9.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            this.groupBox11.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -188,6 +197,15 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Tabelle";
+            // 
+            // label_secureconnection
+            // 
+            this.label_secureconnection.AutoSize = true;
+            this.label_secureconnection.Location = new System.Drawing.Point(13, 710);
+            this.label_secureconnection.Name = "label_secureconnection";
+            this.label_secureconnection.Size = new System.Drawing.Size(67, 13);
+            this.label_secureconnection.TabIndex = 27;
+            this.label_secureconnection.Text = "Verbindung: ";
             // 
             // chk_showTemplates
             // 
@@ -342,6 +360,7 @@
             this.VirtuSphere.Controls.Add(this.Umgebung);
             this.VirtuSphere.Controls.Add(this.tabPage1);
             this.VirtuSphere.Controls.Add(this.tabPage2);
+            this.VirtuSphere.Controls.Add(this.tabPage3);
             this.VirtuSphere.Location = new System.Drawing.Point(6, 19);
             this.VirtuSphere.Name = "VirtuSphere";
             this.VirtuSphere.SelectedIndex = 0;
@@ -1349,14 +1368,63 @@
             this.columnHeader3.Text = "Letzte Ausführung";
             this.columnHeader3.Width = 158;
             // 
-            // label_secureconnection
+            // tabPage3
             // 
-            this.label_secureconnection.AutoSize = true;
-            this.label_secureconnection.Location = new System.Drawing.Point(13, 710);
-            this.label_secureconnection.Name = "label_secureconnection";
-            this.label_secureconnection.Size = new System.Drawing.Size(67, 13);
-            this.label_secureconnection.TabIndex = 27;
-            this.label_secureconnection.Text = "Verbindung: ";
+            this.tabPage3.Controls.Add(this.groupBox11);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(1479, 627);
+            this.tabPage3.TabIndex = 4;
+            this.tabPage3.Text = "MECM";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // groupBox11
+            // 
+            this.groupBox11.Controls.Add(this.button8);
+            this.groupBox11.Controls.Add(this.listView4);
+            this.groupBox11.Location = new System.Drawing.Point(17, 24);
+            this.groupBox11.Name = "groupBox11";
+            this.groupBox11.Size = new System.Drawing.Size(437, 255);
+            this.groupBox11.TabIndex = 0;
+            this.groupBox11.TabStop = false;
+            this.groupBox11.Text = "Microsoft Configuration Manager";
+            // 
+            // listView4
+            // 
+            this.listView4.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader6,
+            this.columnHeader8,
+            this.columnHeader7});
+            this.listView4.HideSelection = false;
+            this.listView4.Location = new System.Drawing.Point(45, 40);
+            this.listView4.Name = "listView4";
+            this.listView4.Size = new System.Drawing.Size(362, 162);
+            this.listView4.TabIndex = 0;
+            this.listView4.UseCompatibleStateImageBehavior = false;
+            this.listView4.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "Service";
+            // 
+            // columnHeader7
+            // 
+            this.columnHeader7.Text = "Status";
+            // 
+            // columnHeader8
+            // 
+            this.columnHeader8.Text = "File";
+            this.columnHeader8.Width = 83;
+            // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(332, 217);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(75, 23);
+            this.button8.TabIndex = 1;
+            this.button8.Text = "Verbinden";
+            this.button8.UseVisualStyleBackColor = true;
             // 
             // FMmain
             // 
@@ -1393,6 +1461,8 @@
             this.tabPage2.ResumeLayout(false);
             this.groupBox10.ResumeLayout(false);
             this.groupBox9.ResumeLayout(false);
+            this.tabPage3.ResumeLayout(false);
+            this.groupBox11.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1517,6 +1587,13 @@
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.CheckBox chk_showTemplates;
         internal System.Windows.Forms.Label label_secureconnection;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.GroupBox groupBox11;
+        private System.Windows.Forms.ListView listView4;
+        private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.ColumnHeader columnHeader7;
+        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.ColumnHeader columnHeader8;
     }
 }
 

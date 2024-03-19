@@ -73,7 +73,17 @@ namespace VirtuSphere
                 selectedVM.Disks.Add(newDisk);
             }
 
+            // Ausgabe von Datacenter und Datastore wenn Id = selectedVM.mission_id
+            foreach (MissionItem missionItem in Form1.missionsList)
+            {
+                if (missionItem.Id == selectedVM.mission_id)
+                {
+                    txtd_datacenter.Text = missionItem.hypervisor_datacenter;
+                    txtd_datastore.Text = missionItem.hypervisor_datastorage;
+                }
+            }
 
+            
 
             // standartmäßig soll nichts selected sein
             listBoxHDDs.SelectedIndex = -1; 
@@ -104,8 +114,6 @@ namespace VirtuSphere
 
             // andere auswahlen sollen nicht möglich sein osItems
             combo_os.DropDownStyle = ComboBoxStyle.DropDownList;
-
-
 
         }
 
@@ -662,8 +670,22 @@ namespace VirtuSphere
 
         private void txtd_datastore_TextChanged(object sender, EventArgs e)
         {
-            
-            this.Enabled = true;
+
+        }
+
+        private void txtd_datastore_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtd_datacenter_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtd_datacenter_Click(object sender, MouseEventArgs e)
+        {
+
         }
     }
 }

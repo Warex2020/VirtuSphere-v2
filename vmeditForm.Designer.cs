@@ -365,6 +365,7 @@
             this.txtd_datacenter.Name = "txtd_datacenter";
             this.txtd_datacenter.Size = new System.Drawing.Size(128, 20);
             this.txtd_datacenter.TabIndex = 26;
+            this.txtd_datacenter.MouseClick += new System.Windows.Forms.MouseEventHandler(this.txtd_datacenter_Click);
             // 
             // txtd_datastore
             // 
@@ -373,6 +374,7 @@
             this.txtd_datastore.Name = "txtd_datastore";
             this.txtd_datastore.Size = new System.Drawing.Size(128, 20);
             this.txtd_datastore.TabIndex = 25;
+            this.txtd_datastore.Click += new System.EventHandler(this.txtd_datastore_Click);
             this.txtd_datastore.TextChanged += new System.EventHandler(this.txtd_datastore_TextChanged);
             // 
             // txtd_disk

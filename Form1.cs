@@ -42,7 +42,7 @@ namespace VirtuSphere
         public List<VLANItem> vLANItems = new List<VLANItem>();
         public List<OSItem> osItems = new List<OSItem>();
 
-
+        public string Username;
 
         public object JsonConvert { get; private set; }
 
@@ -50,7 +50,6 @@ namespace VirtuSphere
         {
             apiService = new apiService(apiToken, apiUrl);
             InitializeComponent();
-            FormPositionManager.LoadFormPosition(this);
             DisableInputFields();
             LoadDefaultSettings();
             
@@ -244,11 +243,11 @@ namespace VirtuSphere
                 vm_hostname = txtHostname.Text,
                 vm_domain = txtDomain.Text,
                 vm_os = listBoxOS.Text,
-                vm_status = "",
+                vm_status = "nicht ausgerollt",
                 vm_cpu = txtCPU.Text,
                 vm_ram = txtRAM.Text,
                 vm_disk = txtHDD.Text,
-                vm_creator = apiService.globalusername,
+                vm_creator = Username,
                 vm_datacenter = "",
                 vm_datastore = "",
                 vm_guest_id = "windows2019srv_64Guest",
@@ -2144,8 +2143,7 @@ namespace VirtuSphere
 
         private void FMmain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Speichere die Formposition
-            FormPositionManager.SaveFormPosition(this);
+
         }
 
         private void missionBoxKeyUp(object sender, KeyEventArgs e)

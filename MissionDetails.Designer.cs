@@ -54,11 +54,15 @@
             this.btn_save = new System.Windows.Forms.Button();
             this.txtMissionId = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.comboBox1);
+            this.groupBox1.Controls.Add(this.label12);
             this.groupBox1.Controls.Add(this.comboCopyMission);
             this.groupBox1.Controls.Add(this.label11);
             this.groupBox1.Controls.Add(this.comboMissionWDS);
@@ -214,6 +218,17 @@
             resources.ApplyResources(this.label1, "label1");
             this.label1.Name = "label1";
             // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            resources.ApplyResources(this.comboBox1, "comboBox1");
+            this.comboBox1.Name = "comboBox1";
+            // 
+            // label12
+            // 
+            resources.ApplyResources(this.label12, "label12");
+            this.label12.Name = "label12";
+            // 
             // MissionDetails
             // 
             resources.ApplyResources(this, "$this");
@@ -256,5 +271,7 @@
         private System.Windows.Forms.ComboBox comboMissionWDS;
         private System.Windows.Forms.ComboBox comboCopyMission;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Label label12;
     }
 }

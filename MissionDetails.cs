@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static VirtuSphere.apiService;
 using static VirtuSphere.FMmain;
 
@@ -94,8 +95,22 @@ namespace VirtuSphere
             txtMissionCreated.Text = mission.created_at;
             txtMissionUpdated.Text = mission.updated_at;
             txtMissionCount.Text = mission.vm_count.ToString();
+
+            // füge ESXi zu comboBox1 hinzu und wähle es aus. Andere auswahlen sind nicht möglich
+            comboBox1.Items.Add("ESXi");
+            comboBox1.SelectedIndex = 0;
+
+            // nur comboBox1 darf ausgewählt werden
+            comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
+
+            // wenn nicht mit mission.mission_name mit _ beginnt, dann schreib ha-datacenter in txtMissionDatacenter
+            if (!mission.mission_name.StartsWith("_"))
+            {
+                txtMissionDatacenter.Text = "ha-datacenter";
+            }
+
         }
-       
+
 
         private void btn_save_Click(object sender, EventArgs e)
         {
@@ -144,7 +159,7 @@ namespace VirtuSphere
 
                 // gib Id von selectedTemplate aus missionList zurück
                 int selectedTemplateId = _mainForm.missionsList.Find(x => x.mission_name == selectedTemplate).Id;
-
+                
                 //MessageBox.Show("Kopiere von Mission ID: " + selectedTemplateId + " ("+selectedTemplate+") zu Mission ID: " + missionId+ " ("+ missionName+")");
 
                 // Kopiere alle VMs mit der alten Mission ID in die neue Mission ID
