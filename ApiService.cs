@@ -541,12 +541,18 @@ namespace VirtuSphere
             Console.WriteLine($"Response Content: {responseContent}");
 
             // zeige ergebnis in ErrorForm  
-
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
                 ErrorForm logForm = new ErrorForm();
                 logForm.txtLog.Text = requestUri;
                 logForm.txtLog.Text += "\n" + json;
                 logForm.txtLog.Text += "\n" + responseContent;
                 logForm.ShowDialog();
+            }
 
             if(responseContent == "true")
             {

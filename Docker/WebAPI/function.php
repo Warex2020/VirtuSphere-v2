@@ -426,7 +426,7 @@ function updateMission($mysqli, $missionId, $missionData) {
          // Logge den Query und die Parameter
          $logMessage = "UPDATE deploy_missions SET " . implode(', ', $sets) . " WHERE id = $missionId\n";
          $logMessage .= "Params: " . implode(', ', array_map(function($param) { return var_export($param, true); }, $params)) . "\n";
-         file_put_contents('logs/query.log', $logMessage, FILE_APPEND);
+         //file_put_contents('logs/query.log', $logMessage, FILE_APPEND);
 
 
        $stmt->close();
