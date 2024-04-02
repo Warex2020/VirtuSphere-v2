@@ -2268,6 +2268,9 @@ namespace VirtuSphere
                 copiedVm.mission_id = toMissionId;
                 copiedVm.Id = 0;
 
+                // entferne alle Interface MAC
+                copiedVm.interfaces.ForEach(x => x.mac = "");
+
                 // füge zu vms hinzu, wenn noch nicht (vm_name)
                 if (!vms.Any(x => x.vm_name == copiedVm.vm_name))
                 {
