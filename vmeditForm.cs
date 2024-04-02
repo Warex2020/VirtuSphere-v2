@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -25,12 +26,12 @@ namespace VirtuSphere
             LoadVMToFormFields(vm); // Optionale Methode, um die Formularfelder zu befüllen
 
             // wenn ComboVLAN count gößer 0 ist, dann setze den index auf 0
-            if (ComboVLAN.Items.Count > 0) ComboVLAN.SelectedIndex = 0;
+            if (ComboPortgruppe.Items.Count > 0) ComboPortgruppe.SelectedIndex = 0;
             // nochmal für comboart 
-            if (comboMode.Items.Count > 0) comboMode.SelectedIndex = 0;
+            //if (comboMode.Items.Count > 0) comboMode.SelectedIndex = 0;
+            comboType.Items.Add("e1000e");
+            comboType.Items.Add("vmxnet3");
 
-            // txtType 
-            if (txtType.Items.Count > 0) txtType.SelectedIndex = 0;
 
             // comboHDD_Type füge als Typen hinzu: Thin, Thick, EagerZeroedThick
             comboHDD_Type.Items.Add("Thin");
@@ -39,7 +40,8 @@ namespace VirtuSphere
 
             // andere auswahlmöglichkeiten sollen nicht möglich sein
             comboHDD_Type.DropDownStyle = ComboBoxStyle.DropDownList;
-            ComboVLAN.DropDownStyle = ComboBoxStyle.DropDownList;
+            ComboPortgruppe.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboMode.DropDownStyle = ComboBoxStyle.DropDownList;
 
             //Setzte als Standard Thin
             comboHDD_Type.SelectedIndex = 0;
@@ -115,6 +117,27 @@ namespace VirtuSphere
             // andere auswahlen sollen nicht möglich sein osItems
             combo_os.DropDownStyle = ComboBoxStyle.DropDownList;
 
+            // Erstelle eine Liste mit Ramwerten
+            List<string> ramValues = new List<string> { "512", "1024", "2048", "4096", "8192", "16384", "32768", "65536" };
+    
+            // fülle die Ramwerte in die ComboRAM
+            foreach (string ramValue in ramValues)
+            {
+                comboRAM.Items.Add(ramValue);
+            }
+
+            // erstelle liste mit cpuwerten
+            List<string> cpuValues = new List<string> { "1", "2", "4", "8", "16", "32", "64" };
+
+            // fülle die cpuwerte in die ComboCPU
+            foreach (string cpuValue in cpuValues)
+            {
+                comboVCPU.Items.Add(cpuValue);
+            }
+
+
+
+
         }
 
         private void textBox7_TextChanged(object sender, EventArgs e)
@@ -159,8 +182,8 @@ namespace VirtuSphere
                 selectedVM.vm_hostname = txtd_hostname.Text;
                 selectedVM.vm_domain = txtd_domain.Text;
                 selectedVM.vm_os = combo_os.Text;
-                selectedVM.vm_ram = txtd_ram.Text;
-                selectedVM.vm_cpu = txtd_cpu.Text;
+                selectedVM.vm_ram = comboRAM.Text;
+                selectedVM.vm_cpu = comboVCPU.Text;
                 selectedVM.vm_disk = txtd_disk.Text;
                 selectedVM.vm_datacenter = txtd_datacenter.Text;
                 selectedVM.vm_datastore = txtd_datastore.Text;
@@ -212,6 +235,8 @@ namespace VirtuSphere
 
                     }
                 }
+
+
 
                 // Anzahl der hinzugefügten Interfaces
                 Console.WriteLine("Anzahl der hinzugefügten Interfaces: " + selectedVM.interfaces.Count);
@@ -286,8 +311,8 @@ namespace VirtuSphere
             txtd_hostname.Text = selectedVM.vm_hostname;
             txtd_domain.Text = selectedVM.vm_domain;
             combo_os.Text = selectedVM.vm_os;
-            txtd_ram.Text = selectedVM.vm_ram; 
-            txtd_cpu.Text = selectedVM.vm_cpu;
+            comboRAM.Text = selectedVM.vm_ram;
+            comboVCPU.Text = selectedVM.vm_cpu;
             txtd_disk.Text = selectedVM.vm_disk;
             txtd_datacenter.Text = selectedVM.vm_datacenter;
             txtd_datastore.Text = selectedVM.vm_datastore;
@@ -298,26 +323,17 @@ namespace VirtuSphere
             txtd_status.Text = selectedVM.vm_status; 
             txtd_notes.Text = selectedVM.vm_notes;
 
-            // Diable gewisse Felder
+            // Disable gewisse Felder
             txtd_Id.Enabled = false;
             txtd_status.Enabled = false;
             txtd_created_at.Enabled = false;
             txtd_updated_at.Enabled = false;
 
-            //// lade packages
-            //await GetSelectedPackages(apiService); // Warten auf das Task-Ergebnis
-
-            //// lade vlans mit apiService.GetVLANs in die ComboVLAN
-            //List<VLANItem> vlanItems = await apiService.GetVLANs(Form1.apiUrl, Form1.apiToken);
-            //foreach (var vlanItem in vlanItems)
-            //{
-            //    ComboVLAN.Items.Add(vlanItem.vlan_name);
-            //}
 
             // Alle VLANItems aus Form1.vLANItems in ComboVLAN.Items hinzufügen
             foreach (var vlanItem in Form1.vLANItems)
             {
-                ComboVLAN.Items.Add(vlanItem.vlan_name);
+                ComboPortgruppe.Items.Add(vlanItem.vlan_name);
             }
 
             // Alle Packages aus Form1.packageItems in ComboVLAN.Items hinzufügen
@@ -326,12 +342,10 @@ namespace VirtuSphere
                 listBoxPackages2.Items.Add(packageItem.package_name);
             }
 
-            // Lade alle vLANItems in die ComboVLAN.Items
-
 
 
             // wenn ComboVLAN count gößer 0 ist, dann setze den index auf 0
-            if (ComboVLAN.Items.Count > 0) ComboVLAN.SelectedIndex = 0;
+            if (ComboPortgruppe.Items.Count > 0) ComboPortgruppe.SelectedIndex = 0;
 
             // list selectedVM.packages
             foreach (var package in selectedVM.packages)
@@ -353,27 +367,43 @@ namespace VirtuSphere
             {
                 Interface newInterface = new Interface
                 {
+                    id = intf.id,
                     ip = intf.ip,
                     subnet = intf.subnet,
                     gateway = intf.gateway,
                     dns1 = intf.dns1,
                     dns2 = intf.dns2,
                     vlan = intf.vlan,
-                    mac = intf.mac,
                     mode = intf.mode,
-                    type = intf.type
+                    type = intf.type,
+                    mac = intf.mac
                 };
 
+                if (listBoxInterfaces.Items.Count == 0)
+                {
+                    newInterface.IsManagementInterface = true;
+                }
 
-                listBoxInterfaces.Items.Add(intf);
+                // wenn type leer dann setzte e1000e
+                if (newInterface.type == "" || newInterface.type == null)
+                {
+                    newInterface.type = "e1000e";
+                }
+
+                // wenn mode leer dann setzte dhcp
+                if (newInterface.mode == "" || newInterface.mode == null)
+                {
+                    newInterface.mode = "DHCP";
+                }
+
+
+                listBoxInterfaces.Items.Add(newInterface);
 
 
             }
             listBoxInterfaces.DisplayMember = "DisplayText";
 
-            // wenn listboxInterface count größer 0 ist, dann setze den index auf 0
-            if (listBoxInterfaces.Items.Count > 0) listBoxInterfaces.SelectedIndex = 0;
-
+     
 
         }
 
@@ -409,8 +439,36 @@ namespace VirtuSphere
 
         private void btn_addInterface(object sender, EventArgs e)
         {
-            AddInterfaceToListBox(listBoxInterfaces, txtIP.Text, txtSub.Text, txtGateway.Text, txtDNS1.Text, txtDNS2.Text, ComboVLAN.Text, comboMode.Text, txtType.Text, txtMAC.Text);
-            ClearInterfaceDetails();
+            // TODO: Prüfen wenn Static, dann müssen alle Felder ausgefüllt sein
+            // Prüfen, ob die Felder für die IP-Konfiguration ausgefüllt sind
+            if (comboMode.Text == "Static" && (string.IsNullOrWhiteSpace(txtIP.Text) || string.IsNullOrWhiteSpace(txtSub.Text) || string.IsNullOrWhiteSpace(txtGateway.Text)))
+            {
+                MessageBox.Show("Bitte füllen Sie die Felder für die statische IP-Konfiguration aus.", "Fehlende Eingabe", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            //AddInterfaceToListBox(listBoxInterfaces, txtIP.Text, txtSub.Text, txtGateway.Text, txtDNS1.Text, txtDNS2.Text, ComboPortgruppe.Text, comboMode.Text, comboType.Text, txtMAC.Text);
+
+            // Erstellen des neues Interface - Objekts und füge es Listbox hinzu
+            Interface newInterface = new Interface
+            {
+                ip = txtIP.Text,
+                subnet = txtSub.Text,
+                gateway = txtGateway.Text,
+                dns1 = txtDNS1.Text,
+                dns2 = txtDNS2.Text,
+                vlan = ComboPortgruppe.Text,
+                mode = comboMode.Text,
+                type = comboType.Text,
+                mac = txtMAC.Text
+            };
+            // füge zur Liste hinzu
+            listBoxInterfaces.Items.Add(newInterface);
+
+            // wähle die neue hinzugefügte Interface aus
+            listBoxInterfaces.SelectedItem = newInterface;
+
+
         }
 
         // Annahme: listBoxInterfaces ist Ihre ListBox im UI
@@ -441,18 +499,49 @@ namespace VirtuSphere
         {
             if (listBoxInterfaces.SelectedItem != null)
             {
+
                 btnEdit.Enabled = true;
                 Interface selectedInterface = (Interface)listBoxInterfaces.SelectedItem;
+
+                if (selectedInterface.IsManagementInterface)
+                {
+                   // MessageBox.Show("Dieses Interface ist ein Management-Interface und kann nicht bearbeitet werden.", "Management-Interface", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                   // return;
+                }
+
+                Interface_DBID.Text = selectedInterface.id.ToString();
                 txtIP.Text = selectedInterface.ip;
                 txtSub.Text = selectedInterface.subnet;
                 txtGateway.Text = selectedInterface.gateway;
                 txtDNS1.Text = selectedInterface.dns1;
                 txtDNS2.Text = selectedInterface.dns2;
-                ComboVLAN.Text = selectedInterface.vlan;
-                comboMode.Text = selectedInterface.mode;
-                txtType.Text = selectedInterface.type;
+                ComboPortgruppe.Text = selectedInterface.vlan;
+                
+
+                if (selectedInterface.mode == "")
+                {
+                    comboMode.Text = "DHCP";
+                }
+                else { comboMode.Text = selectedInterface.mode; }
+
+                // wenn selectedInterface.type leer dann selectindex 
+                if (selectedInterface.type == "")
+                {
+                    comboType.SelectedIndex = 0;
+                }
+                else
+                {
+                    comboType.Text = selectedInterface.type;
+                }
                 txtMAC.Text = selectedInterface.mac;
-                Interface_DBID.Text = selectedInterface.id.ToString();
+
+                if (!selectedInterface.IsManagementInterface)
+                {
+                    label32.Visible = false;
+                    comboMode.Enabled = true;
+                    ComboPortgruppe.Enabled = true;
+                    comboType.Enabled = true;
+                }
             }
         }
 
@@ -470,9 +559,9 @@ namespace VirtuSphere
                 selectedInterface.gateway = txtGateway.Text;
                 selectedInterface.dns1 = txtDNS1.Text;
                 selectedInterface.dns2 = txtDNS2.Text;
-                selectedInterface.vlan = ComboVLAN.Text;
+                selectedInterface.vlan = ComboPortgruppe.Text;
                 selectedInterface.mode = comboMode.Text;
-                selectedInterface.type = txtType.Text;
+                selectedInterface.type = comboType.Text;
                 selectedInterface.mac = txtMAC.Text;
 
                 // Aktualisieren der ListBox, um die geänderten Daten widerzuspiegeln
@@ -500,11 +589,44 @@ namespace VirtuSphere
 
 
                 // Optional: Leeren der Formularfelder nach der Bearbeitung
-                //ClearInterfaceDetails();
+                ClearInterfaceDetails();
             }
             else
             {
                 MessageBox.Show("Bitte wählen Sie ein Interface aus der Liste aus, bevor Sie versuchen, es zu bearbeiten.");
+            }
+        }
+
+        // schreibe eine methode für alle Textboxen bei einem Keyup, dass die änderungen sofort in dem selectedInterface übernommen werden
+        private void txt_TextChanged(object sender, EventArgs e)
+        {
+            if (listBoxInterfaces.SelectedItem != null)
+            {
+                Interface selectedInterface = (Interface)listBoxInterfaces.SelectedItem;
+
+                // wenn txtType.Text = DHCP dann setze die anderen Felder auf leer
+                if (comboMode.Text == "DHCP")
+                {
+                    txtIP.Text = "";
+                    txtSub.Text = "";
+                    txtGateway.Text = "";
+                    txtDNS1.Text = "";
+                    txtDNS2.Text = "";
+                }
+
+                selectedInterface.ip = txtIP.Text;
+                selectedInterface.subnet = txtSub.Text;
+                selectedInterface.gateway = txtGateway.Text;
+                selectedInterface.dns1 = txtDNS1.Text;
+                selectedInterface.dns2 = txtDNS2.Text;
+                selectedInterface.vlan = ComboPortgruppe.Text;
+                selectedInterface.mode = comboMode.Text;
+                selectedInterface.type = comboType.Text;
+
+                // Aktualisieren der ListBox, um die geänderten Daten widerzuspiegeln
+                int selectedIndex = listBoxInterfaces.SelectedIndex;
+                listBoxInterfaces.Items[selectedIndex] = listBoxInterfaces.Items[selectedIndex]; // Trigger the ListBox to refresh
+
             }
         }
 
@@ -631,6 +753,16 @@ namespace VirtuSphere
                 btnDiskDelete.Enabled = false;
                 btnDiskUpdate.Enabled = true;
 
+                // wenn disk_name nicht system aktiviere btnDiskDelete
+                if (selectedDisk.disk_name != "System")
+                {
+                    btnDiskDelete.Enabled = true;
+                }
+                else
+                {
+                    btnDiskDelete.Enabled = false;
+                }
+
             }
             else
             {
@@ -714,6 +846,137 @@ namespace VirtuSphere
         private void txtd_datacenter_Click(object sender, MouseEventArgs e)
         {
 
+        }
+
+        private void TextBoxEnabledChanged(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            if (textBox != null)
+            {
+                // Ändert die Hintergrundfarbe basierend auf dem Enabled-Zustand
+                textBox.BackColor = textBox.Enabled ? SystemColors.Window : System.Drawing.Color.LightGray;
+            }
+        }
+
+        private void txtHDD_TextChanged(object sender, KeyEventArgs e)
+        {
+            // übernimm änderungen sofort in disks
+            if (listBoxHDDs.SelectedItem != null)
+            {
+                Disk selectedDisk = (Disk)listBoxHDDs.SelectedItem;
+                selectedDisk.disk_name = txtHDD_Name.Text;
+                //selectedDisk.disk_size = Convert.ToInt64(txtHDD_Size.Text);
+
+                if (long.TryParse(txtHDD_Size.Text, out long diskSize))
+                {
+                    selectedDisk.disk_size = diskSize;
+                }
+                else
+                {
+                    // Handle invalid input
+                }
+
+                selectedDisk.disk_type = comboHDD_Type.Text;
+
+                // Aktualisieren der ListBox, um die geänderten Daten widerzuspiegeln
+                int selectedIndex = listBoxHDDs.SelectedIndex;
+                listBoxHDDs.Items[selectedIndex] = listBoxHDDs.Items[selectedIndex]; // Trigger the ListBox to refresh
+
+            }
+
+        }
+
+        private void txtHDD_TextChanged(object sender, EventArgs e)
+        {
+            // übernimm änderungen sofort in disks
+            if (listBoxHDDs.SelectedItem != null)
+            {
+                Disk selectedDisk = (Disk)listBoxHDDs.SelectedItem;
+                selectedDisk.disk_name = txtHDD_Name.Text;
+                //selectedDisk.disk_size = Convert.ToInt64(txtHDD_Size.Text);
+
+                if (long.TryParse(txtHDD_Size.Text, out long diskSize))
+                {
+                    selectedDisk.disk_size = diskSize;
+                }
+                else
+                {
+                    // Handle invalid input
+                }
+
+                selectedDisk.disk_type = comboHDD_Type.Text;
+
+                // Aktualisieren der ListBox, um die geänderten Daten widerzuspiegeln
+                int selectedIndex = listBoxHDDs.SelectedIndex;
+                listBoxHDDs.Items[selectedIndex] = listBoxHDDs.Items[selectedIndex]; // Trigger the ListBox to refresh
+
+            }
+        }
+
+        private void btnDiskDelete_Click(object sender, EventArgs e)
+        {
+            // lösche das ausgewählte Objekt aus der ListBox 
+            if (listBoxHDDs.SelectedItem != null)
+            {
+                listBoxHDDs.Items.Remove(listBoxHDDs.SelectedItem);
+                ClearDiskDetails();
+
+                btnDiskUpdate.Enabled = false;
+                btnDiskDelete.Enabled = false;
+                lbl_status.Text = "Status: Update erforderlich!";
+            }
+            else
+            {
+                MessageBox.Show("Bitte wählen Sie eine Festplatte zum Löschen aus.", "Keine Auswahl", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void txt_TextChanged(object sender, KeyEventArgs e)
+        {
+            if (listBoxInterfaces.SelectedItem != null)
+            {
+                Interface selectedInterface = (Interface)listBoxInterfaces.SelectedItem;
+
+                // wenn txtType.Text = DHCP dann setze die anderen Felder auf leer
+                if (comboMode.Text == "DHCP")
+                {
+                    txtIP.Text = "";
+                    txtSub.Text = "";
+                    txtGateway.Text = "";
+                    txtDNS1.Text = "";
+                    txtDNS2.Text = "";
+                }
+
+                selectedInterface.ip = txtIP.Text;
+                selectedInterface.subnet = txtSub.Text;
+                selectedInterface.gateway = txtGateway.Text;
+                selectedInterface.dns1 = txtDNS1.Text;
+                selectedInterface.dns2 = txtDNS2.Text;
+                selectedInterface.vlan = ComboPortgruppe.Text;
+                selectedInterface.mode = comboMode.Text;
+                selectedInterface.type = comboType.Text;
+
+                // Aktualisieren der ListBox, um die geänderten Daten widerzuspiegeln
+                int selectedIndex = listBoxInterfaces.SelectedIndex;
+                listBoxInterfaces.Items[selectedIndex] = listBoxInterfaces.Items[selectedIndex]; // Trigger the ListBox to refresh
+
+            }
+        }
+
+        private void comboTypechange(object sender, EventArgs e)
+        {
+            // listbox selected != null
+            if (listBoxInterfaces.SelectedItem != null)
+            {
+                Interface selectedInterface = (Interface)listBoxInterfaces.SelectedItem;
+
+                selectedInterface.type = comboType.Text;
+
+                // Aktualisieren der ListBox, um die geänderten Daten widerzuspiegeln
+                int selectedIndex = listBoxInterfaces.SelectedIndex;
+                listBoxInterfaces.Items[selectedIndex] = listBoxInterfaces.Items[selectedIndex]; // Trigger the ListBox to refresh
+
+            }   
         }
     }
 }

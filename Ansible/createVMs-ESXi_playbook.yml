@@ -22,7 +22,8 @@
         disk: "{{ item.disks }}"
         hardware:
           memory_mb: "{{ item.memory }}"
-          num_cpus: "{{ item.vcpus }}"
+          num_cpus: "{{ item.
+          s }}"
           scsi: lsilogicsas
           secure_boot: true
           boot_firmware: "efi"
@@ -31,6 +32,10 @@
       loop: "{{ vm_configurations }}"
       when: vm_configurations | length > 0
       register: vm_creation_results
+
+    - name: warten
+      pause:
+        seconds: 60
 
     - name: Setze das Hinweisfeld der VM mit Erstellungsdatum, User, Installation und Rollen
       ignore_errors: true

@@ -107,7 +107,7 @@ namespace VirtuSphere
 
 
 
-        public async Task ConnectAndExecuteSSHCommands(string host, int port, string username, string password, string missionName, string runPlaybook, bool chk_autostart, bool chk_verbose, bool run_python)
+        public async Task ConnectAndExecuteSSHCommands(string host, int port, string username, string password, string missionName, string runPlaybook, bool chk_createvms, bool chk_exportvminfos, bool chk_autostart, bool chk_verbose)
         {
             await Task.Run(async () =>
             {
@@ -137,11 +137,27 @@ namespace VirtuSphere
                         executionCommand = "cd /tmp/" + missionName + "; chmod 666 /tmp/" + missionName + "/* ; ";
 
                         if (runPlaybook.EndsWith("eateVMs-ESXi_playbook.yml")) {
-                            executionCommand += "ansible-playbook /tmp/" + missionName + "/" + runPlaybook;
+                            
 
-                            if (chk_verbose) { executionCommand += " -vvv; "; } else { executionCommand += "; ";}
-                            if (run_python) { executionCommand += " ansible-playbook exportVMs* "; if (chk_verbose) { executionCommand += " -vvv ; "; } else { executionCommand += "; "; } }
-                            if (chk_autostart) { executionCommand += " ansible-playbook startVMs*"; if (chk_verbose) { executionCommand += " -vvv"; } else { executionCommand += "; "; } }
+                            // wenn runPlaybook nicht leer ist dann führe aus
+                            if (runPlaybook != null) { executionCommand += "ansible-playbook /tmp/" + missionName + "/" + runPlaybook;
+
+                                if (chk_verbose) { executionCommand += " -vvv; "; } else { executionCommand += "; "; }
+                            } else
+                            {
+
+                                if (chk_createvms) { executionCommand += "ansible-playbook /tmp/" + missionName + "/createVMs-ESXi-playbook.yml"; } else { executionCommand += "; "; }
+                                if (chk_verbose) { executionCommand += " -vvv; "; } else { executionCommand += "; "; }
+
+                                if (chk_exportvminfos) { executionCommand += " ansible-playbook exportVMs* "; 
+                                if (chk_verbose) { executionCommand += " -vvv ; "; } else { executionCommand += "; "; } }
+
+
+                                if (chk_autostart) { executionCommand += " ansible-playbook startVMs*"; 
+                                if (chk_verbose) { executionCommand += " -vvv"; } else { executionCommand += "; "; } }
+
+                            }
+                            
                         }
                         else
                         {

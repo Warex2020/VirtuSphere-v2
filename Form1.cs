@@ -30,8 +30,11 @@ namespace VirtuSphere
         internal int temp_vlanId;
         internal int temp_osId;
 
+        private int remainingTimeInMinutes = 60; // Startwert in Minuten
+
         public int missionId { get; set; }
         public string missionName { get; set; }
+        public string missionWDSVlan { get; set; }
         public List<VM> vms = new List<VM>();
         public List<VM> vmsToCopy = new List<VM>();
         public List<VM> vmListToDelete = new List<VM>();
@@ -54,6 +57,31 @@ namespace VirtuSphere
             LoadDefaultSettings();
             
             this.Load += async (sender, e) => await InitializeAsync();
+
+            labelTimer.Text = $"Restzeit: {remainingTimeInMinutes} Minuten";
+
+            // Konfiguriere den Timer
+            countdownTimer.Interval = 60000; // Eine Minute
+            countdownTimer.Tick += CountdownTimer_Tick;
+            countdownTimer.Start();
+
+            // Erstelle eine Liste mit Ramwerten
+            List<string> ramValues = new List<string> { "512", "1024", "2048", "4096", "8192", "16384", "32768", "65536" };
+
+            // fülle die Ramwerte in die ComboRAM
+            foreach (string ramValue in ramValues)
+            {
+                comboRAM.Items.Add(ramValue);
+            }
+
+            // erstelle liste mit cpuwerten
+            List<string> cpuValues = new List<string> { "1", "2", "4", "8", "16", "32", "64" };
+
+            // fülle die cpuwerte in die ComboCPU
+            foreach (string cpuValue in cpuValues)
+            {
+                comboVCPU.Items.Add(cpuValue);
+            }
 
         }
 
@@ -114,6 +142,7 @@ namespace VirtuSphere
 
                     missionId = selectedItem.Id;
                     missionName = selectedItem.mission_name;
+                    missionWDSVlan = selectedItem.wds_vlan;
 
                     // enable btn_add
                     if (missionId != 0) { btn_add.Enabled = true; EnableInputFields(); }
@@ -195,20 +224,13 @@ namespace VirtuSphere
             }
 
 
-            string missiondefaultVLAN = comboWDSVlan.SelectedItem.ToString();
-
-            // Wähle das vLANItems mit MissionID aus
-            VLANItem selectedVLAN = vLANItems.FirstOrDefault(v => v.Id == missionId);
-
-            if (selectedVLAN != null)
+            // wenn missionWDSVlan leer dann fehler
+            if (missionWDSVlan == "" || missionWDSVlan == null)
             {
-                Console.WriteLine("Selected VLAN: " + selectedVLAN.vlan_name);
-                missiondefaultVLAN = selectedVLAN.vlan_name;
+                MessageBox.Show("WDS Portgruppe fehlt in der Mission - Fehler!");
+                return;
             }
-            else
-            {
-                Console.WriteLine("Kein VLAN für Mission " + missionId + " gefunden.");
-            }
+
 
             // erstelle Inteface und weise es vm zu
             Interface newInterface = new Interface
@@ -218,9 +240,12 @@ namespace VirtuSphere
                 gateway = "",
                 dns1 = "",
                 dns2 = "",
-                vlan = missiondefaultVLAN,
-                mode = "DHCP"
+                vlan = missionWDSVlan,
+                mode = "DHCP",
+                type = "e1000e"
             };
+
+            newInterface.IsManagementInterface = true;
 
             Disk newdisk = new Disk
             {
@@ -244,8 +269,8 @@ namespace VirtuSphere
                 vm_domain = txtDomain.Text,
                 vm_os = listBoxOS.Text,
                 vm_status = "1/5 Initializing",
-                vm_cpu = txtCPU.Text,
-                vm_ram = txtRAM.Text,
+                vm_cpu = comboVCPU.Text,
+                vm_ram = comboRAM.Text,
                 vm_disk = txtHDD.Text,
                 vm_creator = Username,
                 vm_datacenter = "",
@@ -387,9 +412,9 @@ namespace VirtuSphere
                     selectedVM.vm_hostname = txtHostname.Text;
                     selectedVM.vm_domain = txtDomain.Text;
                     selectedVM.vm_os = listBoxOS.Text;
-                    selectedVM.vm_ram = txtRAM.Text;
+                    selectedVM.vm_ram = comboRAM.Text;
                     selectedVM.vm_disk = txtHDD.Text;
-                    selectedVM.vm_cpu = txtCPU.Text;
+                    selectedVM.vm_cpu = comboVCPU.Text;
 
                     // wenn selectedVM.vm_disk nicht selectedVM.Disks[0].disk_size entspricht, dann ändere es
                     if (selectedVM.Disks[0].disk_size != long.Parse(txtHDD.Text))
@@ -462,9 +487,9 @@ namespace VirtuSphere
                     txtHostname.Text = selectedVM.vm_hostname;
                     txtDomain.Text = selectedVM.vm_domain;
                     listBoxOS.Text = selectedVM.vm_os;
-                    txtRAM.Text = selectedVM.vm_ram;
+                    comboRAM.Text = selectedVM.vm_ram;
                     txtHDD.Text = selectedVM.vm_disk;
-                    txtCPU.Text = selectedVM.vm_cpu;
+                    comboVCPU.Text = selectedVM.vm_cpu;
                     listBoxPackages.ClearSelected();
 
                     MarkSelectedPackagesInListBox(selectedVM.packages);
@@ -626,9 +651,9 @@ namespace VirtuSphere
             listBoxOS.Enabled = false;
             listBoxPackages.Enabled = false;
             btn_add.Enabled = false;
-            txtCPU.Enabled = false;
+            comboVCPU.Enabled = false;
             txtHDD.Enabled = false;
-            txtRAM.Enabled = false;
+            comboRAM.Enabled = false;
         }
 
         public void EnableInputFields()
@@ -639,9 +664,9 @@ namespace VirtuSphere
             listBoxOS.Enabled = true;
             listBoxPackages.Enabled = true;
             btn_add.Enabled = true;
-            txtCPU.Enabled = true;
+            comboVCPU.Enabled = true;
             txtHDD.Enabled = true;
-            txtRAM.Enabled = true;
+            comboRAM.Enabled = true;
         }
 
         private void ExportToCSV()
@@ -808,22 +833,7 @@ namespace VirtuSphere
 
         public void ShowVLANs(List<VLANItem> vlanList)
         {
-            //comboVLAN.Items.Clear();
 
-            if (vlanList != null && vlanList.Any())
-            {
-                foreach (var vlan in vlanList)
-                {
-                    //comboVLAN.Items.Add(vlan); // Fügt das VLANItem direkt hinzu
-                    comboWDSVlan.Items.Add(vlan);
-                }
-            }
-            else
-            {
-                //comboVLAN.Items.Add("Keine VLANs verfügbar.");
-            }
-
-            comboWDSVlan.SelectedIndex = 0;
 
             // comboPortgruppe_Name leeren
             comboPortgruppe_Name.Items.Clear();
@@ -834,6 +844,18 @@ namespace VirtuSphere
                 Console.WriteLine("VLAN ID: " + vlan.Id + " VLAN Name: " + vlan.vlan_name);
                 // Füge vlan.vlan_name zu comboPortgruppe_Name hinzu
                 comboPortgruppe_Name.Items.Add(vlan.vlan_name);
+            }
+        }
+        private void CountdownTimer_Tick(object sender, EventArgs e)
+        {
+            remainingTimeInMinutes--; // Dekrementiere die verbleibende Zeit
+            labelTimer.Text = $"Restzeit: {remainingTimeInMinutes} Minuten"; // Aktualisiere das Label
+
+            if (remainingTimeInMinutes <= 0)
+            {
+                countdownTimer.Stop(); // Stoppe den Timer, wenn die Zeit abgelaufen ist
+                MessageBox.Show("Token ist abgelaufen!");
+                // Schließe Form1
             }
         }
         private async void SaveVMsinMission_Click(object sender, EventArgs e)
@@ -899,6 +921,7 @@ namespace VirtuSphere
                     vms.Clear();
                     vms = await apiService.GetVMs(missionId);
 
+
                     if (vms != null && vms.Count > 0)
                     {
                         UpdateListView(vms);
@@ -929,6 +952,7 @@ namespace VirtuSphere
             {
                 missionBox.SelectedItem = obj;
                 missionId = ((MissionItem)obj).Id;
+                missionWDSVlan = ((MissionItem)obj).wds_vlan;
                 btnMissionNew.Enabled = false;
             }
             else
@@ -1094,6 +1118,37 @@ namespace VirtuSphere
             {
                 MessageBox.Show("Mission nicht gefunden.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        // UpdateAllVMsInMission(missionId, missionWDS);
+        public async Task UpdateAllVMsInMission(int missionId, string missionWDS)
+        {
+            // update von allen vms das erste Interface vlan auf missionWDS
+            foreach (var vm in vms)
+            {
+                if (vm.interfaces != null && vm.interfaces.Count > 0)
+                {
+                    vm.interfaces[0].vlan = missionWDS;
+
+                    // wenn type leer dann setzte e1000e
+                    if (vm.interfaces[0].type == "" || vm.interfaces[0].type == null)
+                    {
+                        vm.interfaces[0].type = "e1000e";
+                    }
+
+                    // wenn mode leer dann setzte dhcp
+                    if (vm.interfaces[0].mode == "" || vm.interfaces[0].mode == null)
+                    {
+                        vm.interfaces[0].mode = "DHCP";
+                    }
+                }
+
+                // füge alle vms zu vmListToUpdate
+                vmListToUpdate.Add(vm);
+            }
+
+            checkStatus();
+
         }
 
         public void SelectMission(string missionName, int vmCount)
@@ -1533,6 +1588,7 @@ namespace VirtuSphere
                 ansibleForm.missionId = missionId;
                 ansibleForm.ssh_port2 = ssh_port2;
                 ansibleForm.SetMissionName(missionName);
+                ansibleForm.setTargetESXi("Zielsystem: "+txt_hv_ip.Text);
                 ansibleForm.generateConfigs();
 
                 ansibleForm.Show();
@@ -2135,6 +2191,7 @@ namespace VirtuSphere
                 if (missionsList.Any(x => x.mission_name == missionName))
                 {
                     missionId = missionsList.FirstOrDefault(x => x.mission_name == missionName).Id;
+                    missionWDSVlan = missionsList.FirstOrDefault(x => x.mission_name == missionName).wds_vlan;
                     btnMissionNew.Enabled = false;
                     btnMissionDelete.Enabled = true;
                     btnMissionEdit.Enabled = true;
@@ -2177,7 +2234,7 @@ namespace VirtuSphere
             {
                 missionId = missionsList.FirstOrDefault(x => x.mission_name == missionName).Id;
                 string missionDomain = missionsList.FirstOrDefault(x => x.mission_name == missionName).domain;
-
+                missionWDSVlan = missionsList.FirstOrDefault(x => x.mission_name == missionName).wds_vlan;
                 txtDomain.Text = missionDomain;
                 btnMissionNew.Enabled = false;
                 btnMissionDelete.Enabled = true;
@@ -2263,6 +2320,11 @@ namespace VirtuSphere
             {
                 button5.Enabled = true;
             }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+
         }
     }
 }

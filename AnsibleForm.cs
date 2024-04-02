@@ -58,6 +58,11 @@ namespace VirtuSphere
             }
         }
 
+        public void setTargetESXi(string esxi_address)
+        {
+            this.label3.Text = esxi_address;
+        }
+
 
         public AnsibleForm(List<VM> vms, string ProjecttempPath, string apiToken, string apiUrl)
         {
@@ -84,11 +89,6 @@ namespace VirtuSphere
                 }
             }
 
-            // selectiere erstes item in comboPlaybooks
-            if (comboPlaybooks.Items.Count > 0)
-            {
-                comboPlaybooks.SelectedIndex = 0;
-            }
 
             // lade alle datei aus ProjecttempPath in listFiles
             foreach (string file in Directory.GetFiles(ProjecttempPath))
@@ -101,6 +101,17 @@ namespace VirtuSphere
             {
                 listFiles.Items[0].Selected = true;
             }
+
+            txtAnsible.Visible = false;
+            btnSave.Visible = false;
+            checkBox1.Visible = false;
+            listFiles.Visible = false;
+            comboPlaybooks.Visible = false;
+            button2.Visible = false;
+            button3.Visible = false;
+            button4.Visible = false;
+            button5.Visible = false;
+
         }
 
         public bool modifiziert = false;
@@ -380,7 +391,7 @@ namespace VirtuSphere
             deployForm.CommandsCompleted += (s, e2) => tcs.SetResult(true);
 
             // Rufen Sie die neue Methode auf, um die SSH-Verbindung herzustellen und Befehle auszuführen
-            await deployForm.ConnectAndExecuteSSHCommands(ssh_hostname, ssh_port2, ssh_username, ssh_password, missionName, selectedPlaybook, chk_autostart.Checked, chk_verbose.Checked, chk_runPython.Checked);
+            await deployForm.ConnectAndExecuteSSHCommands(ssh_hostname, ssh_port2, ssh_username, ssh_password, missionName, selectedPlaybook, chk_createvms.Checked, chk_exportvminfos.Checked, chk_autostart.Checked, chk_verbose.Checked);
 
             await tcs.Task;
 
@@ -612,6 +623,27 @@ mission_configuration:
                     loadConfig(sender, e);
                 }
             }
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+
+            // wenn gechecked dann visbile true
+            txtAnsible.Visible = checkBox2.Checked;
+            btnSave.Visible = checkBox2.Checked;
+            checkBox1.Visible = checkBox2.Checked;
+            listFiles.Visible = checkBox2.Checked;
+            comboPlaybooks.Visible  = checkBox2.Checked;
+            button2.Visible = checkBox2.Checked;
+            button3.Visible = checkBox2.Checked;
+            button4.Visible = checkBox2.Checked;
+            button5.Visible = checkBox2.Checked;
+
+        }
+
+        private void labelMissionName_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -28,8 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FMmain));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.labelTimer = new System.Windows.Forms.Label();
             this.label_secureconnection = new System.Windows.Forms.Label();
             this.chk_showTemplates = new System.Windows.Forms.CheckBox();
             this.btnMissionNew = new System.Windows.Forms.Button();
@@ -48,12 +50,12 @@
             this.VirtuSphere = new System.Windows.Forms.TabControl();
             this.Liste = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.comboVCPU = new System.Windows.Forms.ComboBox();
+            this.comboRAM = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.txtCPU = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txtHDD = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtRAM = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
             this.txtName = new System.Windows.Forms.TextBox();
             this.listBoxOS = new System.Windows.Forms.ComboBox();
@@ -77,9 +79,6 @@
             this.Packages = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Status = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Umgebung = new System.Windows.Forms.TabPage();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.comboWDSVlan = new System.Windows.Forms.ComboBox();
-            this.label10 = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.comboAnsibleRemote = new System.Windows.Forms.ComboBox();
@@ -133,48 +132,32 @@
             this.comboOS_Name = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.groupBox10 = new System.Windows.Forms.GroupBox();
-            this.button15 = new System.Windows.Forms.Button();
-            this.listView3 = new System.Windows.Forms.ListView();
-            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.button14 = new System.Windows.Forms.Button();
-            this.button13 = new System.Windows.Forms.Button();
-            this.button12 = new System.Windows.Forms.Button();
-            this.listView2 = new System.Windows.Forms.ListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
             this.button8 = new System.Windows.Forms.Button();
-            this.listView4 = new System.Windows.Forms.ListView();
+            this.MECM_Services = new System.Windows.Forms.ListView();
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.countdownTimer = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
             this.VirtuSphere.SuspendLayout();
             this.Liste.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.Umgebung.SuspendLayout();
-            this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.groupBox7.SuspendLayout();
-            this.tabPage2.SuspendLayout();
-            this.groupBox10.SuspendLayout();
-            this.groupBox9.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.labelTimer);
             this.groupBox1.Controls.Add(this.label_secureconnection);
             this.groupBox1.Controls.Add(this.chk_showTemplates);
             this.groupBox1.Controls.Add(this.btnMissionNew);
@@ -197,6 +180,15 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Tabelle";
+            // 
+            // labelTimer
+            // 
+            this.labelTimer.AutoSize = true;
+            this.labelTimer.Location = new System.Drawing.Point(13, 690);
+            this.labelTimer.Name = "labelTimer";
+            this.labelTimer.Size = new System.Drawing.Size(41, 13);
+            this.labelTimer.TabIndex = 28;
+            this.labelTimer.Text = "label26";
             // 
             // label_secureconnection
             // 
@@ -363,7 +355,6 @@
             this.VirtuSphere.Controls.Add(this.Liste);
             this.VirtuSphere.Controls.Add(this.Umgebung);
             this.VirtuSphere.Controls.Add(this.tabPage1);
-            this.VirtuSphere.Controls.Add(this.tabPage2);
             this.VirtuSphere.Controls.Add(this.tabPage3);
             this.VirtuSphere.Location = new System.Drawing.Point(6, 19);
             this.VirtuSphere.Name = "VirtuSphere";
@@ -385,12 +376,12 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.comboVCPU);
+            this.groupBox2.Controls.Add(this.comboRAM);
             this.groupBox2.Controls.Add(this.label5);
-            this.groupBox2.Controls.Add(this.txtCPU);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.txtHDD);
             this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Controls.Add(this.txtRAM);
             this.groupBox2.Controls.Add(this.label17);
             this.groupBox2.Controls.Add(this.txtName);
             this.groupBox2.Controls.Add(this.listBoxOS);
@@ -412,6 +403,22 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "VM anlegen";
             // 
+            // comboVCPU
+            // 
+            this.comboVCPU.FormattingEnabled = true;
+            this.comboVCPU.Location = new System.Drawing.Point(131, 163);
+            this.comboVCPU.Name = "comboVCPU";
+            this.comboVCPU.Size = new System.Drawing.Size(215, 21);
+            this.comboVCPU.TabIndex = 35;
+            // 
+            // comboRAM
+            // 
+            this.comboRAM.FormattingEnabled = true;
+            this.comboRAM.Location = new System.Drawing.Point(131, 111);
+            this.comboRAM.Name = "comboRAM";
+            this.comboRAM.Size = new System.Drawing.Size(215, 21);
+            this.comboRAM.TabIndex = 34;
+            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -420,14 +427,6 @@
             this.label5.Size = new System.Drawing.Size(43, 13);
             this.label5.TabIndex = 33;
             this.label5.Text = "vCPUs:";
-            // 
-            // txtCPU
-            // 
-            this.txtCPU.Location = new System.Drawing.Point(131, 164);
-            this.txtCPU.Name = "txtCPU";
-            this.txtCPU.Size = new System.Drawing.Size(215, 20);
-            this.txtCPU.TabIndex = 32;
-            this.txtCPU.Text = "2";
             // 
             // label3
             // 
@@ -454,14 +453,6 @@
             this.label2.Size = new System.Drawing.Size(59, 13);
             this.label2.TabIndex = 29;
             this.label2.Text = "RAM (MB):";
-            // 
-            // txtRAM
-            // 
-            this.txtRAM.Location = new System.Drawing.Point(131, 112);
-            this.txtRAM.Name = "txtRAM";
-            this.txtRAM.Size = new System.Drawing.Size(215, 20);
-            this.txtRAM.TabIndex = 28;
-            this.txtRAM.Text = "8192";
             // 
             // label17
             // 
@@ -656,7 +647,6 @@
             // Umgebung
             // 
             this.Umgebung.BackColor = System.Drawing.Color.Transparent;
-            this.Umgebung.Controls.Add(this.groupBox6);
             this.Umgebung.Controls.Add(this.groupBox5);
             this.Umgebung.Controls.Add(this.groupBox4);
             this.Umgebung.Controls.Add(this.groupBox3);
@@ -666,34 +656,6 @@
             this.Umgebung.Size = new System.Drawing.Size(1479, 627);
             this.Umgebung.TabIndex = 1;
             this.Umgebung.Text = "Umgebung";
-            // 
-            // groupBox6
-            // 
-            this.groupBox6.Controls.Add(this.comboWDSVlan);
-            this.groupBox6.Controls.Add(this.label10);
-            this.groupBox6.Location = new System.Drawing.Point(466, 250);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(428, 136);
-            this.groupBox6.TabIndex = 16;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "WDS";
-            // 
-            // comboWDSVlan
-            // 
-            this.comboWDSVlan.FormattingEnabled = true;
-            this.comboWDSVlan.Location = new System.Drawing.Point(197, 38);
-            this.comboWDSVlan.Name = "comboWDSVlan";
-            this.comboWDSVlan.Size = new System.Drawing.Size(215, 21);
-            this.comboWDSVlan.TabIndex = 14;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(50, 38);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(90, 13);
-            this.label10.TabIndex = 15;
-            this.label10.Text = "Betankungs vlan:";
             // 
             // groupBox5
             // 
@@ -1247,131 +1209,6 @@
             this.label11.Text = "Hinweis: Die verfügbaren Betriebssysteme werden über den MECM in der Datenbank ve" +
     "rwaltet.";
             // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.groupBox10);
-            this.tabPage2.Controls.Add(this.groupBox9);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1479, 627);
-            this.tabPage2.TabIndex = 3;
-            this.tabPage2.Text = resources.GetString("tabPage2.Text");
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // groupBox10
-            // 
-            this.groupBox10.Controls.Add(this.button15);
-            this.groupBox10.Controls.Add(this.listView3);
-            this.groupBox10.Location = new System.Drawing.Point(404, 16);
-            this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(319, 291);
-            this.groupBox10.TabIndex = 1;
-            this.groupBox10.TabStop = false;
-            this.groupBox10.Text = "Powershell Skripts";
-            // 
-            // button15
-            // 
-            this.button15.Location = new System.Drawing.Point(192, 259);
-            this.button15.Name = "button15";
-            this.button15.Size = new System.Drawing.Size(104, 23);
-            this.button15.TabIndex = 4;
-            this.button15.Text = "Windows Explorer";
-            this.button15.UseVisualStyleBackColor = true;
-            // 
-            // listView3
-            // 
-            this.listView3.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader4,
-            this.columnHeader5});
-            this.listView3.HideSelection = false;
-            this.listView3.Location = new System.Drawing.Point(20, 29);
-            this.listView3.Name = "listView3";
-            this.listView3.Size = new System.Drawing.Size(276, 224);
-            this.listView3.TabIndex = 4;
-            this.listView3.UseCompatibleStateImageBehavior = false;
-            this.listView3.View = System.Windows.Forms.View.Details;
-            // 
-            // columnHeader4
-            // 
-            this.columnHeader4.Text = "Service";
-            this.columnHeader4.Width = 103;
-            // 
-            // columnHeader5
-            // 
-            this.columnHeader5.Text = "Powershell-Datei";
-            this.columnHeader5.Width = 160;
-            // 
-            // groupBox9
-            // 
-            this.groupBox9.Controls.Add(this.button14);
-            this.groupBox9.Controls.Add(this.button13);
-            this.groupBox9.Controls.Add(this.button12);
-            this.groupBox9.Controls.Add(this.listView2);
-            this.groupBox9.Location = new System.Drawing.Point(16, 16);
-            this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(370, 190);
-            this.groupBox9.TabIndex = 0;
-            this.groupBox9.TabStop = false;
-            this.groupBox9.Text = "Microsoft Endpoint Configuration Manager";
-            // 
-            // button14
-            // 
-            this.button14.Enabled = false;
-            this.button14.Location = new System.Drawing.Point(260, 152);
-            this.button14.Name = "button14";
-            this.button14.Size = new System.Drawing.Size(104, 23);
-            this.button14.TabIndex = 3;
-            this.button14.Text = "Deinstallieren";
-            this.button14.UseVisualStyleBackColor = true;
-            // 
-            // button13
-            // 
-            this.button13.Enabled = false;
-            this.button13.Location = new System.Drawing.Point(150, 152);
-            this.button13.Name = "button13";
-            this.button13.Size = new System.Drawing.Size(104, 23);
-            this.button13.TabIndex = 2;
-            this.button13.Text = "Installieren";
-            this.button13.UseVisualStyleBackColor = true;
-            // 
-            // button12
-            // 
-            this.button12.Location = new System.Drawing.Point(34, 152);
-            this.button12.Name = "button12";
-            this.button12.Size = new System.Drawing.Size(75, 23);
-            this.button12.TabIndex = 1;
-            this.button12.Text = "Verbinden";
-            this.button12.UseVisualStyleBackColor = true;
-            // 
-            // listView2
-            // 
-            this.listView2.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader3});
-            this.listView2.HideSelection = false;
-            this.listView2.Location = new System.Drawing.Point(24, 39);
-            this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(325, 98);
-            this.listView2.TabIndex = 0;
-            this.listView2.UseCompatibleStateImageBehavior = false;
-            this.listView2.View = System.Windows.Forms.View.Details;
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "Service";
-            this.columnHeader1.Width = 93;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "Status";
-            // 
-            // columnHeader3
-            // 
-            this.columnHeader3.Text = "Letzte Ausführung";
-            this.columnHeader3.Width = 158;
-            // 
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.groupBox11);
@@ -1386,7 +1223,7 @@
             // groupBox11
             // 
             this.groupBox11.Controls.Add(this.button8);
-            this.groupBox11.Controls.Add(this.listView4);
+            this.groupBox11.Controls.Add(this.MECM_Services);
             this.groupBox11.Location = new System.Drawing.Point(17, 24);
             this.groupBox11.Name = "groupBox11";
             this.groupBox11.Size = new System.Drawing.Size(437, 255);
@@ -1403,19 +1240,19 @@
             this.button8.Text = "Verbinden";
             this.button8.UseVisualStyleBackColor = true;
             // 
-            // listView4
+            // MECM_Services
             // 
-            this.listView4.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.MECM_Services.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader6,
             this.columnHeader8,
             this.columnHeader7});
-            this.listView4.HideSelection = false;
-            this.listView4.Location = new System.Drawing.Point(45, 40);
-            this.listView4.Name = "listView4";
-            this.listView4.Size = new System.Drawing.Size(362, 162);
-            this.listView4.TabIndex = 0;
-            this.listView4.UseCompatibleStateImageBehavior = false;
-            this.listView4.View = System.Windows.Forms.View.Details;
+            this.MECM_Services.HideSelection = false;
+            this.MECM_Services.Location = new System.Drawing.Point(45, 40);
+            this.MECM_Services.Name = "MECM_Services";
+            this.MECM_Services.Size = new System.Drawing.Size(362, 162);
+            this.MECM_Services.TabIndex = 0;
+            this.MECM_Services.UseCompatibleStateImageBehavior = false;
+            this.MECM_Services.View = System.Windows.Forms.View.Details;
             // 
             // columnHeader6
             // 
@@ -1429,6 +1266,10 @@
             // columnHeader7
             // 
             this.columnHeader7.Text = "Status";
+            // 
+            // countdownTimer
+            // 
+            this.countdownTimer.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // FMmain
             // 
@@ -1449,8 +1290,6 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.Umgebung.ResumeLayout(false);
-            this.groupBox6.ResumeLayout(false);
-            this.groupBox6.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -1462,9 +1301,6 @@
             this.groupBox8.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
-            this.groupBox10.ResumeLayout(false);
-            this.groupBox9.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.groupBox11.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -1542,15 +1378,10 @@
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox txtCPU;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtHDD;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtRAM;
         private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.GroupBox groupBox6;
-        private System.Windows.Forms.ComboBox comboWDSVlan;
-        private System.Windows.Forms.Label label10;
         private System.Windows.Forms.CheckBox chk_ansible_credssave;
         private System.Windows.Forms.CheckBox chk_hypervisor_credssave;
         private System.Windows.Forms.Button button9;
@@ -1575,29 +1406,19 @@
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.ComboBox comboPortgruppe_Name;
         private System.Windows.Forms.Label label29;
-        private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.GroupBox groupBox10;
-        private System.Windows.Forms.Button button15;
-        private System.Windows.Forms.ListView listView3;
-        private System.Windows.Forms.ColumnHeader columnHeader4;
-        private System.Windows.Forms.GroupBox groupBox9;
-        private System.Windows.Forms.Button button14;
-        private System.Windows.Forms.Button button13;
-        private System.Windows.Forms.Button button12;
-        private System.Windows.Forms.ListView listView2;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ColumnHeader columnHeader2;
-        private System.Windows.Forms.ColumnHeader columnHeader3;
-        private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.CheckBox chk_showTemplates;
         internal System.Windows.Forms.Label label_secureconnection;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.GroupBox groupBox11;
-        private System.Windows.Forms.ListView listView4;
+        private System.Windows.Forms.ListView MECM_Services;
         private System.Windows.Forms.ColumnHeader columnHeader6;
         private System.Windows.Forms.ColumnHeader columnHeader7;
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.ColumnHeader columnHeader8;
+        private System.Windows.Forms.Label labelTimer;
+        private System.Windows.Forms.Timer countdownTimer;
+        private System.Windows.Forms.ComboBox comboVCPU;
+        private System.Windows.Forms.ComboBox comboRAM;
     }
 }
 

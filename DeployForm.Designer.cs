@@ -41,7 +41,7 @@ namespace VirtuSphere
             // 
             // txtBox_commands
             // 
-            this.txtBox_commands.Location = new System.Drawing.Point(12, 415);
+            this.txtBox_commands.Location = new System.Drawing.Point(12, 604);
             this.txtBox_commands.Name = "txtBox_commands";
             this.txtBox_commands.Size = new System.Drawing.Size(695, 20);
             this.txtBox_commands.TabIndex = 1;
@@ -51,13 +51,13 @@ namespace VirtuSphere
             // 
             this.richTextBox1.Location = new System.Drawing.Point(12, 12);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(776, 397);
+            this.richTextBox1.Size = new System.Drawing.Size(776, 586);
             this.richTextBox1.TabIndex = 2;
             this.richTextBox1.Text = "";
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(713, 415);
+            this.button1.Location = new System.Drawing.Point(713, 604);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 3;
@@ -70,7 +70,7 @@ namespace VirtuSphere
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.ClientSize = new System.Drawing.Size(800, 441);
+            this.ClientSize = new System.Drawing.Size(800, 636);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.txtBox_commands);

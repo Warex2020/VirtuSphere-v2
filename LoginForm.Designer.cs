@@ -151,9 +151,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(42, 144);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(41, 13);
+            this.label1.Size = new System.Drawing.Size(78, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Server:";
+            this.label1.Text = "Ansible Server:";
             // 
             // LoginForm
             // 

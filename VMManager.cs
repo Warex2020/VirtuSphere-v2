@@ -58,11 +58,17 @@ public class Interface
     public string mode { get; set; }
     public string type { get; set; }
 
+    public bool IsManagementInterface { get; set; } = false;
+
     public string DisplayText
     {
         get
         {
-            if (mode == "DHCP")
+            if (IsManagementInterface)
+            {
+                return "Management Interface";
+            }
+            else if (mode == "DHCP")
             {
                 return $"Mode: {mode}, VLAN: {vlan}";
             }

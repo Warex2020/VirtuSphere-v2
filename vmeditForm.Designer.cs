@@ -30,6 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(vmeditForm));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.comboVCPU = new System.Windows.Forms.ComboBox();
+            this.comboRAM = new System.Windows.Forms.ComboBox();
             this.combo_os = new System.Windows.Forms.ComboBox();
             this.chkStartafterDeploy = new System.Windows.Forms.CheckBox();
             this.chkAutostart = new System.Windows.Forms.CheckBox();
@@ -37,7 +39,6 @@
             this.chkEnabled = new System.Windows.Forms.CheckBox();
             this.txtd_status = new System.Windows.Forms.TextBox();
             this.label24 = new System.Windows.Forms.Label();
-            this.txtd_cpu = new System.Windows.Forms.TextBox();
             this.label23 = new System.Windows.Forms.Label();
             this.txtd_updated_at = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
@@ -55,7 +56,6 @@
             this.txtd_datacenter = new System.Windows.Forms.TextBox();
             this.txtd_datastore = new System.Windows.Forms.TextBox();
             this.txtd_disk = new System.Windows.Forms.TextBox();
-            this.txtd_ram = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
@@ -75,14 +75,15 @@
             this.txtSub = new System.Windows.Forms.TextBox();
             this.txtGateway = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.comboType = new System.Windows.Forms.ComboBox();
+            this.label32 = new System.Windows.Forms.Label();
             this.Interface_DBID = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
-            this.txtType = new System.Windows.Forms.ComboBox();
             this.label26 = new System.Windows.Forms.Label();
             this.label25 = new System.Windows.Forms.Label();
             this.comboMode = new System.Windows.Forms.ComboBox();
-            this.ComboVLAN = new System.Windows.Forms.ComboBox();
+            this.ComboPortgruppe = new System.Windows.Forms.ComboBox();
             this.txtMAC = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.button5 = new System.Windows.Forms.Button();
@@ -116,6 +117,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.comboVCPU);
+            this.groupBox1.Controls.Add(this.comboRAM);
             this.groupBox1.Controls.Add(this.combo_os);
             this.groupBox1.Controls.Add(this.chkStartafterDeploy);
             this.groupBox1.Controls.Add(this.chkAutostart);
@@ -123,7 +126,6 @@
             this.groupBox1.Controls.Add(this.chkEnabled);
             this.groupBox1.Controls.Add(this.txtd_status);
             this.groupBox1.Controls.Add(this.label24);
-            this.groupBox1.Controls.Add(this.txtd_cpu);
             this.groupBox1.Controls.Add(this.label23);
             this.groupBox1.Controls.Add(this.txtd_updated_at);
             this.groupBox1.Controls.Add(this.label22);
@@ -141,7 +143,6 @@
             this.groupBox1.Controls.Add(this.txtd_datacenter);
             this.groupBox1.Controls.Add(this.txtd_datastore);
             this.groupBox1.Controls.Add(this.txtd_disk);
-            this.groupBox1.Controls.Add(this.txtd_ram);
             this.groupBox1.Controls.Add(this.label14);
             this.groupBox1.Controls.Add(this.label13);
             this.groupBox1.Controls.Add(this.label12);
@@ -156,17 +157,33 @@
             this.groupBox1.Controls.Add(this.txtd_name);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(450, 575);
+            this.groupBox1.Size = new System.Drawing.Size(587, 575);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Details";
             // 
+            // comboVCPU
+            // 
+            this.comboVCPU.FormattingEnabled = true;
+            this.comboVCPU.Location = new System.Drawing.Point(108, 190);
+            this.comboVCPU.Name = "comboVCPU";
+            this.comboVCPU.Size = new System.Drawing.Size(225, 21);
+            this.comboVCPU.TabIndex = 50;
+            // 
+            // comboRAM
+            // 
+            this.comboRAM.FormattingEnabled = true;
+            this.comboRAM.Location = new System.Drawing.Point(108, 161);
+            this.comboRAM.Name = "comboRAM";
+            this.comboRAM.Size = new System.Drawing.Size(225, 21);
+            this.comboRAM.TabIndex = 49;
+            // 
             // combo_os
             // 
             this.combo_os.FormattingEnabled = true;
-            this.combo_os.Location = new System.Drawing.Point(108, 134);
+            this.combo_os.Location = new System.Drawing.Point(108, 56);
             this.combo_os.Name = "combo_os";
-            this.combo_os.Size = new System.Drawing.Size(128, 21);
+            this.combo_os.Size = new System.Drawing.Size(225, 21);
             this.combo_os.TabIndex = 4;
             // 
             // chkStartafterDeploy
@@ -174,7 +191,7 @@
             this.chkStartafterDeploy.AutoSize = true;
             this.chkStartafterDeploy.Checked = true;
             this.chkStartafterDeploy.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkStartafterDeploy.Location = new System.Drawing.Point(245, 372);
+            this.chkStartafterDeploy.Location = new System.Drawing.Point(397, 367);
             this.chkStartafterDeploy.Name = "chkStartafterDeploy";
             this.chkStartafterDeploy.Size = new System.Drawing.Size(124, 17);
             this.chkStartafterDeploy.TabIndex = 48;
@@ -186,7 +203,7 @@
             this.chkAutostart.AutoSize = true;
             this.chkAutostart.Checked = true;
             this.chkAutostart.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkAutostart.Location = new System.Drawing.Point(245, 349);
+            this.chkAutostart.Location = new System.Drawing.Point(397, 344);
             this.chkAutostart.Name = "chkAutostart";
             this.chkAutostart.Size = new System.Drawing.Size(68, 17);
             this.chkAutostart.TabIndex = 47;
@@ -198,7 +215,7 @@
             this.chkImportMecm.AutoSize = true;
             this.chkImportMecm.Checked = true;
             this.chkImportMecm.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkImportMecm.Location = new System.Drawing.Point(245, 395);
+            this.chkImportMecm.Location = new System.Drawing.Point(397, 390);
             this.chkImportMecm.Name = "chkImportMecm";
             this.chkImportMecm.Size = new System.Drawing.Size(137, 17);
             this.chkImportMecm.TabIndex = 46;
@@ -211,7 +228,7 @@
             this.chkEnabled.Checked = true;
             this.chkEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkEnabled.Enabled = false;
-            this.chkEnabled.Location = new System.Drawing.Point(245, 326);
+            this.chkEnabled.Location = new System.Drawing.Point(397, 321);
             this.chkEnabled.Name = "chkEnabled";
             this.chkEnabled.Size = new System.Drawing.Size(50, 17);
             this.chkEnabled.TabIndex = 45;
@@ -222,7 +239,7 @@
             // 
             this.txtd_status.Location = new System.Drawing.Point(108, 380);
             this.txtd_status.Name = "txtd_status";
-            this.txtd_status.Size = new System.Drawing.Size(127, 20);
+            this.txtd_status.Size = new System.Drawing.Size(222, 20);
             this.txtd_status.TabIndex = 13;
             // 
             // label24
@@ -233,14 +250,6 @@
             this.label24.Size = new System.Drawing.Size(37, 13);
             this.label24.TabIndex = 43;
             this.label24.Text = "Status";
-            // 
-            // txtd_cpu
-            // 
-            this.txtd_cpu.Location = new System.Drawing.Point(107, 190);
-            this.txtd_cpu.Name = "txtd_cpu";
-            this.txtd_cpu.Size = new System.Drawing.Size(128, 20);
-            this.txtd_cpu.TabIndex = 6;
-            this.txtd_cpu.Text = "2";
             // 
             // label23
             // 
@@ -255,7 +264,7 @@
             // 
             this.txtd_updated_at.Location = new System.Drawing.Point(107, 354);
             this.txtd_updated_at.Name = "txtd_updated_at";
-            this.txtd_updated_at.Size = new System.Drawing.Size(128, 20);
+            this.txtd_updated_at.Size = new System.Drawing.Size(223, 20);
             this.txtd_updated_at.TabIndex = 12;
             // 
             // label22
@@ -272,21 +281,21 @@
             this.txtd_Id.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.txtd_Id.Location = new System.Drawing.Point(108, 30);
             this.txtd_Id.Name = "txtd_Id";
-            this.txtd_Id.Size = new System.Drawing.Size(128, 20);
+            this.txtd_Id.Size = new System.Drawing.Size(222, 20);
             this.txtd_Id.TabIndex = 38;
             // 
             // txtd_created_at
             // 
             this.txtd_created_at.Location = new System.Drawing.Point(107, 325);
             this.txtd_created_at.Name = "txtd_created_at";
-            this.txtd_created_at.Size = new System.Drawing.Size(128, 20);
+            this.txtd_created_at.Size = new System.Drawing.Size(223, 20);
             this.txtd_created_at.TabIndex = 11;
             // 
             // txtd_creator
             // 
             this.txtd_creator.Location = new System.Drawing.Point(107, 296);
             this.txtd_creator.Name = "txtd_creator";
-            this.txtd_creator.Size = new System.Drawing.Size(128, 20);
+            this.txtd_creator.Size = new System.Drawing.Size(223, 20);
             this.txtd_creator.TabIndex = 10;
             // 
             // label21
@@ -321,7 +330,7 @@
             this.txtd_notes.Location = new System.Drawing.Point(25, 459);
             this.txtd_notes.Multiline = true;
             this.txtd_notes.Name = "txtd_notes";
-            this.txtd_notes.Size = new System.Drawing.Size(213, 96);
+            this.txtd_notes.Size = new System.Drawing.Size(338, 96);
             this.txtd_notes.TabIndex = 31;
             // 
             // label17
@@ -336,7 +345,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(242, 37);
+            this.label15.Location = new System.Drawing.Point(394, 32);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(55, 13);
             this.label15.TabIndex = 29;
@@ -345,7 +354,7 @@
             // listBoxPackages2
             // 
             this.listBoxPackages2.FormattingEnabled = true;
-            this.listBoxPackages2.Location = new System.Drawing.Point(242, 61);
+            this.listBoxPackages2.Location = new System.Drawing.Point(394, 56);
             this.listBoxPackages2.Name = "listBoxPackages2";
             this.listBoxPackages2.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
             this.listBoxPackages2.Size = new System.Drawing.Size(187, 251);
@@ -355,7 +364,7 @@
             // 
             this.txtd_guest_id.Location = new System.Drawing.Point(107, 269);
             this.txtd_guest_id.Name = "txtd_guest_id";
-            this.txtd_guest_id.Size = new System.Drawing.Size(128, 20);
+            this.txtd_guest_id.Size = new System.Drawing.Size(223, 20);
             this.txtd_guest_id.TabIndex = 9;
             // 
             // txtd_datacenter
@@ -363,7 +372,7 @@
             this.txtd_datacenter.Enabled = false;
             this.txtd_datacenter.Location = new System.Drawing.Point(107, 243);
             this.txtd_datacenter.Name = "txtd_datacenter";
-            this.txtd_datacenter.Size = new System.Drawing.Size(128, 20);
+            this.txtd_datacenter.Size = new System.Drawing.Size(223, 20);
             this.txtd_datacenter.TabIndex = 8;
             this.txtd_datacenter.MouseClick += new System.Windows.Forms.MouseEventHandler(this.txtd_datacenter_Click);
             // 
@@ -372,7 +381,7 @@
             this.txtd_datastore.Enabled = false;
             this.txtd_datastore.Location = new System.Drawing.Point(107, 217);
             this.txtd_datastore.Name = "txtd_datastore";
-            this.txtd_datastore.Size = new System.Drawing.Size(128, 20);
+            this.txtd_datastore.Size = new System.Drawing.Size(223, 20);
             this.txtd_datastore.TabIndex = 7;
             this.txtd_datastore.Click += new System.EventHandler(this.txtd_datastore_Click);
             this.txtd_datastore.TextChanged += new System.EventHandler(this.txtd_datastore_TextChanged);
@@ -381,18 +390,10 @@
             // 
             this.txtd_disk.Location = new System.Drawing.Point(107, 406);
             this.txtd_disk.Name = "txtd_disk";
-            this.txtd_disk.Size = new System.Drawing.Size(128, 20);
+            this.txtd_disk.Size = new System.Drawing.Size(223, 20);
             this.txtd_disk.TabIndex = 14;
             this.txtd_disk.Text = "40";
             this.txtd_disk.Visible = false;
-            // 
-            // txtd_ram
-            // 
-            this.txtd_ram.Location = new System.Drawing.Point(108, 161);
-            this.txtd_ram.Name = "txtd_ram";
-            this.txtd_ram.Size = new System.Drawing.Size(128, 20);
-            this.txtd_ram.TabIndex = 5;
-            this.txtd_ram.Text = "8";
             // 
             // label14
             // 
@@ -443,7 +444,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(20, 137);
+            this.label9.Location = new System.Drawing.Point(20, 59);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(77, 13);
             this.label9.TabIndex = 17;
@@ -452,7 +453,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(20, 111);
+            this.label7.Location = new System.Drawing.Point(21, 137);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(43, 13);
             this.label7.TabIndex = 15;
@@ -461,23 +462,23 @@
             // 
             // txtd_domain
             // 
-            this.txtd_domain.Location = new System.Drawing.Point(108, 108);
+            this.txtd_domain.Location = new System.Drawing.Point(109, 134);
             this.txtd_domain.Name = "txtd_domain";
-            this.txtd_domain.Size = new System.Drawing.Size(128, 20);
+            this.txtd_domain.Size = new System.Drawing.Size(223, 20);
             this.txtd_domain.TabIndex = 3;
             this.txtd_domain.TextChanged += new System.EventHandler(this.textBox7_TextChanged);
             // 
             // txtd_hostname
             // 
-            this.txtd_hostname.Location = new System.Drawing.Point(108, 82);
+            this.txtd_hostname.Location = new System.Drawing.Point(109, 108);
             this.txtd_hostname.Name = "txtd_hostname";
-            this.txtd_hostname.Size = new System.Drawing.Size(128, 20);
+            this.txtd_hostname.Size = new System.Drawing.Size(224, 20);
             this.txtd_hostname.TabIndex = 2;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(20, 85);
+            this.label5.Location = new System.Drawing.Point(21, 111);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(55, 13);
             this.label5.TabIndex = 5;
@@ -486,7 +487,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(20, 59);
+            this.label1.Location = new System.Drawing.Point(21, 85);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 1;
@@ -494,14 +495,14 @@
             // 
             // txtd_name
             // 
-            this.txtd_name.Location = new System.Drawing.Point(108, 56);
+            this.txtd_name.Location = new System.Drawing.Point(109, 82);
             this.txtd_name.Name = "txtd_name";
-            this.txtd_name.Size = new System.Drawing.Size(128, 20);
+            this.txtd_name.Size = new System.Drawing.Size(224, 20);
             this.txtd_name.TabIndex = 0;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(863, 594);
+            this.button1.Location = new System.Drawing.Point(1008, 594);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(99, 23);
             this.button1.TabIndex = 32;
@@ -511,7 +512,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(758, 594);
+            this.button2.Location = new System.Drawing.Point(903, 594);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(99, 23);
             this.button2.TabIndex = 31;
@@ -543,6 +544,8 @@
             this.txtSub.Name = "txtSub";
             this.txtSub.Size = new System.Drawing.Size(115, 20);
             this.txtSub.TabIndex = 17;
+            this.txtSub.EnabledChanged += new System.EventHandler(this.TextBoxEnabledChanged);
+            this.txtSub.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txt_TextChanged);
             // 
             // txtGateway
             // 
@@ -550,17 +553,20 @@
             this.txtGateway.Name = "txtGateway";
             this.txtGateway.Size = new System.Drawing.Size(115, 20);
             this.txtGateway.TabIndex = 18;
+            this.txtGateway.EnabledChanged += new System.EventHandler(this.TextBoxEnabledChanged);
+            this.txtGateway.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txt_TextChanged);
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.comboType);
+            this.groupBox2.Controls.Add(this.label32);
             this.groupBox2.Controls.Add(this.Interface_DBID);
             this.groupBox2.Controls.Add(this.label8);
             this.groupBox2.Controls.Add(this.label31);
-            this.groupBox2.Controls.Add(this.txtType);
             this.groupBox2.Controls.Add(this.label26);
             this.groupBox2.Controls.Add(this.label25);
             this.groupBox2.Controls.Add(this.comboMode);
-            this.groupBox2.Controls.Add(this.ComboVLAN);
+            this.groupBox2.Controls.Add(this.ComboPortgruppe);
             this.groupBox2.Controls.Add(this.txtMAC);
             this.groupBox2.Controls.Add(this.label18);
             this.groupBox2.Controls.Add(this.button5);
@@ -577,12 +583,33 @@
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Controls.Add(this.txtGateway);
-            this.groupBox2.Location = new System.Drawing.Point(468, 12);
+            this.groupBox2.Location = new System.Drawing.Point(613, 14);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(254, 575);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Interfaces";
+            // 
+            // comboType
+            // 
+            this.comboType.FormattingEnabled = true;
+            this.comboType.Location = new System.Drawing.Point(115, 301);
+            this.comboType.Name = "comboType";
+            this.comboType.Size = new System.Drawing.Size(115, 21);
+            this.comboType.TabIndex = 60;
+            this.comboType.SelectedIndexChanged += new System.EventHandler(this.comboTypechange);
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label32.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label32.Location = new System.Drawing.Point(27, 511);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(209, 16);
+            this.label32.TabIndex = 59;
+            this.label32.Text = "Management (WDS) Interface";
+            this.label32.Visible = false;
             // 
             // Interface_DBID
             // 
@@ -610,17 +637,6 @@
             this.label31.Size = new System.Drawing.Size(70, 13);
             this.label31.TabIndex = 57;
             this.label31.Text = "Database ID:";
-            // 
-            // txtType
-            // 
-            this.txtType.FormattingEnabled = true;
-            this.txtType.Items.AddRange(new object[] {
-            "e1000e",
-            "vmxnet3"});
-            this.txtType.Location = new System.Drawing.Point(115, 298);
-            this.txtType.Name = "txtType";
-            this.txtType.Size = new System.Drawing.Size(115, 21);
-            this.txtType.TabIndex = 46;
             // 
             // label26
             // 
@@ -651,22 +667,28 @@
             this.comboMode.Size = new System.Drawing.Size(115, 21);
             this.comboMode.TabIndex = 43;
             this.comboMode.SelectedIndexChanged += new System.EventHandler(this.comboArt_SelectedIndexChanged);
+            this.comboMode.SelectionChangeCommitted += new System.EventHandler(this.txt_TextChanged);
+            this.comboMode.EnabledChanged += new System.EventHandler(this.TextBoxEnabledChanged);
             // 
-            // ComboVLAN
+            // ComboPortgruppe
             // 
-            this.ComboVLAN.FormattingEnabled = true;
-            this.ComboVLAN.Location = new System.Drawing.Point(115, 271);
-            this.ComboVLAN.Name = "ComboVLAN";
-            this.ComboVLAN.Size = new System.Drawing.Size(115, 21);
-            this.ComboVLAN.TabIndex = 42;
+            this.ComboPortgruppe.FormattingEnabled = true;
+            this.ComboPortgruppe.Location = new System.Drawing.Point(115, 271);
+            this.ComboPortgruppe.Name = "ComboPortgruppe";
+            this.ComboPortgruppe.Size = new System.Drawing.Size(115, 21);
+            this.ComboPortgruppe.TabIndex = 42;
+            this.ComboPortgruppe.SelectionChangeCommitted += new System.EventHandler(this.txt_TextChanged);
+            this.ComboPortgruppe.EnabledChanged += new System.EventHandler(this.TextBoxEnabledChanged);
             // 
             // txtMAC
             // 
+            this.txtMAC.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.txtMAC.Enabled = false;
             this.txtMAC.Location = new System.Drawing.Point(115, 482);
             this.txtMAC.Name = "txtMAC";
             this.txtMAC.Size = new System.Drawing.Size(115, 20);
             this.txtMAC.TabIndex = 21;
+            this.txtMAC.EnabledChanged += new System.EventHandler(this.TextBoxEnabledChanged);
             // 
             // label18
             // 
@@ -689,6 +711,7 @@
             // 
             // button4
             // 
+            this.button4.Enabled = false;
             this.button4.Location = new System.Drawing.Point(4, 536);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(65, 23);
@@ -706,6 +729,7 @@
             this.btnEdit.TabIndex = 24;
             this.btnEdit.Text = "Bearbeiten";
             this.btnEdit.UseVisualStyleBackColor = true;
+            this.btnEdit.Visible = false;
             this.btnEdit.Click += new System.EventHandler(this.btn_editInterface_Click);
             // 
             // txtIP
@@ -714,6 +738,8 @@
             this.txtIP.Name = "txtIP";
             this.txtIP.Size = new System.Drawing.Size(115, 20);
             this.txtIP.TabIndex = 16;
+            this.txtIP.EnabledChanged += new System.EventHandler(this.TextBoxEnabledChanged);
+            this.txtIP.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txt_TextChanged);
             // 
             // label16
             // 
@@ -739,6 +765,8 @@
             this.txtDNS1.Name = "txtDNS1";
             this.txtDNS1.Size = new System.Drawing.Size(115, 20);
             this.txtDNS1.TabIndex = 19;
+            this.txtDNS1.EnabledChanged += new System.EventHandler(this.TextBoxEnabledChanged);
+            this.txtDNS1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txt_TextChanged);
             // 
             // txtDNS2
             // 
@@ -746,6 +774,8 @@
             this.txtDNS2.Name = "txtDNS2";
             this.txtDNS2.Size = new System.Drawing.Size(115, 20);
             this.txtDNS2.TabIndex = 20;
+            this.txtDNS2.EnabledChanged += new System.EventHandler(this.TextBoxEnabledChanged);
+            this.txtDNS2.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txt_TextChanged);
             // 
             // label2
             // 
@@ -779,7 +809,7 @@
             this.groupBox3.Controls.Add(this.txtHDD_Size);
             this.groupBox3.Controls.Add(this.btnDiskDelete);
             this.groupBox3.Controls.Add(this.label29);
-            this.groupBox3.Location = new System.Drawing.Point(728, 14);
+            this.groupBox3.Location = new System.Drawing.Point(873, 14);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(237, 390);
             this.groupBox3.TabIndex = 4;
@@ -810,6 +840,7 @@
             this.txtHDD_Name.Name = "txtHDD_Name";
             this.txtHDD_Name.Size = new System.Drawing.Size(114, 20);
             this.txtHDD_Name.TabIndex = 25;
+            this.txtHDD_Name.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtHDD_TextChanged);
             // 
             // label27
             // 
@@ -855,6 +886,7 @@
             this.comboHDD_Type.Name = "comboHDD_Type";
             this.comboHDD_Type.Size = new System.Drawing.Size(114, 21);
             this.comboHDD_Type.TabIndex = 51;
+            this.comboHDD_Type.SelectionChangeCommitted += new System.EventHandler(this.txtHDD_TextChanged);
             // 
             // btnDiskUpdate
             // 
@@ -865,6 +897,7 @@
             this.btnDiskUpdate.TabIndex = 30;
             this.btnDiskUpdate.Text = "Bearbeiten";
             this.btnDiskUpdate.UseVisualStyleBackColor = true;
+            this.btnDiskUpdate.Visible = false;
             this.btnDiskUpdate.Click += new System.EventHandler(this.button7_Click);
             // 
             // txtHDD_Size
@@ -873,6 +906,7 @@
             this.txtHDD_Size.Name = "txtHDD_Size";
             this.txtHDD_Size.Size = new System.Drawing.Size(114, 20);
             this.txtHDD_Size.TabIndex = 26;
+            this.txtHDD_Size.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtHDD_TextChanged);
             // 
             // btnDiskDelete
             // 
@@ -883,6 +917,7 @@
             this.btnDiskDelete.TabIndex = 28;
             this.btnDiskDelete.Text = "Löschen";
             this.btnDiskDelete.UseVisualStyleBackColor = true;
+            this.btnDiskDelete.Click += new System.EventHandler(this.btnDiskDelete_Click);
             // 
             // label29
             // 
@@ -896,7 +931,7 @@
             // lbl_status
             // 
             this.lbl_status.AutoSize = true;
-            this.lbl_status.Location = new System.Drawing.Point(764, 558);
+            this.lbl_status.Location = new System.Drawing.Point(909, 558);
             this.lbl_status.Name = "lbl_status";
             this.lbl_status.Size = new System.Drawing.Size(58, 13);
             this.lbl_status.TabIndex = 5;
@@ -907,7 +942,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.ClientSize = new System.Drawing.Size(977, 629);
+            this.ClientSize = new System.Drawing.Size(1116, 629);
             this.Controls.Add(this.lbl_status);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -979,18 +1014,15 @@
         internal System.Windows.Forms.TextBox txtd_datacenter;
         internal System.Windows.Forms.TextBox txtd_datastore;
         internal System.Windows.Forms.TextBox txtd_disk;
-        internal System.Windows.Forms.TextBox txtd_ram;
         internal System.Windows.Forms.TextBox txtd_notes;
-        internal System.Windows.Forms.TextBox txtd_cpu;
         private System.Windows.Forms.Label label23;
         internal System.Windows.Forms.TextBox txtd_status;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Label label26;
         private System.Windows.Forms.Label label25;
         private System.Windows.Forms.ComboBox comboMode;
-        private System.Windows.Forms.ComboBox ComboVLAN;
+        private System.Windows.Forms.ComboBox ComboPortgruppe;
         private System.Windows.Forms.Label label8;
-        internal System.Windows.Forms.ComboBox txtType;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.ListBox listBoxHDDs;
@@ -1012,5 +1044,9 @@
         private System.Windows.Forms.CheckBox chkImportMecm;
         private System.Windows.Forms.CheckBox chkEnabled;
         private System.Windows.Forms.ComboBox combo_os;
+        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.ComboBox comboVCPU;
+        private System.Windows.Forms.ComboBox comboRAM;
+        private System.Windows.Forms.ComboBox comboType;
     }
 }

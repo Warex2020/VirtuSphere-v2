@@ -135,6 +135,25 @@ namespace VirtuSphere
                 return;
             }
 
+            // lade wds_vlan aus mission
+            string wds_vlan_old = _mainForm.missionsList.Find(x => x.Id == missionId).wds_vlan;
+
+            if(wds_vlan_old != missionWDS)
+            {
+                // frage ob alle VMs geupdated werden sollen, weil sich die WDS Portgruppe geändert hat
+                DialogResult dialogResult = MessageBox.Show("Wollen Sie alle VMs in dieser Mission updaten, weil sich die WDS Portgruppe geändert hat?", "WDS Portgruppe geändert", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    //MessageBox.Show("Ja");
+                    _mainForm.UpdateAllVMsInMission(missionId, missionWDS);
+                }
+                else if (dialogResult == DialogResult.No)
+                {
+                    //MessageBox.Show("Nein");
+                }
+
+            }
+
             // Speichere die Daten in der Klasse
             MissionItem mission = new MissionItem
             {
