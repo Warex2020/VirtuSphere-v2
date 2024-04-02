@@ -22,8 +22,7 @@
         disk: "{{ item.disks }}"
         hardware:
           memory_mb: "{{ item.memory }}"
-          num_cpus: "{{ item.
-          s }}"
+          num_cpus: "{{ item.vcpus }}"
           scsi: lsilogicsas
           secure_boot: true
           boot_firmware: "efi"

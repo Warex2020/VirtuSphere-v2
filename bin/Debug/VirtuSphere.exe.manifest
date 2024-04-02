@@ -170,17 +170,17 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>0oGub524FojWYRPMYPZXsHNeKb/Os/P1SE3WXvpP09Y=</dsig:DigestValue>
+        <dsig:DigestValue>AhehxbXa+0Zcei0ATNDvcC0QjMv44BYOCo8D8V3Ybqg=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="Ansible\createVMs-ESXi_playbook.yml" size="2176">
+  <file name="Ansible\createVMs-ESXi_playbook.yml" size="2168">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>lg+hOqcXiKeaBBaqQfg5q6kLC6OMim4N0pgTRKlkMgU=</dsig:DigestValue>
+      <dsig:DigestValue>l1C7uOqevaRYRECFLkYelxexwIDhMOkeoCb47sVwbhM=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Ansible\exportVMs-Informations-ESXi_playbook.yml" size="931">
