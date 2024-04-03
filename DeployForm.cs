@@ -139,8 +139,8 @@ namespace VirtuSphere
 
 
                         // wenn runPlaybook nicht leer ist dann führe aus
-                        if (runPlaybook != null || runPlaybook == "") { executionCommand += "ansible-playbook /tmp/" + missionName + "/" + runPlaybook;
-
+                        if (runPlaybook != null || runPlaybook == "") { 
+                            executionCommand += "ansible-playbook /tmp/" + missionName + "/" + runPlaybook;
                             if (chk_verbose) { executionCommand += " -vvv; "; } else { executionCommand += "; "; }
                         } else
                         {

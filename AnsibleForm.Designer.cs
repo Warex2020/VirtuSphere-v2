@@ -32,25 +32,25 @@
             this.listFiles = new System.Windows.Forms.ListView();
             this.txtAnsible = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.chk_createvms = new System.Windows.Forms.CheckBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.txtWaitTime = new System.Windows.Forms.TextBox();
             this.chk_verbose = new System.Windows.Forms.CheckBox();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.chk_autostart = new System.Windows.Forms.CheckBox();
             this.chk_exportvminfos = new System.Windows.Forms.CheckBox();
             this.btn_importMacDB = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.comboPlaybooks = new System.Windows.Forms.ComboBox();
             this.btnSave = new System.Windows.Forms.Button();
-            this.labelMissionName = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.comboPlaybooks = new System.Windows.Forms.ComboBox();
+            this.labelMissionName = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.chk_createvms = new System.Windows.Forms.CheckBox();
-            this.label3 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -105,6 +105,38 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Generierten Ansible Playbooks";
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(693, 308);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(59, 13);
+            this.label3.TabIndex = 33;
+            this.label3.Text = "Zielsystem:";
+            // 
+            // chk_createvms
+            // 
+            this.chk_createvms.AutoSize = true;
+            this.chk_createvms.Checked = true;
+            this.chk_createvms.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chk_createvms.Location = new System.Drawing.Point(701, 339);
+            this.chk_createvms.Name = "chk_createvms";
+            this.chk_createvms.Size = new System.Drawing.Size(99, 17);
+            this.chk_createvms.TabIndex = 32;
+            this.chk_createvms.Text = "Server erstellen";
+            this.chk_createvms.UseVisualStyleBackColor = true;
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(701, 434);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(103, 17);
+            this.checkBox2.TabIndex = 31;
+            this.checkBox2.Text = "Experten Modus";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -132,26 +164,6 @@
             this.chk_verbose.TabIndex = 27;
             this.chk_verbose.Text = "Ansible Debug";
             this.chk_verbose.UseVisualStyleBackColor = true;
-            // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(776, 214);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(84, 23);
-            this.button5.TabIndex = 26;
-            this.button5.Text = "Generieren";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.btn_generateClick);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(686, 214);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(84, 23);
-            this.button2.TabIndex = 25;
-            this.button2.Text = "Löschen";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.btn_deleteClick);
             // 
             // chk_autostart
             // 
@@ -198,14 +210,6 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.btnDeploy2_Click);
             // 
-            // comboPlaybooks
-            // 
-            this.comboPlaybooks.FormattingEnabled = true;
-            this.comboPlaybooks.Location = new System.Drawing.Point(689, 243);
-            this.comboPlaybooks.Name = "comboPlaybooks";
-            this.comboPlaybooks.Size = new System.Drawing.Size(173, 21);
-            this.comboPlaybooks.TabIndex = 17;
-            // 
             // btnSave
             // 
             this.btnSave.Location = new System.Drawing.Point(599, 503);
@@ -217,6 +221,55 @@
             this.btnSave.Visible = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(693, 291);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(79, 13);
+            this.label1.TabIndex = 14;
+            this.label1.Text = "Missionsname: ";
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(726, 163);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(119, 17);
+            this.checkBox1.TabIndex = 11;
+            this.checkBox1.Text = "Bearbeitungsmodus";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(776, 214);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(84, 23);
+            this.button5.TabIndex = 26;
+            this.button5.Text = "Generieren";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.btn_generateClick);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(686, 214);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(84, 23);
+            this.button2.TabIndex = 25;
+            this.button2.Text = "Löschen";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.btn_deleteClick);
+            // 
+            // comboPlaybooks
+            // 
+            this.comboPlaybooks.FormattingEnabled = true;
+            this.comboPlaybooks.Location = new System.Drawing.Point(689, 243);
+            this.comboPlaybooks.Name = "comboPlaybooks";
+            this.comboPlaybooks.Size = new System.Drawing.Size(173, 21);
+            this.comboPlaybooks.TabIndex = 17;
+            this.comboPlaybooks.SelectionChangeCommitted += new System.EventHandler(this.comboPlaybooks_SelectionChangeCommitted);
+            // 
             // labelMissionName
             // 
             this.labelMissionName.AutoSize = true;
@@ -226,15 +279,6 @@
             this.labelMissionName.TabIndex = 15;
             this.labelMissionName.Text = "leer";
             this.labelMissionName.Click += new System.EventHandler(this.labelMissionName_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(693, 291);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(79, 13);
-            this.label1.TabIndex = 14;
-            this.label1.Text = "Missionsname: ";
             // 
             // button4
             // 
@@ -255,49 +299,6 @@
             this.button3.Text = "Explorer";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(726, 163);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(119, 17);
-            this.checkBox1.TabIndex = 11;
-            this.checkBox1.Text = "Bearbeitungsmodus";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-            // 
-            // checkBox2
-            // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(701, 434);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(103, 17);
-            this.checkBox2.TabIndex = 31;
-            this.checkBox2.Text = "Experten Modus";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
-            // 
-            // chk_createvms
-            // 
-            this.chk_createvms.AutoSize = true;
-            this.chk_createvms.Checked = true;
-            this.chk_createvms.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chk_createvms.Location = new System.Drawing.Point(701, 339);
-            this.chk_createvms.Name = "chk_createvms";
-            this.chk_createvms.Size = new System.Drawing.Size(99, 17);
-            this.chk_createvms.TabIndex = 32;
-            this.chk_createvms.Text = "Server erstellen";
-            this.chk_createvms.UseVisualStyleBackColor = true;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(693, 308);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(59, 13);
-            this.label3.TabIndex = 33;
-            this.label3.Text = "Zielsystem:";
             // 
             // AnsibleForm
             // 

@@ -51,11 +51,6 @@ namespace VirtuSphere
             this.labelMissionName.Text = missionName;
             ProjectPathTmp = Path.Combine(PathTmp, missionName);
 
-            // selectiere erstes item in listFiles
-            if (listFiles.Items.Count > 0)
-            {
-                listFiles.Items[0].Selected = true;
-            }
         }
 
         public void setTargetESXi(string esxi_address)
@@ -90,18 +85,6 @@ namespace VirtuSphere
             }
 
 
-            // lade alle datei aus ProjecttempPath in listFiles
-            foreach (string file in Directory.GetFiles(ProjecttempPath))
-            {
-                listFiles.Items.Add(Path.GetFileName(file));
-            }
-
-            // selectiere erste datei in listFiles
-            if (listFiles.Items.Count > 0)
-            {
-                listFiles.Items[0].Selected = true;
-            }
-
             txtAnsible.Visible = false;
             btnSave.Visible = false;
             checkBox1.Visible = false;
@@ -111,6 +94,9 @@ namespace VirtuSphere
             button3.Visible = false;
             button4.Visible = false;
             button5.Visible = false;
+
+            // comboPlaybooks soll auch leer zur auswahl haben
+            comboPlaybooks.Items.Add("");
 
         }
 
@@ -125,8 +111,6 @@ namespace VirtuSphere
             if (listFiles.SelectedItems.Count > 0)
             {
                 string selectedItem = listFiles.SelectedItems[0].Text;
-                // Anzeigen der Auswahl in einer MessageBox
-                //MessageBox.Show("Ausgewählter Eintrag: " + selectedItem, "Auswahl", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 String path = Path.Combine(ProjectPathTmp, selectedItem);
                 // prüfe ob Filepath existiert
@@ -299,23 +283,7 @@ namespace VirtuSphere
                 }
             }
 
-            // leere listFiles
-            listFiles.Items.Clear();
-            // fülle listFiles mit Dateien aus dem Ordner
-            foreach (string file in Directory.GetFiles(ProjectPathTmp))
-            {
-                listFiles.Items.Add(Path.GetFileName(file));
-            }
-
-            // wähle in listFiles test.yml aus
-            foreach (ListViewItem item in listFiles.Items)
-            {
-                if (item.Text == selectedItem)
-                {
-                    item.Selected = true;
-                    break;
-                }
-            }
+            reloadListFiles();
 
             if (System.IO.File.Exists(ProjectPathTmp + "/vm_mac_list.csv"))
             {
@@ -377,8 +345,12 @@ namespace VirtuSphere
             deployForm.ssh_port2 = ssh_port2;
 
             // Erkenne auswahl comboPlaybooks_SelectedIndexChanged
-            string selectedPlaybook = comboPlaybooks.SelectedItem.ToString();
-            Console.WriteLine("Ausgewähltes Playbook: " + selectedPlaybook);
+            // wenn comboPlaybooks nicht leer setzte comboPlaybooks.SelectedItem.ToString();
+
+
+            string selectedPlaybook = null;
+
+            if(comboPlaybooks.SelectedItem != null) selectedPlaybook = comboPlaybooks.SelectedItem.ToString();
 
             // Sende alle dateien aus ProjectPathTmp an SSH-Server
             foreach (string file in Directory.GetFiles(ProjectPathTmp))
@@ -477,15 +449,25 @@ namespace VirtuSphere
             // leere listFiles
             listFiles.Items.Clear();
             // fülle listFiles mit Dateien aus dem Ordner
-            foreach (string file in Directory.GetFiles(ProjectPathTmp))
+            // lade alle datei aus ProjecttempPath in listFiles
+            foreach (string file in Directory.GetFiles(ProjecttempPath))
             {
-                listFiles.Items.Add(Path.GetFileName(file));
+                // prüfe ob filename accounts.yml ist
+                if (Path.GetFileName(file) != "accounts.yml")
+                {
+                    listFiles.Items.Add(Path.GetFileName(file));
+                }
+
             }
 
-            // selectiere erstes item in listFiles
-            if (listFiles.Items.Count > 0)
+            // selectiere serverlist.yml
+            foreach (ListViewItem item in listFiles.Items)
             {
-                listFiles.Items[0].Selected = true;
+                if (item.Text == "serverlist.yml")
+                {
+                    item.Selected = true;
+                    break;
+                }
             }
 
             // einträge sollen untereinander stehen
@@ -639,11 +621,33 @@ mission_configuration:
             button4.Visible = checkBox2.Checked;
             button5.Visible = checkBox2.Checked;
 
+
+
         }
 
         private void labelMissionName_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void comboPlaybooks_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            // wenn die auswahl nicht leer ist dann deativiere checkbox
+            if (comboPlaybooks.SelectedItem.ToString() != "")
+            {
+                chk_autostart.Enabled = false;
+                chk_createvms.Enabled = false;
+                chk_exportvminfos.Enabled = false;
+                checkBox2.Enabled = false;
+            }
+            else
+            {
+                chk_autostart.Enabled = true;
+                chk_createvms.Enabled = true;
+                chk_exportvminfos.Enabled = true;
+                checkBox2.Enabled = true;
+                
+            }
         }
     }
 }
