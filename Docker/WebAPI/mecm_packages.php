@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $packages[] = $row['package_name'];
     }
 
-    print_r($data);
+    print_r($data[0]);
 
 
         switch ($data['type']) {
