@@ -1,6 +1,9 @@
 $VirtuSphere_WebAPI = "127.0.0.1:8021"
 
-$jsonUrl = "http://$VirtuSphere_WebAPI/mecm-api.php?action=getDeviceList"
+$mac = (Get-WmiObject Win32_NetworkAdapterConfiguration | Where { $_.IPEnabled -eq $true }).MacAddress | Select-Object -last 1
+
+
+$jsonUrl = "http://$VirtuSphere_WebAPI/mecm-api.php?action=getDeviceList&mac=$($mac)"
 
 $webClient = New-Object System.Net.WebClient
 $json = $webClient.DownloadString($jsonUrl)
