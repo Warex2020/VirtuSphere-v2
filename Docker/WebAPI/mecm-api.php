@@ -110,6 +110,12 @@ if(isset($_GET["action"]) && $_GET["action"] == "getDeviceList"){
     if ($result->num_rows > 0) {
         $vm_id = $result->fetch_assoc()['vm_id'];
 
+        // update deploy_vm vm_status to "5/5 OS Installed"
+        $sql = $connection->prepare("UPDATE deploy_vms SET vm_status = '5/5 OS Installed' WHERE id = ?");
+        $sql->bind_param("i", $vm_id);
+        $sql->execute();
+    
+
         $sql = $connection->prepare("SELECT * FROM deploy_vms WHERE id = ?");
         $sql->bind_param("i", $vm_id);
         $sql->execute();
