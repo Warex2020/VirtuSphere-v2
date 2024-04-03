@@ -51,6 +51,7 @@
             this.labelMissionName = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
+            this.chk_removeplaybooks = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -77,6 +78,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.chk_removeplaybooks);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.chk_createvms);
             this.groupBox1.Controls.Add(this.checkBox2);
@@ -119,7 +121,7 @@
             this.chk_createvms.AutoSize = true;
             this.chk_createvms.Checked = true;
             this.chk_createvms.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chk_createvms.Location = new System.Drawing.Point(701, 339);
+            this.chk_createvms.Location = new System.Drawing.Point(701, 333);
             this.chk_createvms.Name = "chk_createvms";
             this.chk_createvms.Size = new System.Drawing.Size(99, 17);
             this.chk_createvms.TabIndex = 32;
@@ -129,7 +131,7 @@
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(701, 434);
+            this.checkBox2.Location = new System.Drawing.Point(701, 451);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(103, 17);
             this.checkBox2.TabIndex = 31;
@@ -140,7 +142,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(834, 392);
+            this.label2.Location = new System.Drawing.Point(834, 386);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(24, 13);
             this.label2.TabIndex = 29;
@@ -148,7 +150,7 @@
             // 
             // txtWaitTime
             // 
-            this.txtWaitTime.Location = new System.Drawing.Point(802, 388);
+            this.txtWaitTime.Location = new System.Drawing.Point(802, 382);
             this.txtWaitTime.Name = "txtWaitTime";
             this.txtWaitTime.Size = new System.Drawing.Size(28, 20);
             this.txtWaitTime.TabIndex = 28;
@@ -158,7 +160,7 @@
             // chk_verbose
             // 
             this.chk_verbose.AutoSize = true;
-            this.chk_verbose.Location = new System.Drawing.Point(701, 411);
+            this.chk_verbose.Location = new System.Drawing.Point(701, 428);
             this.chk_verbose.Name = "chk_verbose";
             this.chk_verbose.Size = new System.Drawing.Size(95, 17);
             this.chk_verbose.TabIndex = 27;
@@ -170,7 +172,7 @@
             this.chk_autostart.AutoSize = true;
             this.chk_autostart.Checked = true;
             this.chk_autostart.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chk_autostart.Location = new System.Drawing.Point(701, 388);
+            this.chk_autostart.Location = new System.Drawing.Point(701, 382);
             this.chk_autostart.Name = "chk_autostart";
             this.chk_autostart.Size = new System.Drawing.Size(87, 17);
             this.chk_autostart.TabIndex = 24;
@@ -182,7 +184,7 @@
             this.chk_exportvminfos.AutoSize = true;
             this.chk_exportvminfos.Checked = true;
             this.chk_exportvminfos.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chk_exportvminfos.Location = new System.Drawing.Point(702, 364);
+            this.chk_exportvminfos.Location = new System.Drawing.Point(702, 358);
             this.chk_exportvminfos.Name = "chk_exportvminfos";
             this.chk_exportvminfos.Size = new System.Drawing.Size(145, 17);
             this.chk_exportvminfos.TabIndex = 23;
@@ -192,7 +194,7 @@
             // btn_importMacDB
             // 
             this.btn_importMacDB.Enabled = false;
-            this.btn_importMacDB.Location = new System.Drawing.Point(706, 457);
+            this.btn_importMacDB.Location = new System.Drawing.Point(701, 474);
             this.btn_importMacDB.Name = "btn_importMacDB";
             this.btn_importMacDB.Size = new System.Drawing.Size(157, 23);
             this.btn_importMacDB.TabIndex = 22;
@@ -300,6 +302,18 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
+            // chk_removeplaybooks
+            // 
+            this.chk_removeplaybooks.AutoSize = true;
+            this.chk_removeplaybooks.Checked = true;
+            this.chk_removeplaybooks.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chk_removeplaybooks.Location = new System.Drawing.Point(701, 405);
+            this.chk_removeplaybooks.Name = "chk_removeplaybooks";
+            this.chk_removeplaybooks.Size = new System.Drawing.Size(110, 17);
+            this.chk_removeplaybooks.TabIndex = 34;
+            this.chk_removeplaybooks.Text = "Playbook löschen";
+            this.chk_removeplaybooks.UseVisualStyleBackColor = true;
+            // 
             // AnsibleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -340,5 +354,6 @@
         internal System.Windows.Forms.CheckBox checkBox2;
         internal System.Windows.Forms.CheckBox chk_createvms;
         private System.Windows.Forms.Label label3;
+        internal System.Windows.Forms.CheckBox chk_removeplaybooks;
     }
 }

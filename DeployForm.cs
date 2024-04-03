@@ -107,7 +107,7 @@ namespace VirtuSphere
 
 
 
-        public async Task ConnectAndExecuteSSHCommands(string host, int port, string username, string password, string missionName, string runPlaybook, bool chk_createvms, bool chk_exportvminfos, bool chk_autostart, bool chk_verbose)
+        public async Task ConnectAndExecuteSSHCommands(string host, int port, string username, string password, string missionName, string runPlaybook, bool chk_createvms, bool chk_exportvminfos, bool chk_autostart, bool chk_verbose, bool chk_removeplaybooks)
         {
             await Task.Run(async () =>
             {
@@ -155,6 +155,8 @@ namespace VirtuSphere
 
                             if (chk_autostart) { executionCommand += " ansible-playbook startVMs*"; 
                             if (chk_verbose) { executionCommand += " -vvv"; } else { executionCommand += "; "; } }
+
+                            if (chk_removeplaybooks) { executionCommand += "cd ~ ; rm -rf /tmp/" + missionName + "/*"; }
 
                         }
                             
