@@ -3,7 +3,7 @@ $VirtuSphere_WebAPI = "127.0.0.1:8021"
 $mac = (Get-WmiObject Win32_NetworkAdapterConfiguration | Where { $_.IPEnabled -eq $true }).MacAddress | Select-Object -last 1
 
 
-$jsonUrl = "http://$VirtuSphere_WebAPI/mecm-api.php?action=getDeviceList&mac=$($mac)"
+$jsonUrl = "http://$VirtuSphere_WebAPI/mecm-api.php?action=getDeviceInfos&mac=$($mac)"
 
 $webClient = New-Object System.Net.WebClient
 $json = $webClient.DownloadString($jsonUrl)
@@ -12,10 +12,8 @@ $webClient.Dispose()
 $jsonData = ConvertFrom-Json $json
 
 # Basispfad in der Registry, wo die Daten gespeichert werden sollen
-$registryBasePath = 'HKCU:\Software\VirtuSphere'
+$registryBasePath = 'HKLM:\Software\VirtuSphere'
 
-# Lese die JSON-Daten
-$jsonData = Get-Content -Path $jsonFilePath -Raw | ConvertFrom-Json
 
 function Save-ToRegistry {
     param(
@@ -28,14 +26,23 @@ function Save-ToRegistry {
 
     # Überprüfe jedes Property im Objekt
     foreach ($property in $Data.PSObject.Properties) {
-        $currentPath = "$Path\$($property.Name)"
-        if ($property.Value -is [System.Collections.IEnumerable] -and $property.Value -isnot [string]) {
-            # Für Arrays und Objekte, rekursiver Aufruf
+        # Ignoriere Methoden und spezielle Eigenschaften
+        if ($property.TypeNameOfValue -eq 'System.Management.Automation.PSCustomObject' -or
+            $property.TypeNameOfValue -like 'System.*[]') {
+            $currentPath = "$Path\$($property.Name)"
+            # Für Objekte und Arrays, rekursiver Aufruf
             if (-not (Test-Path $currentPath)) {
                 New-Item -Path $currentPath -Force | Out-Null
             }
-            Save-ToRegistry -Data $property.Value -Path $currentPath
-        } else {
+            # Behandle Arrays von Objekten
+            if ($property.Value -is [System.Collections.IEnumerable] -and $property.Value -isnot [string]) {
+                foreach ($item in $property.Value) {
+                    Save-ToRegistry -Data $item -Path $currentPath
+                }
+            } else {
+                Save-ToRegistry -Data $property.Value -Path $currentPath
+            }
+        } elseif ($property.TypeNameOfValue -ne 'System.Management.Automation.PSMethod') {
             # Wert direkt in die Registry schreiben
             if (-not (Test-Path $Path)) {
                 New-Item -Path $Path -Force | Out-Null
@@ -44,6 +51,7 @@ function Save-ToRegistry {
         }
     }
 }
+
 
 # Speichere die Daten in der Registry
 Save-ToRegistry -Data $jsonData -Path $registryBasePath
