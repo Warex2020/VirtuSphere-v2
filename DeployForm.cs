@@ -145,7 +145,7 @@ namespace VirtuSphere
                         } else
                         {
 
-                            if (chk_createvms) { executionCommand += "ansible-playbook /tmp/" + missionName + "/createVMs-ESXi-playbook.yml"; 
+                            if (chk_createvms) { executionCommand += "ansible-playbook /tmp/" + missionName + "/createVMs-ESXi_playbook.yml"; 
                                 if (chk_verbose) { executionCommand += " -vvv; "; } else { executionCommand += "; "; }
                             }
 
