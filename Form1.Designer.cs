@@ -134,6 +134,8 @@
             this.label11 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.txtMECMIP = new System.Windows.Forms.TextBox();
             this.button8 = new System.Windows.Forms.Button();
             this.MECM_Services = new System.Windows.Forms.ListView();
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -1217,11 +1219,13 @@
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage3.Size = new System.Drawing.Size(1479, 627);
             this.tabPage3.TabIndex = 4;
-            this.tabPage3.Text = "MECM";
+            this.tabPage3.Text = "ConfigMgr";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // groupBox11
             // 
+            this.groupBox11.Controls.Add(this.label10);
+            this.groupBox11.Controls.Add(this.txtMECMIP);
             this.groupBox11.Controls.Add(this.button8);
             this.groupBox11.Controls.Add(this.MECM_Services);
             this.groupBox11.Location = new System.Drawing.Point(17, 24);
@@ -1231,6 +1235,22 @@
             this.groupBox11.TabStop = false;
             this.groupBox11.Text = "Microsoft Configuration Manager";
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(42, 222);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(55, 13);
+            this.label10.TabIndex = 3;
+            this.label10.Text = "MECM IP:";
+            // 
+            // txtMECMIP
+            // 
+            this.txtMECMIP.Location = new System.Drawing.Point(103, 220);
+            this.txtMECMIP.Name = "txtMECMIP";
+            this.txtMECMIP.Size = new System.Drawing.Size(127, 20);
+            this.txtMECMIP.TabIndex = 2;
+            // 
             // button8
             // 
             this.button8.Location = new System.Drawing.Point(332, 217);
@@ -1239,6 +1259,7 @@
             this.button8.TabIndex = 1;
             this.button8.Text = "Verbinden";
             this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
             // MECM_Services
             // 
@@ -1303,6 +1324,7 @@
             this.groupBox7.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.groupBox11.ResumeLayout(false);
+            this.groupBox11.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1419,6 +1441,8 @@
         private System.Windows.Forms.Timer countdownTimer;
         private System.Windows.Forms.ComboBox comboVCPU;
         private System.Windows.Forms.ComboBox comboRAM;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox txtMECMIP;
     }
 }
 

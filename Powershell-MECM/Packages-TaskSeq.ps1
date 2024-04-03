@@ -1,7 +1,11 @@
-# test
+# Dieses PowerShell-Skript ist für die Interaktion mit der VirtuSphere Web API konzipiert. Es liest Konfigurationsdaten aus der Windows Registry,
+# um die Verbindungsinformationen für die API zu erhalten. Das Skript zielt darauf ab, alle Paket-Daten aus dem Microsoft Endpoint Configuration Manager (MECM)
+# auszulesen und diese Informationen anschließend gesammelt an die VirtuSphere Web API zu senden. Es extrahiert spezifische Informationen wie Name, Version und PackageID
+# der MECM Pakete. Die gesammelte Übermittlung der Paketdaten an die API ermöglicht eine effiziente Synchronisierung und minimiert die Anzahl der HTTP-Anfragen.
+# Dieses Skript ist besonders nützlich in Umgebungen, wo eine automatisierte, effiziente Übermittlung von MECM-Daten an eine externe API erforderlich ist.
+
 $apiEndpoint = (Get-ItemProperty -Path "HKLM:\SOFTWARE\VirtuSphere\MECM").VirtuSphere_WebAPI
 $MECM_SiteCode = (Get-ItemProperty -Path "HKLM:\SOFTWARE\VirtuSphere\MECM").MECM_SiteCode
-$FolderName = "MECM_ScriptApplications"
 
 $apiEndpoint = "http://"+$apiEndpoint + "/mecm_packages.php"
 
@@ -12,42 +16,22 @@ function Send-ToApi($data) {
     return $response
 }
 
-# Packages auslesen
-#$packages = Get-CMPackage | Select-Object Name, Version, PackageID, PkgSourcePath
-
-
-$FolderID = (Get-CMFolder -Name $FolderName | Where { $_.ObjectType -eq 5000}).ContainerNodeID
-$CollectionsInSpecficFolder = Get-WmiObject -Namespace "ROOT\SMS\Site_$MECM_SiteCode" `
--Query "select * from SMS_Collection where CollectionID is
-in(select InstanceKey from SMS_ObjectContainerItem where ObjectType='5000'
-and ContainerNodeID='$FolderID') and CollectionType='2'"
- 
-$packages = $CollectionsInSpecficFolder | Select-Object Name, CollectionID
-
-
-# Task Sequences auslesen
-$taskSequences = Get-CMTaskSequence | Select-Object Name, PackageID
+# Alle Packages auslesen
+$packages = Get-CMPackage | Select-Object Name, Version, PackageID, PkgSourcePath
 
 # Daten vorbereiten
 $deployData = @()
 foreach ($package in $packages) {
     $deployData += @{
-        type = "deviceCollection"
+        type = "Package"
         name = $package.Name
+        version = $package.Version
+        id = $package.PackageID
+        sourcePath = $package.PkgSourcePath
     }
 }
 
-foreach ($ts in $taskSequences) {
-    $deployData += @{
-        type = "TaskSequence"
-        name = $ts.Name
-        id = $ts.PackageID
-    }
-}
-
-# Daten an die API senden
-foreach ($data in $deployData) {
-    $response = Send-ToApi $data
-    write-host "Sende -> $($data.name)" -ForegroundColor Yellow
-    Write-Host "Response: $response"
-}
+# Gesammelte Daten an die API senden
+$response = Send-ToApi $deployData
+write-host "Sende gesammelte Paketdaten..." -ForegroundColor Yellow
+Write-Host "Response: $response"

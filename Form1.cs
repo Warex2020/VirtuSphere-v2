@@ -2366,5 +2366,20 @@ namespace VirtuSphere
         {
 
         }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            // verbinde dich mit der txtMECMIP und lese alle Dienste aus
+            string mecIP = txtMECMIP.Text;
+
+
+            // baue eine Verbindung mit powershell auf und lade alle dienste in MECM_Services
+            MECM_Services = MECMHelper.GetServices(mecIP);
+
+            // fülle die listview mit den diensten
+            ShowMECMServices(MECM_Services);
+
+
+        }
     }
 }
