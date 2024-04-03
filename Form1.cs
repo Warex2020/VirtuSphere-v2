@@ -243,6 +243,9 @@ namespace VirtuSphere
                 Console.WriteLine("Selected Packages Item für: " + txtName.Text + " " + item.ToString());
             }
 
+            // erhalte von Mission mit missionId die WDSVlan
+            missionWDSVlan = missionsList.Find(x => x.Id == missionId).wds_vlan;
+
 
             // wenn missionWDSVlan leer dann fehler
             if (missionWDSVlan == "" || missionWDSVlan == null)
