@@ -550,7 +550,7 @@ function missionToUpdate($missionList, $connection) {
    $successCount = 0;
    foreach ($missionList as $mission) {
        if (isset($mission->Id)) {
-           $query = "UPDATE deploy_missions SET mission_name = ?, mission_status = ?, mecm_id = null WHERE id = ?";
+           $query = "UPDATE deploy_missions SET mission_name = ?, mission_status = ? WHERE id = ?";
            if ($stmt = $connection->prepare($query)) {
                $stmt->bind_param("ssi", $mission->mission_name, $mission->mission_status, $mission->Id);
                if (!$stmt->execute()) {
@@ -586,7 +586,7 @@ function vmListToUpdate($vmList, $connection) {
 
            // Dynamisch festlegen, welche Felder aktualisiert werden sollen
            foreach ($vm as $key => $value) {
-               if ($key != 'Id' && $key != 'interfaces' && $key != 'vm_status' && $key != 'packages' && $key != 'Disks' && $key != 'created_at' && $key != 'updated_at') {
+               if ($key != 'Id' && $key != 'interfaces' && $key != 'vm_status' && $key != 'mecm_id' && $key != 'packages' && $key != 'Disks' && $key != 'created_at' && $key != 'updated_at') {
                    $updates[] = "{$key} = ?";
                    $params[] = $value;
                    $types .= is_numeric($value) && !is_string($value) ? 'i' : 's'; // Einfache Typbestimmung
@@ -596,6 +596,13 @@ function vmListToUpdate($vmList, $connection) {
                if ($key == 'vm_status') {
                   $updates[] = "vm_status = ?";
                   $params[] = '2/5 Registered';
+                  $types .= 's';
+               }
+
+               // wenn mecm_id dann setze auf null
+               if ($key == 'mecm_id') {
+                  $updates[] = "mecm_id = ?";
+                  $params[] = null;
                   $types .= 's';
                }
            }
