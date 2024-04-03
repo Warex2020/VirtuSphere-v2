@@ -1,133 +1,76 @@
-# get Device Infos from mecm-api.php?action=getDeviceInfos and store it in Registry
-
-
-
-$jsonUrl = "http://$VirtuSphere_WebAPI/mecm-api.php?action=getDeviceList"
-
-$webClient = New-Object System.Net.WebClient
-$json = $webClient.DownloadString($jsonUrl)
-$webClient.Dispose()
-
-$deviceList = ConvertFrom-Json $json
-
-
-
-
-
 function CheckAndCreateRegistryEntries {
     param (
         [string]$ServiceName,
         [boolean]$status
     )
 
-    # Basispfad für den Registrierungsschlüssel
     $basePath = "HKLM:\SOFTWARE\APLw-CGN"
+    New-Item -Path $basePath -Force | Out-Null
 
-    # Überprüfen, ob der Basispfad existiert
-    if (-not (Test-Path $basePath)) {
-        New-Item -Path $basePath -Force
-    }
-
-    # Spezifischer Pfad für den Service
     $servicePath = Join-Path $basePath $ServiceName
+    New-Item -Path $servicePath -Force | Out-Null
 
-    # Überprüfen und Erstellen des Service-Schlüssels
-    if (-not (Test-Path $servicePath)) {
-        New-Item -Path $servicePath -Force
-    }
+    # Direktes Setzen der "installed"-Eigenschaft
+    New-ItemProperty -Path $servicePath -Name "installed" -Value $status -PropertyType "DWORD" -Force | Out-Null
 
-    # Überprüfen und Erstellen des "installed"-Wertes
-    $installedValuePath = Join-Path $servicePath "installed"
-    if (-not (Test-Path $installedValuePath)) {
-        New-ItemProperty -Path $servicePath -Name "installed" -Value $status -PropertyType "DWORD" -Force
-    }
-    
-    # Datum für aktuelle Aktion festlegen
     $currentDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 
-    if($status){
-        # Überprüfen und Erstellen des "installdate"-Wertes
-        $installdateValuePath = Join-Path $servicePath "installdate"
-        if (-not (Test-Path $installdateValuePath)) {
-            New-ItemProperty -Path $servicePath -Name "installdate" -Value $currentDate -PropertyType "String" -Force
-        }
+    if ($status) {
+        New-ItemProperty -Path $servicePath -Name "installdate" -Value $currentDate -PropertyType "String" -Force | Out-Null
     } else {
-                # Überprüfen und Hochzählen des "installfaildate"-Wertes
-                $failCount = 0
-                # Erhalten aller Eigenschaften des Service-Registry-Schlüssels
-                $properties = Get-ItemProperty -Path $servicePath
-
-                # Durchlaufen aller vorhandenen Eigenschaften und Ermitteln des höchsten Fehlversuchszählers
-                foreach ($prop in $properties.PSObject.Properties) {
-                    if ($prop.Name -match '^installfaildate\[(\d+)\]$') {
-                        $currentCount = [int]$matches[1]
-                        if ($currentCount -ge $failCount) {
-                            $failCount = $currentCount + 1
-                        }
-                    }
-                }
-
-                # Wenn kein Fehlversuch vorhanden ist, beginne mit 1
-                if ($failCount -eq 0) {
-                    $failCount = 1
-                }
-
-                # Erstellen des neuen "installfaildate"-Wertes
-                $failDateKey = "installfaildate[$failCount]"
-                New-ItemProperty -Path $servicePath -Name $failDateKey -Value $currentDate -PropertyType "String" -Force
-
-
+        $properties = Get-ItemProperty -Path $servicePath
+        $failCount = ($properties.PSObject.Properties.Name | Where-Object { $_ -match '^installfaildate\[\d+\]$' } | Measure-Object).Count + 1
+        $failDateKey = "installfaildate[$failCount]"
+        New-ItemProperty -Path $servicePath -Name $failDateKey -Value $currentDate -PropertyType "String" -Force | Out-Null
     }
 }
 
 
-# Erhalte den Hostnamen des Computers
-$hostname = $env:COMPUTERNAME
+# Laden aller Interface-Einträge aus der Registry
+$interfaceEntries = Get-ChildItem -Path "HKLM:\SOFTWARE\VirtuSphere\Interfaces"
 
-# URL für den API-Zugriff
-$url = 
+# Bereiten Sie eine Hashtable vor, um die Konfiguration zu speichern
+$interfaceConfigurations = @{}
 
-(Get-NetAdapter -InterfaceDescription "Intel(R) 82574L Gigabit Network Connection") | Rename-NetAdapter -NewName "DHCP_WDS"
-(Get-NetAdapter -InterfaceDescription "Ethernet-Adapter für vmxnet3") | Rename-NetAdapter -NewName "vmxnet3"
-
-# IP-Konfiguration vom Server abrufen
-$response = Invoke-RestMethod -Uri $url
-
-# Überprüfe, ob eine Antwort erhalten wurde
-if ($response) {
-    # Nehme an, dass der erste Adapter konfiguriert werden soll
-    # Überprüfen und anpassen Sie dies entsprechend Ihrer Umgebung
-    $adapter = Get-NetIPAddress -InterfaceAlias vmxnet3 | Select-Object -First 1
-
-    #DHCP Disable
-    
-    #Disable-NetAdapterBinding -InterfaceAlias vmxnet3 -ComponentID ms_tcpip6
-    Set-NetIPInterface -InterfaceAlias vmxnet3 -Dhcp Disabled
-    Get-NetIPInterface -InterfaceAlias vmxnet3
-
-
-    if ($adapter) {
-
-        try{
-            # Entferne die aktuelle IP-Konfiguration
-            Remove-NetIPAddress -InterfaceIndex $adapter.InterfaceIndex -Confirm:$false
-
-
-            # Setze die neue IP-Konfiguration
-            New-NetIPAddress -InterfaceIndex $adapter.InterfaceIndex -IPAddress $response.ip -PrefixLength 24 -AddressFamily IPv4 -DefaultGateway $response.gateway
-
-            # Setze den DNS-Server
-            Set-DnsClientServerAddress -InterfaceIndex $adapter.InterfaceIndex -ServerAddresses $response.dns
-
-            CheckAndCreateRegistryEntries -ServiceName StaticIP -status $true
-        }catch{
-            CheckAndCreateRegistryEntries -ServiceName StaticIP -status $false
-        }
-    } else {
-        Write-Output "Netzwerkadapter konnte nicht gefunden werden."
-        CheckAndCreateRegistryEntries -ServiceName StaticIP -status $false
+foreach ($entry in $interfaceEntries) {
+    # Erstellen eines Objekts für jede Schnittstelle mit allen notwendigen Daten
+    $config = New-Object PSObject -Property @{
+        Name = $entry.GetValue("Name")
+        MacAddress = $entry.GetValue("MacAddress")
+        Mode = $entry.GetValue("Mode")
+        IP = $entry.GetValue("IP")
+        Subnet = $entry.GetValue("Subnet")
+        Gateway = $entry.GetValue("Gateway")
+        DNS1 = $entry.GetValue("DNS1")
+        DNS2 = $entry.GetValue("DNS2")
     }
-} else {
-    Write-Output "Keine Daten vom Server erhalten."
-    CheckAndCreateRegistryEntries -ServiceName StaticIP -status $false
+    
+    # Hinzufügen der Konfiguration zur Hashtable mit der MAC-Adresse als Schlüssel
+    $interfaceConfigurations[$config.MacAddress] = $config
+}
+
+# Durchlaufen aller Netzwerkadapter auf dem System
+$networkAdapters = Get-NetAdapter | Where-Object { $_.Status -eq "Up" -and $_.PhysicalMediaType -ne "Wireless" }
+
+foreach ($adapter in $networkAdapters) {
+    $macAddress = $adapter.MacAddress.Replace("-", ":") # Formatieren der MAC-Adresse, falls nötig
+    if ($interfaceConfigurations.ContainsKey($macAddress)) {
+        $config = $interfaceConfigurations[$macAddress]
+        
+        # Adapter umbenennen, falls ein Name vorhanden ist
+        if ($config.Name) {
+            Rename-NetAdapter -InterfaceIndex $adapter.ifIndex -NewName $config.Name -Confirm:$false
+        }
+
+        # Statische IP-Konfiguration anwenden, wenn Mode "Static" ist
+        if ($config.Mode -eq "Static") {
+            $ipAddress = $config.IP
+            $prefixLength = [System.Net.IPAddress]::Parse($config.Subnet).GetAddressBytes() | ForEach-Object { [Convert]::ToString($_, 2) } | Join-String "" -Separator "" | Where-Object { $_ -eq "1" } | Measure-Object | Select-Object -ExpandProperty Count
+            $gateway = $config.Gateway
+            $dnsServers = @($config.DNS1, $config.DNS2) | Where-Object { $_ -ne $null -and $_ -ne "" }
+
+            New-NetIPAddress -InterfaceIndex $adapter.ifIndex -IPAddress $ipAddress -PrefixLength $prefixLength -DefaultGateway $gateway -Confirm:$false
+            Set-DnsClientServerAddress -InterfaceIndex $adapter.ifIndex -ServerAddresses $dnsServers
+        }
+    }
 }
