@@ -59,7 +59,7 @@ foreach ($adapter in $networkAdapters) {
         
         # Adapter umbenennen, falls ein Name vorhanden ist
         if ($config.Name) {
-            Rename-NetAdapter -InterfaceIndex $adapter.ifIndex -NewName $config.Name -Confirm:$false
+            $adapter | Rename-NetAdapter -NewName $config.Name -Confirm:$false
         }
 
         # Statische IP-Konfiguration anwenden, wenn Mode "Static" ist
