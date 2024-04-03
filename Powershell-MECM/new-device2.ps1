@@ -59,11 +59,11 @@ while($true){
 
         if ($MECMDeviceList.Name -contains $deviceName) {
             Write-Host "$deviceName, bereits in MECM DB vorhanden." -ForegroundColor Cyan
-            $mecmmacaddr = ($MECMDeviceList | where {$_.name -eq "Test-Miss-FS01"}).MACAddress
+            $mecmmacaddr = ($MECMDeviceList | where {$_.name -eq $deviceName}).MACAddress
             if($null -ne $mecmmacaddr -AND $mecmmacaddr -ne $deviceMAC){
                 write-host "`tMAC-Adressen stimmen nicht ueberein! $mecmmacaddr (MECM) $deviceMAC (ESXi)" -ForegroundColor Red
                 write-host "Lege weiteres Konto an" -ForegroundColor yellow
-                Import-CMComputerInformation -ComputerName $deviceName -MacAddress $deviceMAC -CollectionName "All Systems"
+                #Import-CMComputerInformation -ComputerName $deviceName -MacAddress $deviceMAC -CollectionName "All Systems"
             }
         }
 
@@ -157,7 +157,26 @@ while($true){
             }
 
         }
-   
+
+        ## Mission $mission_name
+        $missionCollection = Get-CMDeviceCollection -Name $mission_name
+        if ($null -eq $missionCollection) {
+            Write-Host "`t - Collection $mission_name does not exist. Skipping device" -ForegroundColor Magenta
+        } else {
+            $memberships = Get-CMDeviceCollectionDirectMembershipRule -CollectionName $($missionCollection.Name) -ResourceId $deviceResourceID
+            if(!($memberships)){
+                try {
+                    #Add-CMDeviceCollectionDirectMembershipRule -CollectionName $($missionCollection) -ResourceName $deviceName
+                    Add-CMDeviceCollectionDirectMembershipRule -CollectionId $($missionCollection.CollectionID) -ResourceId $deviceResourceID
+                    Invoke-CMCollectionUpdate -Name $($missionCollection.Name)
+                    write-host "`t - $($deviceName) wurde \"$($missionCollection.Name)\" hinzugefuegt!" -ForegroundColor Green
+                } catch {
+                    Write-Host "`t - Fehler beim Hinzufügen AddCollectionMembership \"$($missionCollection.Name)\" zu $deviceName" -ForegroundColor Red
+                }
+            }else{
+                Write-Host "`t - Skip, weil bereits AddCollectionMembership \"$($missionCollection.Name)\" zu $deviceName" -ForegroundColor Yellow
+            }
+        }
 
         
         # Construct the JSON payload
