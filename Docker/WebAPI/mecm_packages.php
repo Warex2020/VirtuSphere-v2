@@ -27,11 +27,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
 
-    if (!empty($data)) {
+    if (!empty($data) && is_array($data)) {
 
-        foreach($data as $key => $value) {
-            echo $data;
-        }
+    // lade alle packages aus deploy_packages in ein array
+    $sql = "SELECT package_name FROM deploy_packages";
+    $stmt = $connection->prepare($sql);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $packages = array();
+    while ($row = $result->fetch_assoc()) {
+        $packages[] = $row['package_name'];
+    }
+
+    print_r($data);
+
 
         switch ($data['type']) {
             case 'deviceCollection':
