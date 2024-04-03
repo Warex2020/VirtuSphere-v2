@@ -156,7 +156,7 @@ namespace VirtuSphere
                             if (chk_autostart) { executionCommand += " ansible-playbook startVMs*"; 
                             if (chk_verbose) { executionCommand += " -vvv"; } else { executionCommand += "; "; } }
 
-                            if (chk_removeplaybooks) { executionCommand += "cd ~ ; rm -rf /tmp/" + missionName + "/*"; }
+                            if (chk_removeplaybooks) { executionCommand += "cd ~ ; rm -rf /tmp/" + missionName + "/"; }
 
                         }
                             

@@ -133,6 +133,26 @@ namespace VirtuSphere
         {
             if (missionBox.SelectedIndex != -1)
             {
+                // wenn VMListtoUpdate nicht leer ist Frag ob liste gespeichert werden soll
+                if (vmListToUpdate.Count > 0 || vmListToUpdate.Count > 0 || vmListToDelete.Count > 0)
+                {
+                    DialogResult result = MessageBox.Show("Möchten Sie die Änderungen speichern?", "Bestätigung", MessageBoxButtons.YesNo);
+                    if (result == DialogResult.Yes)
+                    {
+                        // Speichere die Änderungen
+                        // trigger button saveVMsinMission
+                        SaveVMsinMission_Click(sender, e);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Änderungen nicht gespeichert.");
+                        vmListToCreate.Clear();
+                        vmListToDelete.Clear();
+                        vmListToUpdate.Clear();
+                    }
+                }
+
+
                 MissionItem selectedItem = missionBox.SelectedItem as MissionItem;
                 if (selectedItem != null)
                 {
@@ -1548,6 +1568,8 @@ namespace VirtuSphere
             {
                 AnsibleForm ansibleForm = new AnsibleForm(vms, ProjecttempPath, apiService.apiToken, apiService.apiUrl);
 
+                ansibleForm.FormClosed += AnsibleForm_FormClosed;
+
                 // createVMs-ESXi
                 String TargetFile = Path.Combine(ProjecttempPath, "createVMs-ESXi.yml");
                 //ansibleForm.
@@ -1599,6 +1621,14 @@ namespace VirtuSphere
                 MessageBox.Show($"Fehler beim Lesen der Datei: {ex.Message}");
             }
 
+        }
+
+        private void AnsibleForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            
+            Console.WriteLine("Das AnsibleForm-Fenster wurde geschlossen.");
+            // Trigger den Button mit dem Namen btnLoad
+            btnLoad.PerformClick();
         }
 
         private void OpenVmeditForm(object sender, EventArgs e)
