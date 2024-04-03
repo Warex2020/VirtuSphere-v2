@@ -6,25 +6,40 @@ header('Content-Type: application/json');
 $clientIP = $_SERVER['REMOTE_ADDR'];
 $access = false;
 
-// Prüfe, ob die Client-IP in der Datenbank vorhanden ist
-$sql = $connection->prepare("SELECT * FROM deploy_accessToWebAPI WHERE ipAddress = ?");
-$sql->bind_param("s", $clientIP);
-$sql->execute();
-$result = $sql->get_result();
+if(!isset($_GET["mac"])){
+    // Prüfe, ob die Client-IP in der Datenbank vorhanden ist
+    $sql = $connection->prepare("SELECT * FROM deploy_accessToWebAPI WHERE ipAddress = ?");
+    $sql->bind_param("s", $clientIP);
+    $sql->execute();
+    $result = $sql->get_result();
 
-if ($result->num_rows >= 1) {
-    $access = true;
+    if ($result->num_rows >= 1) {
+        $access = true;
+    }
+
+}else{
+    // get mac from $_GET
+    $clientMAC = $_GET["mac"];
+
+    // protect against sql injection
+    if (!filter_var($clientMAC, FILTER_VALIDATE_MAC)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid MAC address']);
+        exit();
+    }
+
+    
+    // check if the client ip in in the deploy_interfaces table
+    $sql = $connection->prepare("SELECT * FROM deploy_interfaces WHERE mac = ?");
+    $sql->bind_param("s", $clientMAC);
+    $sql->execute();
+    $result = $sql->get_result();
+
+    if ($result->num_rows >= 1) {
+        $access = true;
+    }
 }
 
-// check if the client ip in in the deploy_interfaces table
-$sql = $connection->prepare("SELECT * FROM deploy_interfaces WHERE ip = ?");
-$sql->bind_param("s", $clientIP);
-$sql->execute();
-$result = $sql->get_result();
-
-if ($result->num_rows >= 1) {
-    $access = true;
-}
 
 if($access == false){
     http_response_code(403);
@@ -83,15 +98,6 @@ if(isset($_GET["action"]) && $_GET["action"] == "getDeviceList"){
 
 }elseif(isset($_GET["action"]) && $_GET["action"] == "getDeviceInfos"){
 
-    // get mac from $_GET
-    $clientMAC = $_GET["mac"];
-
-    // protect against sql injection
-    if (!filter_var($clientMAC, FILTER_VALIDATE_MAC)) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Invalid MAC address']);
-        exit();
-    }
 
     // get vm_id from deploy_interfaces
     $sql = $connection->prepare("SELECT vm_id FROM deploy_interfaces WHERE mac = ?");
