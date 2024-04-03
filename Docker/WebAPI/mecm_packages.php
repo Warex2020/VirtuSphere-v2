@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Erfolgsantwort senden
         http_response_code(200);
-        echo json_encode(['success' => 'Daten erfolgreich empfangen']);
+        echo json_encode(['Package' => $entry['type'], 'data' => $entry['name'], 'success' => 'Daten erfolgreich empfangen']);
     }
 
     } else {
