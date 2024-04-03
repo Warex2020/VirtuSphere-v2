@@ -87,7 +87,7 @@
             this.txtMAC = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.button5 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
+            this.btnRemoveInterface = new System.Windows.Forms.Button();
             this.btnEdit = new System.Windows.Forms.Button();
             this.txtIP = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
@@ -570,7 +570,7 @@
             this.groupBox2.Controls.Add(this.txtMAC);
             this.groupBox2.Controls.Add(this.label18);
             this.groupBox2.Controls.Add(this.button5);
-            this.groupBox2.Controls.Add(this.button4);
+            this.groupBox2.Controls.Add(this.btnRemoveInterface);
             this.groupBox2.Controls.Add(this.btnEdit);
             this.groupBox2.Controls.Add(this.txtIP);
             this.groupBox2.Controls.Add(this.label16);
@@ -709,16 +709,16 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.btn_addInterface);
             // 
-            // button4
+            // btnRemoveInterface
             // 
-            this.button4.Enabled = false;
-            this.button4.Location = new System.Drawing.Point(4, 536);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(65, 23);
-            this.button4.TabIndex = 22;
-            this.button4.Text = "Löschen";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.btn_deleteInterface_Click);
+            this.btnRemoveInterface.Enabled = false;
+            this.btnRemoveInterface.Location = new System.Drawing.Point(4, 536);
+            this.btnRemoveInterface.Name = "btnRemoveInterface";
+            this.btnRemoveInterface.Size = new System.Drawing.Size(65, 23);
+            this.btnRemoveInterface.TabIndex = 22;
+            this.btnRemoveInterface.Text = "Löschen";
+            this.btnRemoveInterface.UseVisualStyleBackColor = true;
+            this.btnRemoveInterface.Click += new System.EventHandler(this.btn_deleteInterface_Click);
             // 
             // btnEdit
             // 
@@ -987,7 +987,7 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button btnRemoveInterface;
         private System.Windows.Forms.Button btnEdit;
         private System.Windows.Forms.TextBox txtIP;
         private System.Windows.Forms.Label label16;

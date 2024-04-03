@@ -503,10 +503,16 @@ namespace VirtuSphere
                 btnEdit.Enabled = true;
                 Interface selectedInterface = (Interface)listBoxInterfaces.SelectedItem;
 
-                if (selectedInterface.IsManagementInterface)
+                if (!selectedInterface.IsManagementInterface)
                 {
-                   // MessageBox.Show("Dieses Interface ist ein Management-Interface und kann nicht bearbeitet werden.", "Management-Interface", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                   // return;
+                    // MessageBox.Show("Dieses Interface ist ein Management-Interface und kann nicht bearbeitet werden.", "Management-Interface", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    // return;
+                    btnRemoveInterface.Enabled= true;
+
+                }
+                else
+                {
+                    btnRemoveInterface.Enabled = false;
                 }
 
                 Interface_DBID.Text = selectedInterface.id.ToString();
@@ -516,6 +522,7 @@ namespace VirtuSphere
                 txtDNS1.Text = selectedInterface.dns1;
                 txtDNS2.Text = selectedInterface.dns2;
                 ComboPortgruppe.Text = selectedInterface.vlan;
+                txtMAC.Text = "";
                 
 
                 if (selectedInterface.mode == "")
@@ -533,7 +540,8 @@ namespace VirtuSphere
                 {
                     comboType.Text = selectedInterface.type;
                 }
-                txtMAC.Text = selectedInterface.mac;
+
+                if(selectedInterface.mac != null) txtMAC.Text = selectedInterface.mac;
 
                 if (!selectedInterface.IsManagementInterface)
                 {
