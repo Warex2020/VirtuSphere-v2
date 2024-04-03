@@ -550,7 +550,7 @@ function missionToUpdate($missionList, $connection) {
    $successCount = 0;
    foreach ($missionList as $mission) {
        if (isset($mission->Id)) {
-           $query = "UPDATE deploy_missions SET mission_name = ?, mission_status = ? WHERE id = ?";
+           $query = "UPDATE deploy_missions SET mission_name = ?, mission_status = ?, mecm_id = null WHERE id = ?";
            if ($stmt = $connection->prepare($query)) {
                $stmt->bind_param("ssi", $mission->mission_name, $mission->mission_status, $mission->Id);
                if (!$stmt->execute()) {
