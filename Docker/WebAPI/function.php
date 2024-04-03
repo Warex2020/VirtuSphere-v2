@@ -584,6 +584,9 @@ function vmListToUpdate($vmList, $connection) {
            $params = [];
            $types = '';
 
+           // füge den Key mecm_id mit null hinzu
+             $vm->mecm_id = null;
+
            // Dynamisch festlegen, welche Felder aktualisiert werden sollen
            foreach ($vm as $key => $value) {
                if ($key != 'Id' && $key != 'interfaces' && $key != 'vm_status' && $key != 'packages' && $key != 'Disks' && $key != 'created_at' && $key != 'updated_at') {
@@ -599,6 +602,8 @@ function vmListToUpdate($vmList, $connection) {
                   $types .= 's';
                }
            }
+
+
 
            if (!empty($updates)) {
                // Update-Query vorbereiten

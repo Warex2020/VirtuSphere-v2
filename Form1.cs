@@ -305,6 +305,9 @@ namespace VirtuSphere
                 Disks = new List<Disk> { newdisk }
             };
 
+            // consolenausagabe wieviele disk drin sind
+            Console.WriteLine("Disks für " + vm.vm_name + ": " + vm.Disks.Count);
+
             // Consolenausgabe mit allen Eigenschaften der VM bisschen detailierter und besser formatiert
 
             Console.WriteLine($"New VM-Objekt: Name: {vm.vm_name}, Hostname: {vm.vm_hostname}, Domain: {vm.vm_domain}, OS: {vm.vm_os}, Status: {vm.vm_status}, CPU: {vm.vm_cpu}, Disk: {vm.vm_disk}, RAM: {vm.vm_ram}, Creator: {vm.vm_creator}, Datacenter: {vm.vm_datacenter}, Datastore: {vm.vm_datastore}, Created At: {vm.created_at}, Updated At: {vm.updated_at}");
