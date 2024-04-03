@@ -25,8 +25,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $jsonInput = file_get_contents('php://input');
     $data = json_decode($jsonInput, true);
 
+
+
     if (!empty($data)) {
-        // Datenverarbeitung basierend auf dem Typ der gesendeten Daten
+
+        foreach($data as $key => $value) {
+            echo $key . " => " . $value . "<br>";
+        }
+
         switch ($data['type']) {
             case 'deviceCollection':
                 // Daten in die Tabelle deploy_packages einfügen
