@@ -26,28 +26,31 @@ function Save-ToRegistry {
 
     # Überprüfe jedes Property im Objekt
     foreach ($property in $Data.PSObject.Properties) {
-        # Ignoriere Methoden und spezielle Eigenschaften
-        if ($property.TypeNameOfValue -eq 'System.Management.Automation.PSCustomObject' -or
-            $property.TypeNameOfValue -like 'System.*[]') {
+        # Ignoriere Methoden
+        if ($property.TypeNameOfValue -ne 'System.Management.Automation.PSMethod') {
             $currentPath = "$Path\$($property.Name)"
             # Für Objekte und Arrays, rekursiver Aufruf
-            if (-not (Test-Path $currentPath)) {
-                New-Item -Path $currentPath -Force | Out-Null
-            }
-            # Behandle Arrays von Objekten
-            if ($property.Value -is [System.Collections.IEnumerable] -and $property.Value -isnot [string]) {
-                foreach ($item in $property.Value) {
-                    Save-ToRegistry -Data $item -Path $currentPath
+            if ($property.Value -is [System.Collections.IEnumerable] -and $property.Value -isnot [string] -and $property.Value.GetType().IsArray) {
+                if (-not (Test-Path $currentPath)) {
+                    New-Item -Path $currentPath -Force | Out-Null
                 }
-            } else {
-                Save-ToRegistry -Data $property.Value -Path $currentPath
+                $index = 0
+                foreach ($item in $property.Value) {
+                    # Benutze den Index für Array-Elemente, um sie zu unterscheiden
+                    $itemPath = "$currentPath\Item$index"
+                    $index++
+                    if (-not (Test-Path $itemPath)) {
+                        New-Item -Path $itemPath -Force | Out-Null
+                    }
+                    Save-ToRegistry -Data $item -Path $itemPath
+                }
+            } elseif (-not [string]::IsNullOrWhiteSpace($property.Value)) {
+                # Wert direkt in die Registry schreiben
+                if (-not (Test-Path $Path)) {
+                    New-Item -Path $Path -Force | Out-Null
+                }
+                New-ItemProperty -Path $Path -Name $property.Name -Value $property.Value -PropertyType String -Force | Out-Null
             }
-        } elseif ($property.TypeNameOfValue -ne 'System.Management.Automation.PSMethod') {
-            # Wert direkt in die Registry schreiben
-            if (-not (Test-Path $Path)) {
-                New-Item -Path $Path -Force | Out-Null
-            }
-            New-ItemProperty -Path $Path -Name $property.Name -Value $property.Value -PropertyType String -Force | Out-Null
         }
     }
 }
