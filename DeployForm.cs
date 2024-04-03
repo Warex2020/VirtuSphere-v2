@@ -139,14 +139,15 @@ namespace VirtuSphere
 
 
                         // wenn runPlaybook nicht leer ist dann führe aus
-                        if (runPlaybook != null || runPlaybook == "") { 
+                        if (runPlaybook != null) { 
                             executionCommand += "ansible-playbook /tmp/" + missionName + "/" + runPlaybook;
                             if (chk_verbose) { executionCommand += " -vvv; "; } else { executionCommand += "; "; }
                         } else
                         {
 
-                            if (chk_createvms) { executionCommand += "ansible-playbook /tmp/" + missionName + "/createVMs-ESXi-playbook.yml"; } else { executionCommand += "; "; }
-                            if (chk_verbose) { executionCommand += " -vvv; "; } else { executionCommand += "; "; }
+                            if (chk_createvms) { executionCommand += "ansible-playbook /tmp/" + missionName + "/createVMs-ESXi-playbook.yml"; } else { executionCommand += "; ";
+                                if (chk_verbose) { executionCommand += " -vvv; "; } else { executionCommand += "; "; }
+                            }
 
                             if (chk_exportvminfos) { executionCommand += " ansible-playbook exportVMs* "; 
                             if (chk_verbose) { executionCommand += " -vvv ; "; } else { executionCommand += "; "; } }
