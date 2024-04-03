@@ -18,52 +18,42 @@ if ($result->num_rows == 0) {
     exit();
 }
 
+
 // Sicherstellen, dass die Anfrage vom Typ POST ist
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Die empfangenen JSON-Daten aus dem Request-Body extrahieren
     $jsonInput = file_get_contents('php://input');
     $data = json_decode($jsonInput, true);
 
-    if (!empty($data) && is_array($data)) {
-        // Sammle alle Paket-IDs, die im Request gesendet wurden
-        $receivedPackageIds = array_map(function($package) { return $package['id']; }, $data);
-
-        // Führe den Abgleich mit der Datenbank durch und markiere fehlende Pakete
-        $allPackageIdsInDb = []; // Hier sollten Sie eine Abfrage ausführen, um alle Paket-IDs aus Ihrer Datenbank zu erhalten
-
-        $missingPackageIds = array_diff($allPackageIdsInDb, $receivedPackageIds);
-
-        // Lösche oder markiere die fehlenden Pakete in der Datenbank als gelöscht
-        foreach ($missingPackageIds as $missingId) {
-            // Lösche Package mit der id $missingId
-            $sql = $connection->prepare("DELETE FROM deploy_packages WHERE id = ?");
-            $sql->bind_param("s", $missingId);
-            $sql->execute();
-        }
-
-        // Verarbeite die im Request erhaltenen Pakete
-        foreach ($data as $package) {
-            // Füge neue Pakete hinzu oder aktualisiere bestehende Pakete
-            $sql = $connection->prepare("SELECT * FROM deploy_packages WHERE id = ?");
-            $sql->bind_param("s", $package['id']);
-            $sql->execute();
-            $result = $sql->get_result();
-
-            if ($result->num_rows == 0) {
-                // Füge neues Paket hinzu
-                $sql = $connection->prepare("INSERT INTO deploy_packages (id, package_name, package_version, package_status) VALUES (?, ?, ?, ?)");
-                $sql->bind_param("ssss", $package['id'], $package['name'], $package['version'], 'active');
-                $sql->execute();
-            } else {
-                // Aktualisiere bestehendes Paket
-                $sql = $connection->prepare("UPDATE deploy_packages SET package_name = ?, package_version = ?, package_status = 'active' WHERE id = ?");
-                $sql->bind_param("sss", $package['name'], $package['version'], $package['id']);
-                $sql->execute();
-            }
+    if (!empty($data)) {
+        // Datenverarbeitung basierend auf dem Typ der gesendeten Daten
+        switch ($data['type']) {
+            case 'deviceCollection':
+                // Daten in die Tabelle deploy_packages einfügen
+                $sql = "INSERT INTO deploy_packages (package_name, package_version, package_status) VALUES (?,'', 'Aktiv') ON DUPLICATE KEY UPDATE package_version = VALUES(package_version), package_status = VALUES(package_status)";
+                $stmt = $connection->prepare($sql);
+                $stmt->bind_param("s", $data['name']);
+                $stmt->execute();
+                if(!($stmt->execute())){ echo "Error: ".$connection->error;}
+                break;
+            case 'TaskSequence':
+                // Daten in die Tabelle deploy_os einfügen
+                $sql = "INSERT INTO deploy_os (os_name, os_status) VALUES (?, 'Aktiv') ON DUPLICATE KEY UPDATE os_status = VALUES(os_status)";
+                $stmt = $connection->prepare($sql);
+                $stmt->bind_param("s", $data['name']);
+                $stmt->execute();
+                if(!($stmt->execute())){ echo "Error: ".$connection->error;}
+                break;
+            default:
+                // Unbekannter Typ
+                http_response_code(400);
+                echo json_encode(['error' => 'Unbekannter Daten Typ']);
+                exit();
         }
 
         // Erfolgsantwort senden
         http_response_code(200);
-        echo json_encode(['success' => 'Daten erfolgreich synchronisiert']);
+        echo json_encode(['success' => 'Daten erfolgreich empfangen']);
     } else {
         // Fehler bei leeren Daten
         http_response_code(400);
