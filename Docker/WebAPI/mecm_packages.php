@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!empty($data)) {
 
         foreach($data as $key => $value) {
-            echo $key . " => " . $value . "<br>";
+            echo $data;
         }
 
         switch ($data['type']) {
