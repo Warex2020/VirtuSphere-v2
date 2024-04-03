@@ -20,5 +20,8 @@ Copy-Item -Path ".\Packages-TaskSeq.ps1" -Destination "C:\Windows\Temp\Packages-
 copy-item -path ".new-device2.ps1" -Destination "C:\Windows\Temp\new-device2.ps1" -ToSession $MECM_SiteCode
 
 ## create task scheduler job
-New-ScheduledTask -Action (New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '-ExecutionPolicy Bypass -File C:\Windows\Temp\Packages-TaskSeq.ps1') -Trigger (New-ScheduledTaskTrigger -AtStartup) -TaskName "VirtuSphere MECM Sync" -Description "Sync MECM Packages and Task Sequences with VirtuSphere Web API" -User "NT AUTHORITY\SYSTEM" -RunLevel Highest -Force
-New-ScheduledTask -Action (New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '-ExecutionPolicy Bypass -File C:\Windows\Temp\new-device2.ps1') -Trigger (New-ScheduledTaskTrigger -AtStartup) -TaskName "VirtuSphere MECM Sync" -Description "Sync MECM Packages and Task Sequences with VirtuSphere Web API" -User "NT AUTHORITY\SYSTEM" -RunLevel Highest -Force
+# send command to session
+Invoke-Command -Session $MECM_SiteCode -ScriptBlock {
+    New-ScheduledTask -Action (New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '-ExecutionPolicy Bypass -File C:\Windows\Temp\Packages-TaskSeq.ps1') -Trigger (New-ScheduledTaskTrigger -AtStartup) -TaskName "VirtuSphere MECM Sync" -Description "Sync MECM Packages and Task Sequences with VirtuSphere Web API" -User "NT AUTHORITY\SYSTEM" -RunLevel Highest -Force
+    New-ScheduledTask -Action (New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '-ExecutionPolicy Bypass -File C:\Windows\Temp\new-device2.ps1') -Trigger (New-ScheduledTaskTrigger -AtStartup) -TaskName "VirtuSphere MECM Sync" -Description "Sync MECM Packages and Task Sequences with VirtuSphere Web API" -User "NT AUTHORITY\SYSTEM" -RunLevel Highest -Force
+}
