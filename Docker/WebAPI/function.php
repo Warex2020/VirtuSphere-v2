@@ -605,14 +605,16 @@ function vmListToUpdate($vmList, $connection) {
                   $params[] = null;
                   $types .= 's';
                }
-           }
 
-           // wenn mecm_id nicht vorhanden dann setze auf null
+            // wenn mecm_id nicht vorhanden dann setze auf null
              if (!in_array('mecm_id', $vm)) {
                $updates[] = "mecm_id = ?";
                $params[] = null;
                $types .= 's';
              }
+           }
+
+
 
            if (!empty($updates)) {
                // Update-Query vorbereiten
