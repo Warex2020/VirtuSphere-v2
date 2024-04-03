@@ -584,9 +584,12 @@ function vmListToUpdate($vmList, $connection) {
            $params = [];
            $types = '';
 
+           // füge den Key mecm_id mit null hinzu
+             $vm->mecm_id = null;
+
            // Dynamisch festlegen, welche Felder aktualisiert werden sollen
            foreach ($vm as $key => $value) {
-               if ($key != 'Id' && $key != 'interfaces' && $key != 'vm_status' && $key != 'mecm_id' && $key != 'packages' && $key != 'Disks' && $key != 'created_at' && $key != 'updated_at') {
+               if ($key != 'Id' && $key != 'interfaces' && $key != 'vm_status' && $key != 'packages' && $key != 'Disks' && $key != 'created_at' && $key != 'updated_at') {
                    $updates[] = "{$key} = ?";
                    $params[] = $value;
                    $types .= is_numeric($value) && !is_string($value) ? 'i' : 's'; // Einfache Typbestimmung
@@ -598,20 +601,6 @@ function vmListToUpdate($vmList, $connection) {
                   $params[] = '2/5 Registered';
                   $types .= 's';
                }
-
-               // wenn mecm_id dann setze auf null
-               if ($key == 'mecm_id') {
-                  $updates[] = "mecm_id = ?";
-                  $params[] = null;
-                  $types .= 's';
-               }
-
-            // wenn mecm_id nicht vorhanden dann setze auf null
-             if (!in_array('mecm_id', $vm)) {
-               $updates[] = "mecm_id = ?";
-               $params[] = null;
-               $types .= 's';
-             }
            }
 
 
