@@ -16,8 +16,14 @@ function Send-ToApi($data) {
     return $response
 }
 
-# Alle Packages auslesen
-$packages = Get-CMPackage | Select-Object Name, Version, PackageID, PkgSourcePath
+$FolderID = (Get-CMFolder -Name $FolderName | Where { $_.ObjectType -eq 5000}).ContainerNodeID
+$CollectionsInSpecficFolder = Get-WmiObject -Namespace "ROOT\SMS\Site_$MECM_SiteCode" `
+-Query "select * from SMS_Collection where CollectionID is
+in(select InstanceKey from SMS_ObjectContainerItem where ObjectType='5000'
+and ContainerNodeID='$FolderID') and CollectionType='2'"
+
+$packages = $CollectionsInSpecficFolder | Select-Object Name, CollectionID
+$taskSequences = Get-CMTaskSequence | Select-Object Name, PackageID
 
 # Daten vorbereiten
 $deployData = @()
@@ -25,13 +31,18 @@ foreach ($package in $packages) {
     $deployData += @{
         type = "Package"
         name = $package.Name
-        version = $package.Version
-        id = $package.PackageID
-        sourcePath = $package.PkgSourcePath
     }
 }
 
-# Gesammelte Daten an die API senden
+foreach ($taskSequence in $taskSequences) {
+    $deployData += @{
+        type = "TaskSequence"
+        name = $taskSequence.Name
+    }
+}_
+
+
+# Gesammelte Daten an die API senden-:________________________________
 $response = Send-ToApi $deployData
 write-host "Sende gesammelte Paketdaten..." -ForegroundColor Yellow
 Write-Host "Response: $response"
