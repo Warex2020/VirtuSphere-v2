@@ -79,16 +79,16 @@ $interfaceConfigurations = @{}
 foreach ($entry in $interfaceEntries) {
     # Erstellen eines Objekts für jede Schnittstelle mit allen notwendigen Daten
     $config = New-Object PSObject -Property @{
-        Name = $entry.GetValue("Name")
-        MacAddress = $entry.GetValue("MacAddress")
-        Mode = $entry.GetValue("Mode")
-        IP = $entry.GetValue("IP")
-        Subnet = $entry.GetValue("Subnet")
-        Gateway = $entry.GetValue("Gateway")
-        DNS1 = $entry.GetValue("DNS1")
-        DNS2 = $entry.GetValue("DNS2")
+        Name = $entry.GetValue("vlan")
+        MacAddress = $entry.GetValue("mac")
+        Mode = $entry.GetValue("mode")
+        IP = $entry.GetValue("ip")
+        Subnet = $entry.GetValue("subnet")
+        Gateway = $entry.GetValue("gateway")
+        DNS1 = $entry.GetValue("dns1")
+        DNS2 = $entry.GetValue("dns2")
     }
-    
+
     # Hinzufügen der Konfiguration zur Hashtable mit der MAC-Adresse als Schlüssel
     $interfaceConfigurations[$config.MacAddress] = $config
 }
@@ -118,3 +118,6 @@ foreach ($adapter in $networkAdapters) {
         }
     }
 }
+
+
+CheckAndCreateRegistryEntries -ServiceName "staticip" -status $true
