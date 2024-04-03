@@ -439,15 +439,6 @@ namespace VirtuSphere
 
         private void btn_addInterface(object sender, EventArgs e)
         {
-            // TODO: Prüfen wenn Static, dann müssen alle Felder ausgefüllt sein
-            // Prüfen, ob die Felder für die IP-Konfiguration ausgefüllt sind
-            if (comboMode.Text == "Static" && (string.IsNullOrWhiteSpace(txtIP.Text) || string.IsNullOrWhiteSpace(txtSub.Text) || string.IsNullOrWhiteSpace(txtGateway.Text)))
-            {
-                MessageBox.Show("Bitte füllen Sie die Felder für die statische IP-Konfiguration aus.", "Fehlende Eingabe", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            //AddInterfaceToListBox(listBoxInterfaces, txtIP.Text, txtSub.Text, txtGateway.Text, txtDNS1.Text, txtDNS2.Text, ComboPortgruppe.Text, comboMode.Text, comboType.Text, txtMAC.Text);
 
             // Erstellen des neues Interface - Objekts und füge es Listbox hinzu
             Interface newInterface = new Interface
@@ -460,7 +451,7 @@ namespace VirtuSphere
                 vlan = ComboPortgruppe.Text,
                 mode = comboMode.Text,
                 type = comboType.Text,
-                mac = txtMAC.Text
+                mac = ""
             };
             // füge zur Liste hinzu
             listBoxInterfaces.Items.Add(newInterface);
