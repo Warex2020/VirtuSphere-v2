@@ -46,10 +46,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt = $connection->prepare($sql);
             $stmt->bind_param("s", $package);
             $stmt->execute();
-
-            echo "wird geloescht: ".$package;
         }
     }
+
+    // lade alle os aus deploy_os in ein array
+    $sql = "SELECT os_name FROM deploy_os";
+    $stmt = $connection->prepare($sql);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $os = array();
+    while ($row = $result->fetch_assoc()) {
+        $os[] = $row['os_name'];
+    }
+
+    // lösche fehlende os aus deploy_os
+    foreach ($os as $os) {
+        if (!in_array($os, array_column($data, 'name'))) {
+            $sql = "DELETE FROM deploy_os WHERE os_name = ?";
+            $stmt = $connection->prepare($sql);
+            $stmt->bind_param("s", $os);
+            $stmt->execute();
+        }
+    }
+    
 
     foreach ($data as $entry) {
         switch ($entry['type']) {
