@@ -39,9 +39,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $packages[] = $row['package_name'];
     }
 
+    // lösche fehlende packages aus deploy_packages
+    foreach ($packages as $package) {
+        if (!in_array($package, array_column($data, 'name'))) {
+            $sql = "DELETE FROM deploy_packages WHERE package_name = ?";
+            $stmt = $connection->prepare($sql);
+            $stmt->bind_param("s", $package);
+            $stmt->execute();
+        }
+    }
+
     foreach ($data as $entry) {
-
-
         switch ($entry['type']) {
             case 'Package':
                 // Daten in die Tabelle deploy_packages einfügen
