@@ -46,6 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt = $connection->prepare($sql);
             $stmt->bind_param("s", $package);
             $stmt->execute();
+
+            echo "wird geloescht: ".$package;
         }
     }
 
@@ -74,10 +76,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 exit();
         }
 
-        // Erfolgsantwort senden
-        http_response_code(200);
-        echo json_encode(['Package' => $entry['type'], 'data' => $entry['name'], 'success' => 'Daten erfolgreich empfangen']);
+        
+
     }
+
+            // Erfolgsantwort senden
+            http_response_code(200);
+            echo json_encode(['success' => 'Daten erfolgreich empfangen']);
 
     } else {
         // Fehler bei leeren Daten
