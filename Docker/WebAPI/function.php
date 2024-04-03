@@ -607,6 +607,13 @@ function vmListToUpdate($vmList, $connection) {
                }
            }
 
+           // wenn mecm_id nicht vorhanden dann setze auf null
+             if (!in_array('mecm_id', $vm)) {
+               $updates[] = "mecm_id = ?";
+               $params[] = null;
+               $types .= 's';
+             }
+
            if (!empty($updates)) {
                // Update-Query vorbereiten
                $query = "UPDATE deploy_vms SET " . implode(', ', $updates) . " WHERE id = ?";
