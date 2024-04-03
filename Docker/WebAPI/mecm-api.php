@@ -83,9 +83,19 @@ if(isset($_GET["action"]) && $_GET["action"] == "getDeviceList"){
 
 }elseif(isset($_GET["action"]) && $_GET["action"] == "getDeviceInfos"){
 
+    // get mac from $_GET
+    $clientMAC = $_GET["mac"];
+
+    // protect against sql injection
+    if (!filter_var($clientMAC, FILTER_VALIDATE_MAC)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid MAC address']);
+        exit();
+    }
+
     // get vm_id from deploy_interfaces
-    $sql = $connection->prepare("SELECT vm_id FROM deploy_interfaces WHERE ip = ?");
-    $sql->bind_param("s", $clientIP);
+    $sql = $connection->prepare("SELECT vm_id FROM deploy_interfaces WHERE mac = ?");
+    $sql->bind_param("s", $clientMAC);
     $sql->execute();
     $result = $sql->get_result();
 
