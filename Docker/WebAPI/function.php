@@ -453,7 +453,7 @@ function vmListToCreate($missionId, $vmList, $mysqli){
            $missionIdIncluded = false;
 
            foreach ($vm as $key => $value) {
-               if ($key != 'Id' && $key != 'interfaces' && $key != 'vm_status' && $key != 'packages' && $key != 'Disks' && $key != 'created_at' && $key != 'updated_at' && $value !== null) {
+               if ($key != 'Id' && $key != 'updated' && $key != 'interfaces' && $key != 'vm_status' && $key != 'packages' && $key != 'Disks' && $key != 'created_at' && $key != 'updated_at' && $value !== null) {
                    if ($key == 'mission_id') {
                        $missionIdIncluded = true; // Markieren, dass mission_id bereits enthalten ist
                    }
@@ -470,6 +470,15 @@ function vmListToCreate($missionId, $vmList, $mysqli){
                   $params[] = '2/5 Registered';
                   $types .= 's';
                }
+
+               // updated (boolean) = 1
+               if ($key == 'updated') {
+                  $columns[] = 'updated';
+                  $placeholders[] = '?';
+                  $params[] = 1;
+                  $types .= 'i';
+               }
+
            }
 
            if (!$missionIdIncluded) {
@@ -587,7 +596,7 @@ function vmListToUpdate($vmList, $connection) {
 
            // Dynamisch festlegen, welche Felder aktualisiert werden sollen
            foreach ($vm as $key => $value) {
-               if ($key != 'Id' && $key != 'interfaces' && $key != 'vm_status' && $key != 'packages' && $key != 'Disks' && $key != 'created_at' && $key != 'updated_at' && $key != 'mecm_id') {
+               if ($key != 'Id' && $key != 'updated' && $key != 'interfaces' && $key != 'vm_status' && $key != 'packages' && $key != 'Disks' && $key != 'created_at' && $key != 'updated_at' && $key != 'mecm_id') {
                    $updates[] = "{$key} = ?";
                    $params[] = $value;
                    $types .= is_numeric($value) && !is_string($value) ? 'i' : 's'; // Einfache Typbestimmung
@@ -608,7 +617,13 @@ function vmListToUpdate($vmList, $connection) {
                   $params[] = $value;
                   $types .= 'i';
                }
-               
+
+               // updated (boolean) = 1
+               if ($key == 'updated') {
+                  $updates[] = "updated = ?";
+                  $params[] = 1;
+                  $types .= 'i';
+               }
            }
 
 

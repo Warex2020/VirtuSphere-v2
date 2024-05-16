@@ -22,6 +22,13 @@ if (!$connection->query("SELECT domain FROM deploy_missions")) {
     $connection->query("ALTER TABLE deploy_missions ADD domain VARCHAR(255)");
 }
 
+// prüfe ob in der Datenbanktabelle deploy_vms die Spalte updated (boolean) existiert, wenn nicht füge die Spalte hinzu
+if (!$connection->query("SELECT updated FROM deploy_vms")) {
+    $connection->query("ALTER TABLE deploy_vms ADD updated BOOLEAN");
+
+    // standardwert false
+    $connection->query("UPDATE deploy_vms SET updated = 0");
+}
 
 
 

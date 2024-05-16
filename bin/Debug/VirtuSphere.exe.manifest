@@ -163,14 +163,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="VirtuSphere.exe" size="2836920">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="VirtuSphere.exe" size="2837432">
       <assemblyIdentity name="VirtuSphere" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>BSl/BZli9irXST0QdFAeYqJEckcQjeK/3q3T647n+10=</dsig:DigestValue>
+        <dsig:DigestValue>7j8sBMJ8mMMAYBATlSzE2hAY1CZ73m9JiXQi2DANb3o=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

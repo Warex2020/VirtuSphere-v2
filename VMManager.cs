@@ -23,6 +23,7 @@ public class VM
     public string updated_at { get; set; } // Modifiziert am
     public string vm_notes { get; set; } // Notizen
     public string mecm_id { get; set; }
+    public bool updated { get; set; }
     public List<Interface> interfaces { get; set; }
     public List<Package> packages { get; set; }
     public List<Disk> Disks { get; set; }
