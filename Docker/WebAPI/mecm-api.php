@@ -50,7 +50,7 @@ if($access == false){
 
 if(isset($_GET["action"]) && $_GET["action"] == "getDeviceList"){
 
-    $sql = "SELECT * FROM deploy_vms WHERE updated is 1";
+    $sql = "SELECT * FROM deploy_vms WHERE updated = 1";
     $result = $connection->query($sql);
 
     $data = [];
