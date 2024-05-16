@@ -543,6 +543,7 @@
             // 
             // listBoxPackages
             // 
+            this.listBoxPackages.Enabled = false;
             this.listBoxPackages.FormattingEnabled = true;
             this.listBoxPackages.Location = new System.Drawing.Point(131, 217);
             this.listBoxPackages.Name = "listBoxPackages";

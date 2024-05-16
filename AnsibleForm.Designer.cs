@@ -32,6 +32,8 @@
             this.listFiles = new System.Windows.Forms.ListView();
             this.txtAnsible = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.chk_removeplaybooks = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
             this.chk_createvms = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
@@ -51,7 +53,6 @@
             this.labelMissionName = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.chk_removeplaybooks = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -78,6 +79,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.chk_removeplaybooks);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.chk_createvms);
@@ -102,10 +104,31 @@
             this.groupBox1.Controls.Add(this.button3);
             this.groupBox1.Location = new System.Drawing.Point(25, 23);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(876, 555);
+            this.groupBox1.Size = new System.Drawing.Size(876, 560);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Generierten Ansible Playbooks";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(21, 513);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(37, 13);
+            this.label4.TabIndex = 35;
+            this.label4.Text = "Status";
+            // 
+            // chk_removeplaybooks
+            // 
+            this.chk_removeplaybooks.AutoSize = true;
+            this.chk_removeplaybooks.Checked = true;
+            this.chk_removeplaybooks.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chk_removeplaybooks.Location = new System.Drawing.Point(701, 405);
+            this.chk_removeplaybooks.Name = "chk_removeplaybooks";
+            this.chk_removeplaybooks.Size = new System.Drawing.Size(110, 17);
+            this.chk_removeplaybooks.TabIndex = 34;
+            this.chk_removeplaybooks.Text = "Playbook löschen";
+            this.chk_removeplaybooks.UseVisualStyleBackColor = true;
             // 
             // label3
             // 
@@ -204,7 +227,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(746, 503);
+            this.button1.Location = new System.Drawing.Point(746, 513);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(84, 32);
             this.button1.TabIndex = 20;
@@ -302,23 +325,11 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // chk_removeplaybooks
-            // 
-            this.chk_removeplaybooks.AutoSize = true;
-            this.chk_removeplaybooks.Checked = true;
-            this.chk_removeplaybooks.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chk_removeplaybooks.Location = new System.Drawing.Point(701, 405);
-            this.chk_removeplaybooks.Name = "chk_removeplaybooks";
-            this.chk_removeplaybooks.Size = new System.Drawing.Size(110, 17);
-            this.chk_removeplaybooks.TabIndex = 34;
-            this.chk_removeplaybooks.Text = "Playbook löschen";
-            this.chk_removeplaybooks.UseVisualStyleBackColor = true;
-            // 
             // AnsibleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(913, 585);
+            this.ClientSize = new System.Drawing.Size(913, 592);
             this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -355,5 +366,6 @@
         internal System.Windows.Forms.CheckBox chk_createvms;
         private System.Windows.Forms.Label label3;
         internal System.Windows.Forms.CheckBox chk_removeplaybooks;
+        private System.Windows.Forms.Label label4;
     }
 }

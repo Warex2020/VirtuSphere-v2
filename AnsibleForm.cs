@@ -9,6 +9,11 @@ using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 using static VirtuSphere.FMmain;
 using System.Linq;
+using System.Text.RegularExpressions;
+using YamlDotNet.RepresentationModel;
+using System.Drawing;
+using System.Text;
+
 
 
 namespace VirtuSphere
@@ -98,11 +103,17 @@ namespace VirtuSphere
             // comboPlaybooks soll auch leer zur auswahl haben
             comboPlaybooks.Items.Add("");
 
+
+            // check  checkYamlFile und 
+            checkYamlFile(Path.Combine(ProjecttempPath, "serverlist.yml"));
+
         }
 
         public bool modifiziert = false;
         public bool view_modifiziert = false;
         private string selectedItem;
+
+       
 
 
         private void loadConfig(object sender, EventArgs e)
@@ -293,8 +304,6 @@ namespace VirtuSphere
             {
                 btn_importMacDB.Enabled = false;
             }
-
-
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -649,5 +658,85 @@ mission_configuration:
                 
             }
         }
+
+        private void checkYamlFile(string file)
+        {
+            // Zugriff auf das Label control
+            Label label = this.label4;  // Stellen Sie sicher, dass 'label4' der korrekte Name Ihres Label-Controls ist
+
+            // Prüfe, ob die Datei existiert
+            if (File.Exists(file))
+            {
+                // Lese den Inhalt der Datei
+                string content = File.ReadAllText(file);
+                try
+                {
+                    var yaml = new YamlStream();
+                    yaml.Load(new StringReader(content));
+
+                    // Zugriff auf den Root-Node des Dokuments
+                    var root = yaml.Documents[0].RootNode;
+                    var vmList = (YamlSequenceNode)root["vm_configurations"];
+                    StringBuilder errorDetails = new StringBuilder();
+                    bool allValid = true;
+
+                    foreach (YamlMappingNode vm in vmList)
+                    {
+                        var disks = (YamlSequenceNode)vm["disks"];
+                        var network = (YamlSequenceNode)vm["network"];
+                        var memory = vm["memory"];
+                        var vmName = vm["vm_name"].ToString();
+
+                        // Überprüfung der Festplatten und Netzwerkkarten
+                        if (disks.Children.Count < 1 || network.Children.Count < 2)
+                        {
+                            allValid = false;
+                            errorDetails.Append($"VM {vmName} - ");
+
+                            if (disks.Children.Count < 1)
+                            {
+                                errorDetails.Append("keine HDD; ");
+                            }
+                            if (network.Children.Count < 2)
+                            {
+                                errorDetails.Append("zu wenig Netzwerkkarten; ");
+                            }
+
+                            errorDetails.AppendLine(); // Zeilenumbruch für die nächste VM
+                        }
+                    }
+
+                    if (allValid)
+                    {
+                        label.Text = "Status: serverlist.yml gültig.";
+                        label.ForeColor = Color.Green;
+                    }
+                    else
+                    {
+                        label.Text = "Status: serverlist.yml ungültig.";
+                        label.ForeColor = Color.Red;
+                        MessageBox.Show($"Einige VMs sind unvollständig. Details:\n{errorDetails}", "Fehlerdetails", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    label.Text = "Status: serverlist.yml ungültig.";
+                    label.ForeColor = Color.Red;
+                    MessageBox.Show($"Ungültige YAML-Datei. Details: {ex.Message}", "Fehlerdetails", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                label.Text = "Status: serverlist.yml ungültig.";
+                label.ForeColor = Color.Red;
+                MessageBox.Show("Die Datei existiert nicht.", "Fehlerdetails", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+
+
+
+
     }
 }

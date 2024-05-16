@@ -39,6 +39,8 @@ namespace VirtuSphere
             this.FormClosing += DeployForm_FormClosing;
 
 
+
+
             // Setzt den Hintergrund der RichTextBox auf Schwarz
             richTextBox1.BackColor = Color.Black;
 
@@ -397,6 +399,17 @@ namespace VirtuSphere
 
         private void DeployForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+
+            DialogResult result = MessageBox.Show("Achtung: Verbindung wird beendet und Ansible Playbook wird gestoppt, falls noch aktiv?", "Fenster schließen", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            // Überprüfen des Ergebnisses der MessageBox
+            if (result == DialogResult.No)
+            {
+                // Wenn der Benutzer auf 'Nein' klickt, Abbruch des Schließens
+                e.Cancel = true;
+            }
+
+
             // Überprüfen, ob eine SSH-Verbindung besteht und diese dann schließen
             if (sshClient != null)
             {

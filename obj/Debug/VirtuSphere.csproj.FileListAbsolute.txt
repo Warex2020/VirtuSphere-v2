@@ -39,3 +39,5 @@ C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSphere.pdb
 C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\bin\Debug\Ansible\upload_mac_list.py
 C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\bin\Debug\Ansible\exportVMs-Informations-ESXi_playbook.yml
 C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\obj\Debug\VirtuSphere.ErrorForm.resources
+C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\bin\Debug\YamlDotNet.dll
+C:\Users\dario\source\repos\VirtuSphere\VirtuSphere\bin\Debug\YamlDotNet.xml

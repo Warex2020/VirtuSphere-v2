@@ -110,6 +110,9 @@
             this.btnDiskDelete = new System.Windows.Forms.Button();
             this.label29 = new System.Windows.Forms.Label();
             this.lbl_status = new System.Windows.Forms.Label();
+            this.label33 = new System.Windows.Forms.Label();
+            this.txtd_mecmid = new System.Windows.Forms.TextBox();
+            this.chk_resetmecmid = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -117,6 +120,9 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.chk_resetmecmid);
+            this.groupBox1.Controls.Add(this.txtd_mecmid);
+            this.groupBox1.Controls.Add(this.label33);
             this.groupBox1.Controls.Add(this.comboVCPU);
             this.groupBox1.Controls.Add(this.comboRAM);
             this.groupBox1.Controls.Add(this.combo_os);
@@ -157,7 +163,7 @@
             this.groupBox1.Controls.Add(this.txtd_name);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(587, 575);
+            this.groupBox1.Size = new System.Drawing.Size(587, 617);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Details";
@@ -327,7 +333,7 @@
             // 
             // txtd_notes
             // 
-            this.txtd_notes.Location = new System.Drawing.Point(25, 459);
+            this.txtd_notes.Location = new System.Drawing.Point(22, 512);
             this.txtd_notes.Multiline = true;
             this.txtd_notes.Name = "txtd_notes";
             this.txtd_notes.Size = new System.Drawing.Size(338, 96);
@@ -336,7 +342,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(22, 436);
+            this.label17.Location = new System.Drawing.Point(22, 484);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(43, 13);
             this.label17.TabIndex = 30;
@@ -388,7 +394,7 @@
             // 
             // txtd_disk
             // 
-            this.txtd_disk.Location = new System.Drawing.Point(107, 406);
+            this.txtd_disk.Location = new System.Drawing.Point(107, 461);
             this.txtd_disk.Name = "txtd_disk";
             this.txtd_disk.Size = new System.Drawing.Size(223, 20);
             this.txtd_disk.TabIndex = 14;
@@ -425,7 +431,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(22, 406);
+            this.label11.Location = new System.Drawing.Point(22, 461);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(28, 13);
             this.label11.TabIndex = 19;
@@ -502,7 +508,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(1008, 594);
+            this.button1.Location = new System.Drawing.Point(1011, 631);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(99, 23);
             this.button1.TabIndex = 32;
@@ -512,7 +518,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(903, 594);
+            this.button2.Location = new System.Drawing.Point(906, 631);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(99, 23);
             this.button2.TabIndex = 31;
@@ -937,12 +943,40 @@
             this.lbl_status.TabIndex = 5;
             this.lbl_status.Text = "Status: OK";
             // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(23, 408);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(53, 13);
+            this.label33.TabIndex = 51;
+            this.label33.Text = "MECM ID";
+            // 
+            // txtd_mecmid
+            // 
+            this.txtd_mecmid.Location = new System.Drawing.Point(107, 408);
+            this.txtd_mecmid.Name = "txtd_mecmid";
+            this.txtd_mecmid.ReadOnly = true;
+            this.txtd_mecmid.Size = new System.Drawing.Size(222, 20);
+            this.txtd_mecmid.TabIndex = 52;
+            // 
+            // chk_resetmecmid
+            // 
+            this.chk_resetmecmid.AutoSize = true;
+            this.chk_resetmecmid.Location = new System.Drawing.Point(107, 435);
+            this.chk_resetmecmid.Name = "chk_resetmecmid";
+            this.chk_resetmecmid.Size = new System.Drawing.Size(103, 17);
+            this.chk_resetmecmid.TabIndex = 53;
+            this.chk_resetmecmid.Text = "Reset MECM ID";
+            this.chk_resetmecmid.UseVisualStyleBackColor = true;
+            this.chk_resetmecmid.CheckedChanged += new System.EventHandler(this.chk_resetmecmid_CheckedChanged);
+            // 
             // vmeditForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.ClientSize = new System.Drawing.Size(1116, 629);
+            this.ClientSize = new System.Drawing.Size(1116, 666);
             this.Controls.Add(this.lbl_status);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -1048,5 +1082,8 @@
         private System.Windows.Forms.ComboBox comboVCPU;
         private System.Windows.Forms.ComboBox comboRAM;
         private System.Windows.Forms.ComboBox comboType;
+        private System.Windows.Forms.CheckBox chk_resetmecmid;
+        internal System.Windows.Forms.TextBox txtd_mecmid;
+        private System.Windows.Forms.Label label33;
     }
 }

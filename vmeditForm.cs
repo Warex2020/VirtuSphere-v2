@@ -189,6 +189,7 @@ namespace VirtuSphere
                 selectedVM.vm_datastore = txtd_datastore.Text;
                 selectedVM.vm_guest_id = txtd_guest_id.Text;
                 selectedVM.vm_creator = txtd_creator.Text;
+                selectedVM.mecm_id = txtd_mecmid.Text;
 
                 if(id == 0)
                 {
@@ -322,12 +323,14 @@ namespace VirtuSphere
             txtd_updated_at.Text = selectedVM.updated_at.ToString();
             txtd_status.Text = selectedVM.vm_status; 
             txtd_notes.Text = selectedVM.vm_notes;
+            txtd_mecmid.Text = selectedVM.mecm_id;
 
             // Disable gewisse Felder
             txtd_Id.Enabled = false;
             txtd_status.Enabled = false;
             txtd_created_at.Enabled = false;
             txtd_updated_at.Enabled = false;
+            txtd_mecmid.Enabled = false;
 
 
             // Alle VLANItems aus Form1.vLANItems in ComboVLAN.Items hinzufügen
@@ -976,6 +979,19 @@ namespace VirtuSphere
                 listBoxInterfaces.Items[selectedIndex] = listBoxInterfaces.Items[selectedIndex]; // Trigger the ListBox to refresh
 
             }   
+        }
+
+        private void chk_resetmecmid_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chk_resetmecmid.Checked)
+            {
+                txtd_mecmid.Text = string.Empty;
+            }
+            else
+            {
+                // Restore the previous value
+                txtd_mecmid.Text = selectedVM.mecm_id;
+            }
         }
     }
 }

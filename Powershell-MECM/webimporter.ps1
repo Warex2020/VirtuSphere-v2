@@ -53,8 +53,7 @@ while($true) {
                     # Anlegen!
                     Import-CMComputerInformation -ComputerName "$($hostname)" -MacAddress $($computer.macAddress) -CollectionName "$($computer.deployment)"
                 
-                
-            
+
                 Write-Host "Computer $hostname importiert." -ForegroundColor Green
                 }catch{
                     write-host "$hostname Bereits in der MECM Datenbank" -ForegroundColor Yellow

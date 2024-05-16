@@ -131,6 +131,12 @@ namespace VirtuSphere
 
         public async void btn_loadVMsfromDB(object sender, EventArgs e)
         {
+            // reload list Packages
+            packageItems = await apiService.GetPackages();
+            ShowPackages(packageItems);
+
+
+
             if (missionBox.SelectedIndex != -1)
             {
                 // wenn VMListtoUpdate nicht leer ist Frag ob liste gespeichert werden soll
@@ -2373,12 +2379,7 @@ namespace VirtuSphere
             string mecIP = txtMECMIP.Text;
 
 
-            // baue eine Verbindung mit powershell auf und lade alle dienste in MECM_Services
-            MECM_Services = MECMHelper.GetServices(mecIP);
-
-            // fülle die listview mit den diensten
-            ShowMECMServices(MECM_Services);
-
+   
 
         }
     }
