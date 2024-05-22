@@ -98,7 +98,7 @@ $vmData2 = [
 
 
 foreach ($vmData2 as $vm) {
-    $createTestdata_vmstable = "INSERT INTO `deploy_vms` (`mission_id`, `vm_name`, `vm_hostname`, `vm_domain`, `vm_os`, `vm_ram`, `vm_disk`, `vm_datastore`, `vm_datacenter`, `vm_guest_id`, `vm_creator`, `vm_status`, `created_at`, `updated_at`, `vm_notes`) VALUES ($vm[mission_id], '$vm[vm_name]', '$vm[vm_hostname]', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);";
+    $createTestdata_vmstable = "INSERT INTO `deploy_vms` (`mission_id`, `vm_name`, `vm_hostname`, `vm_domain`, `vm_os`, `vm_ram`, `vm_disk`, `vm_datastore`, `vm_datacenter`, `vm_guest_id`, `vm_creator`, `vm_status`, `created_at`, `updated_at`, `vm_notes`, `updated`) VALUES ($vm[mission_id], '$vm[vm_name]', '$vm[vm_hostname]', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 0);";
     
     mysqli_query($connection, $createTestdata_vmstable);
     //echo "$createTestdata_vmstable <br>";
@@ -134,7 +134,7 @@ if (mysqli_num_rows($result) > 0) {
 
 
             // VM-Eintrag in die Datenbank einfügen
-            $insertSql = "INSERT INTO deploy_vms (mission_id, vm_name, vm_hostname, vm_status, vm_os, vm_ram, vm_cpu, vm_disk, vm_domain) VALUES ('$missionId', '$vmName', '$vmHostname', '$vmStatus', '$osId', '$vm_ram', '$vm_cpu', '$vm_disk', '$vmDomain')";
+            $insertSql = "INSERT INTO deploy_vms (mission_id, vm_name, vm_hostname, vm_status, vm_os, vm_ram, vm_cpu, vm_disk, vm_domain, updated) VALUES ('$missionId', '$vmName', '$vmHostname', '$vmStatus', '$osId', '$vm_ram', '$vm_cpu', '$vm_disk', '$vmDomain', 0)";
             if (!mysqli_query($connection, $insertSql)) {
                 echo "Fehler: " . $sql . "<br>" . mysqli_error($connection);
             }
