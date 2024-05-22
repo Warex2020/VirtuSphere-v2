@@ -19,7 +19,7 @@ services:
       - ./Docker/WebAPI:/var/www/html
 
   mysql:
-    image: mysql:latest
+    image: mysql:8.3.0
     environment:
       MYSQL_ROOT_PASSWORD: RootP@ssw0rd
       MYSQL_DATABASE: deploymentcenter
