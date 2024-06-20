@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Windows.Forms;
 
 
@@ -27,6 +28,7 @@ namespace VirtuSphere
             txtUsername.Text = Properties.Settings.Default.txtUsername;
             txtPassword.Text = Properties.Settings.Default.txtPassword;
             chk_loginsave.Checked = Properties.Settings.Default.chk_loginsave;
+            chkbx_tls.Checked = Properties.Settings.Default.chkbx_tls;
             Properties.Settings.Default.Save();
 
 
@@ -46,12 +48,14 @@ namespace VirtuSphere
                 Properties.Settings.Default.txtUsername = txtUsername.Text;
                 Properties.Settings.Default.txtPassword = txtPassword.Text;
                 Properties.Settings.Default.chk_loginsave = chk_loginsave.Checked;
+                Properties.Settings.Default.chkbx_tls = chkbx_tls.Checked;
             }
             else
             {
                 Properties.Settings.Default.txtUsername = "";
                 Properties.Settings.Default.txtPassword = "";
                 Properties.Settings.Default.chk_loginsave = chk_loginsave.Checked;
+                Properties.Settings.Default.chkbx_tls = chkbx_tls.Checked;
             }
 
             Properties.Settings.Default.Save();
@@ -62,7 +66,8 @@ namespace VirtuSphere
             bool usetls = chkbx_tls.Checked;
 
             // apiService-Instanz sollte bereits verfügbar sein, z.B. über Dependency Injection
-            apiService apiService = new apiService(hostname, "0"); 
+            HttpClient httpClient = new HttpClient();
+            apiService apiService = new apiService(httpClient, hostname, "0", usetls); 
             string token = await apiService.IsValidLogin(username, password, hostname, usetls);
 
 
@@ -80,7 +85,23 @@ namespace VirtuSphere
             }
         }
 
+        private void chkbx_tls_CheckedChanged(object sender, EventArgs e)
+        {
+            // alert: Der Standartport für TLS ist 8021
+            if (chkbx_tls.Checked)
+            {
+                comboHostname.Text = comboHostname.Text.Replace("8021", "8022");
+            }
+            else
+            {
+                comboHostname.Text = comboHostname.Text.Replace("8022", "8021");
+            }
 
+        }
 
+        private void chk_loginsave_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

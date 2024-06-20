@@ -18,10 +18,8 @@ namespace VirtuSphere
         [STAThread]
         static async Task Main()
         {
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
 
             // Erstelle eine Instanz deines LoginForms
             LoginForm loginForm = new LoginForm();
@@ -34,31 +32,29 @@ namespace VirtuSphere
             }
             else
             {
+                string username = loginForm.txtUsername.Text;
+                bool useTls = loginForm.chkbx_tls.Checked;
 
+                Console.WriteLine("useTls: " + useTls);
 
-                username = loginForm.txtUsername.Text;
+                FMmain mainForm = new FMmain(loginForm.ApiToken, loginForm.ApiUrl, useTls)
+                {
+                    Username = username
+                };
 
-
-
-                FMmain mainForm = new FMmain(loginForm.ApiToken, loginForm.ApiUrl);
-                if (loginForm.chkbx_tls.Checked)
+                if (useTls)
                 {
                     mainForm.label_secureconnection.Text = "Verbindung: Verschlüsselt";
-
                 }
                 else
                 {
                     mainForm.label_secureconnection.Text = "Verbindung: Unverschlüsselt";
                 }
 
-                mainForm.Username = username;
-
-
                 Application.Run(mainForm);
-
-
             }
         }
+
 
 
 

@@ -6,8 +6,12 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8021:80
+      - 8022:443
     volumes:
       - ./Docker/WebAPI:/var/www/html
+      - ./Docker/nginx/ssl:/etc/nginx/ssl
+    environment:
+      - SSL_SUBJECT=test.virtusphere.de
 
   php:
     build:
@@ -19,13 +23,12 @@ services:
       - ./Docker/WebAPI:/var/www/html
 
   mysql:
-    image: mysql:8.3.0
+    image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: RootP@ssw0rd
       MYSQL_DATABASE: deploymentcenter
       MYSQL_USER: mysqluser
       MYSQL_PASSWORD: UserP@ssw0rd
-    command: --default-authentication-plugin=mysql_native_password
     volumes:
       - ./Docker/mysql/mysql-data:/var/lib/mysql
       - ./Docker/mysql/mysql-init:/docker-entrypoint-initdb.d

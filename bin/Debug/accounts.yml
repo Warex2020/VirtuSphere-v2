@@ -3,3 +3,4 @@ esxi_username:
 esxi_password: ""
 ansible_username: ""
 WaitingTime: "5"
+apiUrl: "localhost:8022"

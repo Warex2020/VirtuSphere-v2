@@ -72,6 +72,7 @@
             this.chk_loginsave.TabIndex = 10;
             this.chk_loginsave.Text = "Speichern";
             this.chk_loginsave.UseVisualStyleBackColor = true;
+            this.chk_loginsave.CheckedChanged += new System.EventHandler(this.chk_loginsave_CheckedChanged);
             // 
             // pictureBox1
             // 
@@ -92,6 +93,7 @@
             this.chkbx_tls.TabIndex = 8;
             this.chkbx_tls.Text = "Secure Connection (TLS)";
             this.chkbx_tls.UseVisualStyleBackColor = true;
+            this.chkbx_tls.CheckedChanged += new System.EventHandler(this.chkbx_tls_CheckedChanged);
             // 
             // comboHostname
             // 

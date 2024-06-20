@@ -1,5 +1,33 @@
 <?php
 
+/**
+ * This PHP script handles various actions related to access control and database operations.
+ * It receives HTTP requests with specific actions and parameters, and performs corresponding operations.
+ * The script verifies access tokens, interacts with the database, and returns JSON responses.
+ * 
+ * Available Actions:
+ * - addVM: Creates a new virtual machine in the database.
+ * - getMissions: Retrieves all missions from the database.
+ * - getVMs: Retrieves all virtual machines for a specific mission from the database.
+ * - updateMission: Updates a mission in the database.
+ * - getPackages: Retrieves all packages from the database.
+ * - deleteMission: Deletes a mission from the database.
+ * - createMission: Creates a new mission in the database.
+ * - getOS: Retrieves all operating systems from the database.
+ * - createOS: Creates a new operating system in the database.
+ * - updateOS: Updates an operating system in the database.
+ * - deleteOS: Deletes an operating system from the database.
+ * - sendVMList: Imports a list of virtual machines into the database for a specific mission.
+ * - getVLANs: Retrieves all VLANs from the database.
+ * - deleteVLAN: Deletes a VLAN from the database.
+ * - createVLAN: Creates a new VLAN in the database.
+ * - updateVLAN: Updates a VLAN in the database.
+ * - deleteVM: Deletes virtual machines from the database based on a JSON list.
+ * - vmListToCreate: Creates virtual machines in the database based on a JSON list.
+ * 
+ * @filesource /c:/Users/dario/source/repos/VirtuSphere/VirtuSphere/Docker/WebAPI/access.php
+ */
+
 require_once 'mysql.php';
 require_once 'function.php';
 
@@ -32,6 +60,11 @@ if (!($connection->query("DESCRIBE deploy_disks"))) {
   
 }
 
+# Wenn action = expandToken dann rufe expandToken($token, $connection) auf
+if (isset($_GET['action']) && $_GET['action'] == 'expandToken') {
+    $result = expandToken($token, $connection);
+    echo json_encode($result);
+}
 
 
 # Wenn action = addVM dann rufe createVM($vmName, $vmHostname, $vmIP, $vmSubnet, $vmGateway, $vmDNS1, $vmDNS2, $vmDomain, $vmVLAN, $vmRole, $vmStatus, $connection) auf

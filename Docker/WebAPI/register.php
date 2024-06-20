@@ -1,5 +1,5 @@
 <?php
-// FILEPATH: /c:/Users/dario/source/repos/VirtuSphere/VirtuSphere/Docker/Dockerfile/WebAPI/register.php
+// FILEPATH: VirtuSphere/Docker/Dockerfile/WebAPI/register.php
 # Database:
 # table: deploy_users
 # id, name, password, email, created_at, updated_at

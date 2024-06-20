@@ -5,7 +5,10 @@ using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Net;
 using System.Net.Http;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static VirtuSphere.apiService;
@@ -16,19 +19,22 @@ namespace VirtuSphere
 
     public class apiService
     {
-        private HttpClient _httpClient;
-        internal string apiToken;
-        internal string apiUrl;
+        private readonly HttpClient _httpClient;
+        internal readonly string apiUrl;  // Ändern auf internal oder public
+        internal readonly string apiToken;  // Ändern auf internal oder public
+        private readonly bool useTls;
 
         public string globalusername;
         public DateTime TokenExpiryTime { get; private set; }
 
-        public apiService(string apiToken, string apiUrl)
+        public apiService(HttpClient httpClient, string apiUrl, string apiToken, bool useTls)
         {
-            _httpClient = new HttpClient();
-            this.apiToken = apiToken;
+            _httpClient = httpClient;
             this.apiUrl = apiUrl;
+            this.apiToken = apiToken;
+            this.useTls = useTls;
         }
+
 
         public class ApiResponse
         {
@@ -39,6 +45,8 @@ namespace VirtuSphere
         public async Task<string> IsValidLogin(string username, string password, string hostname, bool useTls)
         {
             globalusername = username;
+            string certCachePath = "certCache.txt"; // Pfad zur Cache-Datei
+
             // Setze die SecurityProtocol nur, wenn useTls wahr ist
             if (useTls)
             {
@@ -48,6 +56,49 @@ namespace VirtuSphere
             string scheme = useTls ? "https" : "http";
             string requestUri = $"{scheme}://{hostname}/api/login.php";
 
+            // Wenn useTls ist, soll die Verbindung geprüft werden, ob das Zertifikat vertrauenswürdig ist
+            if (useTls)
+            {
+                // Zertifikatsprüfung hinzufügen
+                ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
+                {
+                    var cert = (X509Certificate2)certificate;
+                    string certThumbprint = cert.Thumbprint;
+
+                    if (sslPolicyErrors == SslPolicyErrors.None)
+                    {
+                        return true; // Zertifikat ist vertrauenswürdig
+                    }
+
+                    var ignoredCerts = LoadIgnoredCertificates(certCachePath);
+
+                    if (ignoredCerts.Contains(certThumbprint))
+                    {
+                        return true; // Zertifikat wurde bereits ignoriert
+                    }
+
+                    // Details des Zertifikats abrufen
+                    string certDetails = $"Issuer: {cert.Issuer}\n" +
+                                         $"Subject: {cert.Subject}\n" +
+                                         $"Valid From: {cert.NotBefore}\n" +
+                                         $"Valid To: {cert.NotAfter}\n" +
+                                         $"Thumbprint: {cert.Thumbprint}";
+
+                    Console.WriteLine("Zertifikat ist nicht vertrauenswürdig");
+                    Console.WriteLine(certDetails);
+
+                    // Benutzerentscheidung abfragen
+                    DialogResult result = MessageBox.Show($"Zertifikat ist nicht vertrauenswürdig\n\n{certDetails}\n\nMöchten Sie trotzdem fortfahren?", "Zertifikatfehler", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                    if (result == DialogResult.Yes)
+                    {
+                        SaveIgnoredCertificate(certCachePath, certThumbprint);
+                        return true; // Zertifikat wird ignoriert
+                    }
+
+                    return false; // Zertifikat ist nicht vertrauenswürdig und Benutzer möchte nicht fortfahren
+                };
+            }
+
             // Prüfung, ob die Adresse erreichbar ist und die Verbindung möglich ist
             try
             {
@@ -55,12 +106,6 @@ namespace VirtuSphere
                 var headRequest = new HttpRequestMessage(HttpMethod.Head, requestUri);
                 var headResponse = await _httpClient.SendAsync(headRequest);
                 headResponse.EnsureSuccessStatusCode(); // Löst eine Ausnahme aus, wenn der Statuscode außerhalb von 2xx liegt
-
-                // Hier könnte man zusätzlich prüfen, ob eine Verbindung ohne TLS möglich ist,
-                // indem man eine Anfrage über HTTP sendet und die Antwort prüft.
-                // Da dies jedoch ein Sicherheitsrisiko darstellen kann, überspringen wir diesen Schritt.
-
-                // Für die Prüfung des Zertifikats, siehe unten
             }
             catch (HttpRequestException e)
             {
@@ -110,14 +155,32 @@ namespace VirtuSphere
                 MessageBox.Show("Ein kritischer Fehler ist aufgetreten. Siehe Konsolenausgabe für Details.", "Kritischer Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-
             return null; // Bei Fehlschlag
         }
+
+        private void SaveIgnoredCertificate(string certCachePath, string thumbprint)
+        {
+            File.AppendAllText(certCachePath, thumbprint + Environment.NewLine);
+        }
+
+        private HashSet<string> LoadIgnoredCertificates(string certCachePath)
+        {
+            if (!File.Exists(certCachePath))
+            {
+                return new HashSet<string>();
+            }
+
+            var lines = File.ReadAllLines(certCachePath);
+            return new HashSet<string>(lines);
+        }
+
+
 
 
         public async Task<List<Package>> GetPackages()
         {
-            string requestUri = $"http://{apiUrl}/access.php?action=getPackages&token={apiToken}";
+            string scheme = useTls ? "https" : "http";
+            string requestUri = $"{scheme}://{apiUrl}/access.php?action=getPackages&token={apiToken}";
             var response = await _httpClient.GetAsync(requestUri);
 
             // wenn responsecode 418 ist, dann gib 418 zurück
@@ -136,11 +199,15 @@ namespace VirtuSphere
             }
             return null; // Bei Fehlschlag oder "Access Forbidden"
         }
+
         public async Task<List<MissionItem>> GetMissions()
         {
-            string requestUri = $"http://{apiUrl}/access.php?action=getMissions&token={apiToken}";
+            string scheme = useTls ? "https" : "http";
+            string requestUri = $"{scheme}://{apiUrl}/access.php?action=getMissions&token={apiToken}";
             var response = await _httpClient.GetAsync(requestUri);
 
+            // useTLs in console ausgeben
+            Console.WriteLine($"useTls: {useTls}");
             Console.WriteLine($"RequestUri: {requestUri}");
             Console.WriteLine($"Request: {response}");
             Console.WriteLine($"Status Code:{response.StatusCode}");
@@ -178,47 +245,12 @@ namespace VirtuSphere
             }
             return null; // Bei Fehlschlag oder "Access Forbidden"
         }
-        public async Task<List<Missions>> LoadMissions(string hostname, string token)
-        {
-            string requestUri = $"http://{hostname}/access.php?action=getMissions&token={token}";
-            var response = await _httpClient.GetAsync(requestUri);
-
-            if ((int)response.StatusCode == 418)
-            {
-                Console.WriteLine("Token abgelaufen");
-                MessageBox.Show("Token abgelaufen");
-                return null;
-            }
-
-            if (response.IsSuccessStatusCode)
-            {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                try
-                {
-                    // Direktes Deserialisieren in eine Liste von Missions-Objekten
-                    var missionsList = JsonConvert.DeserializeObject<List<Missions>>(responseContent);
-                    return missionsList;
-                }
-                catch (JsonException ex)
-                {
-                    // Offne LogForm und gib die Fehlermeldung aus
-
-                    ErrorForm logForm = new ErrorForm();
-                    logForm.txtLog.Text = requestUri;
-                    logForm.txtLog.Text += "\n" + responseContent;
-                    logForm.ShowDialog();
-
-                    MessageBox.Show("Ungültiges JSON: " + ex.Message);
-                    return null;
-                }
-            }
-            return null; // Bei Fehlschlag oder "Access Forbidden"
-        }
 
 
         public async Task<List<OSItem>> GetOS()
         {
-            string requestUri = $"http://{apiUrl}/access.php?action=getOS&token={apiToken}";
+            string scheme = useTls ? "https" : "http";
+            string requestUri = $"{scheme}://{apiUrl}/access.php?action=getOS&token={apiToken}";
             var response = await _httpClient.GetAsync(requestUri);
 
             // wenn responsecode 418 ist, dann gib 418 zurück
@@ -232,11 +264,26 @@ namespace VirtuSphere
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                var osList = JsonConvert.DeserializeObject<List<OSItem>>(responseContent);
-                return osList;
+                try
+                {
+                    var osList = JsonConvert.DeserializeObject<List<OSItem>>(responseContent);
+                    return osList;
+                }
+                catch (JsonException)
+                {
+                    // Offne LogForm und gib die Fehlermeldung aus
+                    ErrorForm logForm = new ErrorForm();
+                    logForm.txtLog.Text = requestUri;
+                    logForm.txtLog.Text += "\n" + responseContent;
+                    logForm.ShowDialog();
+
+                    MessageBox.Show("Ungültiges JSON: " + responseContent);
+                    return null;
+                }
             }
             return null; // Bei Fehlschlag oder "Access Forbidden"
         }
+
 
         // CreateOS(comboOS_Name.Text, comboOS_Status.Text);
         public async Task<bool> CreateOS(string osName, string osStatus)
@@ -248,11 +295,13 @@ namespace VirtuSphere
             }
             else
             {
-                string requestUri = $"http://{apiUrl}/access.php?action=createOS&token={apiToken}&osName={osName}&osStatus={osStatus}";
+                string scheme = useTls ? "https" : "http";
+                string requestUri = $"{scheme}://{apiUrl}/access.php?action=createOS&token={apiToken}&osName={osName}&osStatus={osStatus}";
                 var response = await _httpClient.PostAsync(requestUri, null);
 
                 // ausgabe response content
-                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(responseContent);
 
                 Console.WriteLine($"RequestUri: {requestUri}");
                 Console.WriteLine($"Request: {response}");
@@ -267,15 +316,25 @@ namespace VirtuSphere
                 }
                 if (response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+                    Console.WriteLine(responseContent);
                     Console.WriteLine("OS erstellt");
                     // Wenn im Response-Code 200 steht, dann gib true zurück
                     return true;
                 }
+                else
+                {
+                    // Offne LogForm und gib die Fehlermeldung aus
+                    ErrorForm logForm = new ErrorForm();
+                    logForm.txtLog.Text = requestUri;
+                    logForm.txtLog.Text += "\n" + responseContent;
+                    logForm.ShowDialog();
+
+                    MessageBox.Show("Fehler beim Erstellen des OS: " + responseContent);
+                }
                 return false;
             }
         }
-        // RemoveOS
+
         public async Task<bool> RemoveOS(int osId)
         {
             if (apiUrl == null || apiToken == null || _httpClient == null)
@@ -285,11 +344,13 @@ namespace VirtuSphere
             }
             else
             {
-                string requestUri = $"http://{apiUrl}/access.php?action=deleteOS&token={apiToken}&osId={osId}";
+                string scheme = useTls ? "https" : "http";
+                string requestUri = $"{scheme}://{apiUrl}/access.php?action=deleteOS&token={apiToken}&osId={osId}";
                 var response = await _httpClient.DeleteAsync(requestUri);
 
                 // ausgabe response content
-                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(responseContent);
 
                 Console.WriteLine($"RequestUri: {requestUri}");
                 Console.WriteLine($"Request: {response}");
@@ -308,9 +369,20 @@ namespace VirtuSphere
                     // Wenn im Response-Code 200 steht, dann gib true zurück
                     return true;
                 }
+                else
+                {
+                    // Offne LogForm und gib die Fehlermeldung aus
+                    ErrorForm logForm = new ErrorForm();
+                    logForm.txtLog.Text = requestUri;
+                    logForm.txtLog.Text += "\n" + responseContent;
+                    logForm.ShowDialog();
+
+                    MessageBox.Show("Fehler beim Löschen des OS: " + responseContent);
+                }
                 return false;
             }
         }
+
         // UpdateOS(comboOS_Name.Text, comboOS_Status.Text);
         public async Task<bool> UpdateOS(int osId, string osName, string osStatus)
         {
@@ -321,11 +393,13 @@ namespace VirtuSphere
             }
             else
             {
-                string requestUri = $"http://{apiUrl}/access.php?action=updateOS&token={apiToken}&osId={osId}&osName={osName}&osStatus={osStatus}";
+                string scheme = useTls ? "https" : "http";
+                string requestUri = $"{scheme}://{apiUrl}/access.php?action=updateOS&token={apiToken}&osId={osId}&osName={osName}&osStatus={osStatus}";
                 var response = await _httpClient.PutAsync(requestUri, null);
 
                 // ausgabe response content
-                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(responseContent);
 
                 Console.WriteLine($"RequestUri: {requestUri}");
                 Console.WriteLine($"Request: {response}");
@@ -341,17 +415,28 @@ namespace VirtuSphere
                 if (response.IsSuccessStatusCode)
                 {
                     Console.WriteLine("OS aktualisiert");
-                    Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+                    Console.WriteLine(responseContent);
                     // Wenn im Response-Code 200 steht, dann gib true zurück
                     return true;
+                }
+                else
+                {
+                    // Offne LogForm und gib die Fehlermeldung aus
+                    ErrorForm logForm = new ErrorForm();
+                    logForm.txtLog.Text = requestUri;
+                    logForm.txtLog.Text += "\n" + responseContent;
+                    logForm.ShowDialog();
+
+                    MessageBox.Show("Fehler beim Aktualisieren des OS: " + responseContent);
                 }
                 return false;
             }
         }
+
         public async Task<List<VLANItem>> GetVLANs()
         {
-
-            string requestUri = $"http://{apiUrl}/access.php?action=getVLANs&token={apiToken}";
+            string scheme = useTls ? "https" : "http";
+            string requestUri = $"{scheme}://{apiUrl}/access.php?action=getVLANs&token={apiToken}";
             var response = await _httpClient.GetAsync(requestUri);
 
             // wenn responsecode 418 ist, dann gib 418 zurück
@@ -361,7 +446,6 @@ namespace VirtuSphere
                 MessageBox.Show("Token abgelaufen");
                 return null;
             }
-
 
             if (response.IsSuccessStatusCode)
             {
@@ -376,15 +460,21 @@ namespace VirtuSphere
                     }
                     catch (JsonException)
                     {
+                        // Offne LogForm und gib die Fehlermeldung aus
+                        ErrorForm logForm = new ErrorForm();
+                        logForm.txtLog.Text = requestUri;
+                        logForm.txtLog.Text += "\n" + responseContent;
+                        logForm.ShowDialog();
+
                         MessageBox.Show("Ungültiges JSON: " + responseContent);
                         return null;
                     }
                 }
             }
 
-
             return null; // Bei Fehlschlag oder "Access Forbidden"
         }
+
         public async Task<bool> DeleteMission(int missionId)
         {
             if (apiUrl == null || apiToken == null || _httpClient == null)
@@ -400,12 +490,13 @@ namespace VirtuSphere
 
                 Console.WriteLine("DeleteMission aufgerufen: Mission ID: " + missionId.ToString());
 
-
-                string requestUri = $"http://{apiUrl}/access.php?action=deleteMission&token={apiToken}&missionId={missionId}";
+                string scheme = useTls ? "https" : "http";
+                string requestUri = $"{scheme}://{apiUrl}/access.php?action=deleteMission&token={apiToken}&missionId={missionId}";
                 var response = await _httpClient.DeleteAsync(requestUri);
 
                 // ausgabe response content
-                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(responseContent);
 
                 // wenn responsecode 418 ist, dann gib 418 zurück
                 if ((int)response.StatusCode == 418)
@@ -418,12 +509,83 @@ namespace VirtuSphere
                 {
                     Console.WriteLine("Mission gelöscht");
                     // Wenn im Response-Code 200 steht, dann gib true zurück
-                    return response.IsSuccessStatusCode;
+                    return true;
+                }
+                else
+                {
+                    // Offne LogForm und gib die Fehlermeldung aus
+                    ErrorForm logForm = new ErrorForm();
+                    logForm.txtLog.Text = requestUri;
+                    logForm.txtLog.Text += "\n" + responseContent;
+                    logForm.ShowDialog();
+
+                    MessageBox.Show("Fehler beim Löschen der Mission: " + responseContent);
                 }
                 return false;
-
             }
         }
+
+
+        public async Task<bool> ExpandToken()
+        {
+            if (apiUrl == null || apiToken == null || _httpClient == null)
+            {
+                Console.WriteLine("Hostname, Token or HttpClient is not available");
+                return false;
+            }
+            else
+            {
+                Console.WriteLine("ExpandToken called");
+
+                // URL aufbauen, um die Token-Erweiterung anzufordern
+                string scheme = useTls ? "https" : "http";
+                string requestUri = $"{scheme}://{apiUrl}/access.php?action=expandToken&token={apiToken}";
+                var response = await _httpClient.GetAsync(requestUri);
+
+                Console.WriteLine($"RequestUri: {requestUri}");
+                Console.WriteLine($"Request: {response}");
+                Console.WriteLine($"Status Code: {response.StatusCode}");
+
+                // Wenn der Statuscode 418 ist, bedeutet dies, dass das Token abgelaufen ist
+                if ((int)response.StatusCode == 418)
+                {
+                    Console.WriteLine("Token abgelaufen");
+                    MessageBox.Show("Token abgelaufen", "Token Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+
+                // Überprüfen, ob die Anfrage erfolgreich war
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine("Response Content: " + responseContent);
+
+                    try
+                    {
+                        // Verarbeitung der JSON-Antwort
+                        bool result = JsonConvert.DeserializeObject<bool>(responseContent);
+                        return result;
+                    }
+                    catch (JsonException)
+                    {
+                        // Offne LogForm und gib die Fehlermeldung aus
+                        ErrorForm logForm = new ErrorForm();
+                        logForm.txtLog.Text = requestUri;
+                        logForm.txtLog.Text += "\n" + responseContent;
+                        logForm.ShowDialog();
+
+                        MessageBox.Show("Ungültiges JSON: " + responseContent);
+                        return false;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Error: " + response.StatusCode);
+                    return false;
+                }
+            }
+        }
+
 
         public async Task<bool> CreateMission(string missionName)
         {
@@ -439,9 +601,8 @@ namespace VirtuSphere
                 //missionName leerzeichen url encoden
                 missionName = WebUtility.UrlEncode(missionName);
 
-
-
-                string requestUri = $"http://{apiUrl}/access.php?action=createMission&token={apiToken}&missionName={missionName}";
+                string scheme = useTls ? "https" : "http";
+                string requestUri = $"{scheme}://{apiUrl}/access.php?action=createMission&token={apiToken}&missionName={missionName}";
                 var response = await _httpClient.PostAsync(requestUri, null);
 
                 Console.WriteLine($"RequestUri: {requestUri}");
@@ -456,22 +617,33 @@ namespace VirtuSphere
                     return false;
                 }
 
-                Console.WriteLine(response.StatusCode);
+                if (!response.IsSuccessStatusCode)
+                {
+                    // Offne LogForm und gib die Fehlermeldung aus
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    ErrorForm logForm = new ErrorForm();
+                    logForm.txtLog.Text = requestUri;
+                    logForm.txtLog.Text += "\n" + responseContent;
+                    logForm.ShowDialog();
+
+                    MessageBox.Show("Fehler beim Erstellen der Mission: " + responseContent);
+                }
 
                 return response.IsSuccessStatusCode;
             }
         }
+
         public async Task<List<VM>> GetVMs(int missionId)
         {
             Console.WriteLine("----------------------");
             Console.WriteLine("Aktion GetVMs für VM-Liste wird durchgeführt");
-            string requestUri = $"http://{apiUrl}/access.php?action=getVMs&token="+apiToken+"&missionId="+missionId;
+            string scheme = useTls ? "https" : "http";
+            string requestUri = $"{scheme}://{apiUrl}/access.php?action=getVMs&token={apiToken}&missionId={missionId}";
             var response = await _httpClient.GetAsync(requestUri);
 
             Console.WriteLine($"RequestUri: {requestUri}");
             Console.WriteLine($"Request: {response}");
             Console.WriteLine($"Status Code:{response.StatusCode}");
-
 
             if ((int)response.StatusCode == 418)
             {
@@ -494,17 +666,23 @@ namespace VirtuSphere
                 }
                 catch (JsonException)
                 {
+                    // Offne LogForm und gib die Fehlermeldung aus
+                    ErrorForm logForm = new ErrorForm();
+                    logForm.txtLog.Text = requestUri;
+                    logForm.txtLog.Text += "\n" + responseContent;
+                    logForm.ShowDialog();
+
                     MessageBox.Show("Ungültiges JSON: " + responseContent);
                     // responseContent in console
                     Console.WriteLine("Response Content: " + responseContent);
                     Console.WriteLine("----------------------");
                     return null;
                 }
-
             }
             Console.WriteLine("----------------------");
             return null; // Bei Fehlschlag oder "Access Forbidden"
         }
+
 
         public async Task<bool> UpdateMission(MissionItem updatedMission)
         {
@@ -515,7 +693,8 @@ namespace VirtuSphere
             }
 
             // Stellen Sie sicher, dass der Endpunkt Ihrer API korrekt ist.
-            string requestUri = $"http://{apiUrl}/access.php?action=updateMission&token={apiToken}&missionId={updatedMission.Id}";
+            string scheme = useTls ? "https" : "http";
+            string requestUri = $"{scheme}://{apiUrl}/access.php?action=updateMission&token={apiToken}&missionId={updatedMission.Id}";
 
             // Konfigurieren des Request Body als JSON
             var json = JsonConvert.SerializeObject(updatedMission);
@@ -554,7 +733,7 @@ namespace VirtuSphere
                 logForm.ShowDialog();
             }
 
-            if(responseContent == "true")
+            if (responseContent == "true")
             {
                 return true;
             }
@@ -562,8 +741,8 @@ namespace VirtuSphere
             {
                 return false;
             }
-
         }
+
 
 
         public async Task<bool> VmListToWebAPI(string action, int missionId, List<VM> vmList)
@@ -587,8 +766,8 @@ namespace VirtuSphere
                 return false;
             }
 
-
-            string requestUri = $"http://{apiUrl}/access.php?action={action}&token={apiToken}&missionId={missionId}";
+            string scheme = useTls ? "https" : "http";
+            string requestUri = $"{scheme}://{apiUrl}/access.php?action={action}&token={apiToken}&missionId={missionId}";
             var json = JsonConvert.SerializeObject(vmList);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync(requestUri, content);
@@ -614,7 +793,6 @@ namespace VirtuSphere
             catch (JsonException)
             {
                 // Offne LogForm und gib die Fehlermeldung aus
-                
                 ErrorForm logForm = new ErrorForm();
                 logForm.txtLog.Text = requestUri;
                 logForm.txtLog.Text += "\n" + json;
@@ -639,7 +817,6 @@ namespace VirtuSphere
         }
 
 
-        // methode removeVLAN
         public async Task<bool> RemoveVLAN(int vlanId)
         {
             if (apiUrl == null || apiToken == null || _httpClient == null)
@@ -649,11 +826,13 @@ namespace VirtuSphere
             }
             else
             {
-                string requestUri = $"http://{apiUrl}/access.php?action=deleteVLAN&token={apiToken}&vlanId={vlanId}";
+                string scheme = useTls ? "https" : "http";
+                string requestUri = $"{scheme}://{apiUrl}/access.php?action=deleteVLAN&token={apiToken}&vlanId={vlanId}";
                 var response = await _httpClient.DeleteAsync(requestUri);
 
                 // ausgabe response content
-                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(responseContent);
 
                 Console.WriteLine($"RequestUri: {requestUri}");
                 Console.WriteLine($"Request: {response}");
@@ -672,9 +851,20 @@ namespace VirtuSphere
                     // Wenn im Response-Code 200 steht, dann gib true zurück
                     return true;
                 }
+                else
+                {
+                    // Offne LogForm und gib die Fehlermeldung aus
+                    ErrorForm logForm = new ErrorForm();
+                    logForm.txtLog.Text = requestUri;
+                    logForm.txtLog.Text += "\n" + responseContent;
+                    logForm.ShowDialog();
+
+                    MessageBox.Show("Fehler beim Löschen des VLAN: " + responseContent);
+                }
                 return false;
             }
         }
+
 
         public async Task<bool> UpdateVLAN(int vlanId, string vlanName)
         {
@@ -685,11 +875,13 @@ namespace VirtuSphere
             }
             else
             {
-                string requestUri = $"http://{apiUrl}/access.php?action=updateVLAN&token={apiToken}&vlanId={vlanId}&vlanName={vlanName}";
+                string scheme = useTls ? "https" : "http";
+                string requestUri = $"{scheme}://{apiUrl}/access.php?action=updateVLAN&token={apiToken}&vlanId={vlanId}&vlanName={vlanName}";
                 var response = await _httpClient.PutAsync(requestUri, null);
 
                 // ausgabe response content
-                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(responseContent);
 
                 Console.WriteLine($"RequestUri: {requestUri}");
                 Console.WriteLine($"Request: {response}");
@@ -708,11 +900,21 @@ namespace VirtuSphere
                     // Wenn im Response-Code 200 steht, dann gib true zurück
                     return true;
                 }
+                else
+                {
+                    // Offne LogForm und gib die Fehlermeldung aus
+                    ErrorForm logForm = new ErrorForm();
+                    logForm.txtLog.Text = requestUri;
+                    logForm.txtLog.Text += "\n" + responseContent;
+                    logForm.ShowDialog();
+
+                    MessageBox.Show("Fehler beim Aktualisieren des VLAN: " + responseContent);
+                }
                 return false;
             }
         }
 
-        // CreateVLAN(comboPortgruppe_Name.Text)
+
         public async Task<bool> CreateVLAN(string vlanName)
         {
             if (apiUrl == null || apiToken == null || _httpClient == null)
@@ -722,11 +924,13 @@ namespace VirtuSphere
             }
             else
             {
-                string requestUri = $"http://{apiUrl}/access.php?action=createVLAN&token={apiToken}&vlanName={vlanName}";
+                string scheme = useTls ? "https" : "http";
+                string requestUri = $"{scheme}://{apiUrl}/access.php?action=createVLAN&token={apiToken}&vlanName={vlanName}";
                 var response = await _httpClient.PostAsync(requestUri, null);
 
                 // ausgabe response content
-                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(responseContent);
 
                 Console.WriteLine($"RequestUri: {requestUri}");
                 Console.WriteLine($"Request: {response}");
@@ -745,9 +949,20 @@ namespace VirtuSphere
                     // Wenn im Response-Code 200 steht, dann gib true zurück
                     return true;
                 }
+                else
+                {
+                    // Offne LogForm und gib die Fehlermeldung aus
+                    ErrorForm logForm = new ErrorForm();
+                    logForm.txtLog.Text = requestUri;
+                    logForm.txtLog.Text += "\n" + responseContent;
+                    logForm.ShowDialog();
+
+                    MessageBox.Show("Fehler beim Erstellen des VLAN: " + responseContent);
+                }
                 return false;
             }
         }
+
 
         public class Missions
         {

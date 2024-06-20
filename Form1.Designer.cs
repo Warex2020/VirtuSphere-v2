@@ -47,7 +47,7 @@
             this.txtStatus = new System.Windows.Forms.Label();
             this.btnLoad = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.VirtuSphere = new System.Windows.Forms.TabControl();
+            this.Eigenschaften = new System.Windows.Forms.TabControl();
             this.Liste = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.comboVCPU = new System.Windows.Forms.ComboBox();
@@ -132,18 +132,9 @@
             this.comboOS_Name = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.groupBox11 = new System.Windows.Forms.GroupBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.txtMECMIP = new System.Windows.Forms.TextBox();
-            this.button8 = new System.Windows.Forms.Button();
-            this.MECM_Services = new System.Windows.Forms.ListView();
-            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.countdownTimer = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
-            this.VirtuSphere.SuspendLayout();
+            this.Eigenschaften.SuspendLayout();
             this.Liste.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.Umgebung.SuspendLayout();
@@ -153,8 +144,6 @@
             this.tabPage1.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.groupBox7.SuspendLayout();
-            this.tabPage3.SuspendLayout();
-            this.groupBox11.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -175,7 +164,7 @@
             this.groupBox1.Controls.Add(this.txtStatus);
             this.groupBox1.Controls.Add(this.btnLoad);
             this.groupBox1.Controls.Add(this.button3);
-            this.groupBox1.Controls.Add(this.VirtuSphere);
+            this.groupBox1.Controls.Add(this.Eigenschaften);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(1504, 752);
@@ -191,6 +180,8 @@
             this.labelTimer.Size = new System.Drawing.Size(41, 13);
             this.labelTimer.TabIndex = 28;
             this.labelTimer.Text = "label26";
+            this.labelTimer.Click += new System.EventHandler(this.labelTimer_Click);
+            this.labelTimer.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.labelTimer_MouseDoubleClick);
             // 
             // label_secureconnection
             // 
@@ -352,17 +343,16 @@
             this.button3.Visible = false;
             this.button3.Click += new System.EventHandler(this.btnDeploy);
             // 
-            // VirtuSphere
+            // Eigenschaften
             // 
-            this.VirtuSphere.Controls.Add(this.Liste);
-            this.VirtuSphere.Controls.Add(this.Umgebung);
-            this.VirtuSphere.Controls.Add(this.tabPage1);
-            this.VirtuSphere.Controls.Add(this.tabPage3);
-            this.VirtuSphere.Location = new System.Drawing.Point(6, 19);
-            this.VirtuSphere.Name = "VirtuSphere";
-            this.VirtuSphere.SelectedIndex = 0;
-            this.VirtuSphere.Size = new System.Drawing.Size(1487, 653);
-            this.VirtuSphere.TabIndex = 13;
+            this.Eigenschaften.Controls.Add(this.Liste);
+            this.Eigenschaften.Controls.Add(this.Umgebung);
+            this.Eigenschaften.Controls.Add(this.tabPage1);
+            this.Eigenschaften.Location = new System.Drawing.Point(6, 19);
+            this.Eigenschaften.Name = "Eigenschaften";
+            this.Eigenschaften.SelectedIndex = 0;
+            this.Eigenschaften.Size = new System.Drawing.Size(1487, 653);
+            this.Eigenschaften.TabIndex = 13;
             // 
             // Liste
             // 
@@ -673,6 +663,7 @@
             this.groupBox5.TabIndex = 15;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Ansible";
+            this.groupBox5.Visible = false;
             // 
             // checkBox2
             // 
@@ -802,6 +793,7 @@
             this.useSSHKey.TabIndex = 13;
             this.useSSHKey.Text = "Private Key verwenden";
             this.useSSHKey.UseVisualStyleBackColor = true;
+            this.useSSHKey.Visible = false;
             // 
             // checkSSHKey
             // 
@@ -812,6 +804,7 @@
             this.checkSSHKey.TabIndex = 12;
             this.checkSSHKey.Text = "Keys erzeugen und remote hinterlegen";
             this.checkSSHKey.UseVisualStyleBackColor = true;
+            this.checkSSHKey.Visible = false;
             // 
             // lbl_ssh_status
             // 
@@ -925,6 +918,7 @@
             this.checkBox1.TabIndex = 14;
             this.checkBox1.Text = "Verbindungscheck ignorieren";
             this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.Visible = false;
             // 
             // label16
             // 
@@ -954,6 +948,7 @@
             this.lbl_hypervisor.Size = new System.Drawing.Size(94, 13);
             this.lbl_hypervisor.TabIndex = 11;
             this.lbl_hypervisor.Text = "Status: unbekannt";
+            this.lbl_hypervisor.Visible = false;
             // 
             // label6
             // 
@@ -990,6 +985,7 @@
             this.button6.TabIndex = 3;
             this.button6.Text = "Verbinden";
             this.button6.UseVisualStyleBackColor = true;
+            this.button6.Visible = false;
             this.button6.Click += new System.EventHandler(this.btn_connectionHypervisor);
             // 
             // txt_hv_loginpassword
@@ -1024,7 +1020,7 @@
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(1479, 627);
             this.tabPage1.TabIndex = 2;
-            this.tabPage1.Text = "VirtuSphere";
+            this.tabPage1.Text = "Eigenschaften";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // groupBox8
@@ -1212,83 +1208,6 @@
             this.label11.Text = "Hinweis: Die verfügbaren Betriebssysteme werden über den MECM in der Datenbank ve" +
     "rwaltet.";
             // 
-            // tabPage3
-            // 
-            this.tabPage3.Controls.Add(this.groupBox11);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(1479, 627);
-            this.tabPage3.TabIndex = 4;
-            this.tabPage3.Text = "ConfigMgr";
-            this.tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // groupBox11
-            // 
-            this.groupBox11.Controls.Add(this.label10);
-            this.groupBox11.Controls.Add(this.txtMECMIP);
-            this.groupBox11.Controls.Add(this.button8);
-            this.groupBox11.Controls.Add(this.MECM_Services);
-            this.groupBox11.Location = new System.Drawing.Point(17, 24);
-            this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(437, 255);
-            this.groupBox11.TabIndex = 0;
-            this.groupBox11.TabStop = false;
-            this.groupBox11.Text = "Microsoft Configuration Manager";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(42, 222);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(55, 13);
-            this.label10.TabIndex = 3;
-            this.label10.Text = "MECM IP:";
-            // 
-            // txtMECMIP
-            // 
-            this.txtMECMIP.Location = new System.Drawing.Point(103, 220);
-            this.txtMECMIP.Name = "txtMECMIP";
-            this.txtMECMIP.Size = new System.Drawing.Size(127, 20);
-            this.txtMECMIP.TabIndex = 2;
-            // 
-            // button8
-            // 
-            this.button8.Location = new System.Drawing.Point(332, 217);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(75, 23);
-            this.button8.TabIndex = 1;
-            this.button8.Text = "Verbinden";
-            this.button8.UseVisualStyleBackColor = true;
-            this.button8.Click += new System.EventHandler(this.button8_Click);
-            // 
-            // MECM_Services
-            // 
-            this.MECM_Services.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader6,
-            this.columnHeader8,
-            this.columnHeader7});
-            this.MECM_Services.HideSelection = false;
-            this.MECM_Services.Location = new System.Drawing.Point(45, 40);
-            this.MECM_Services.Name = "MECM_Services";
-            this.MECM_Services.Size = new System.Drawing.Size(362, 162);
-            this.MECM_Services.TabIndex = 0;
-            this.MECM_Services.UseCompatibleStateImageBehavior = false;
-            this.MECM_Services.View = System.Windows.Forms.View.Details;
-            // 
-            // columnHeader6
-            // 
-            this.columnHeader6.Text = "Service";
-            // 
-            // columnHeader8
-            // 
-            this.columnHeader8.Text = "File";
-            this.columnHeader8.Width = 83;
-            // 
-            // columnHeader7
-            // 
-            this.columnHeader7.Text = "Status";
-            // 
             // countdownTimer
             // 
             this.countdownTimer.Tick += new System.EventHandler(this.timer1_Tick);
@@ -1307,7 +1226,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FMmain_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.VirtuSphere.ResumeLayout(false);
+            this.Eigenschaften.ResumeLayout(false);
             this.Liste.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
@@ -1323,9 +1242,6 @@
             this.groupBox8.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
-            this.tabPage3.ResumeLayout(false);
-            this.groupBox11.ResumeLayout(false);
-            this.groupBox11.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1354,7 +1270,7 @@
         private System.Windows.Forms.ColumnHeader IP;
         private System.Windows.Forms.ColumnHeader Domain;
         private System.Windows.Forms.ColumnHeader Packages;
-        private System.Windows.Forms.TabControl VirtuSphere;
+        private System.Windows.Forms.TabControl Eigenschaften;
         private System.Windows.Forms.TabPage Liste;
         private System.Windows.Forms.TabPage Umgebung;
         private System.Windows.Forms.ComboBox comboHypervisor;
@@ -1431,19 +1347,10 @@
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.CheckBox chk_showTemplates;
         internal System.Windows.Forms.Label label_secureconnection;
-        private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.GroupBox groupBox11;
-        private System.Windows.Forms.ListView MECM_Services;
-        private System.Windows.Forms.ColumnHeader columnHeader6;
-        private System.Windows.Forms.ColumnHeader columnHeader7;
-        private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.ColumnHeader columnHeader8;
         private System.Windows.Forms.Label labelTimer;
         private System.Windows.Forms.Timer countdownTimer;
         private System.Windows.Forms.ComboBox comboVCPU;
         private System.Windows.Forms.ComboBox comboRAM;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox txtMECMIP;
     }
 }
 

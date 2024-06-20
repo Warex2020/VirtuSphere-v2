@@ -163,14 +163,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="VirtuSphere.exe" size="2837432">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="VirtuSphere.exe" size="2848184">
       <assemblyIdentity name="VirtuSphere" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>7j8sBMJ8mMMAYBATlSzE2hAY1CZ73m9JiXQi2DANb3o=</dsig:DigestValue>
+        <dsig:DigestValue>fxMFhs1w0D+l9Au2PADH2ruXaPqQy16aPeyt5TVGaIs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -249,13 +249,13 @@
       <dsig:DigestValue>XtOlClG3p3M0PrRKTGBLwsjP+hH+ibjERnYWqk4BMW4=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="VirtuSphere.exe.config" size="2479">
+  <file name="VirtuSphere.exe.config" size="2601">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>nmVCKrVG1q0YN1TkJNkKIzJZhUrJw3um9VboKXJjQ9M=</dsig:DigestValue>
+      <dsig:DigestValue>Z6vVtMzSoGGB5EQB2ozAamP04Pbw5qvJC19YiUbhq3w=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

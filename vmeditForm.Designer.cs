@@ -30,6 +30,9 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(vmeditForm));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.chk_resetmecmid = new System.Windows.Forms.CheckBox();
+            this.txtd_mecmid = new System.Windows.Forms.TextBox();
+            this.label33 = new System.Windows.Forms.Label();
             this.comboVCPU = new System.Windows.Forms.ComboBox();
             this.comboRAM = new System.Windows.Forms.ComboBox();
             this.combo_os = new System.Windows.Forms.ComboBox();
@@ -110,9 +113,6 @@
             this.btnDiskDelete = new System.Windows.Forms.Button();
             this.label29 = new System.Windows.Forms.Label();
             this.lbl_status = new System.Windows.Forms.Label();
-            this.label33 = new System.Windows.Forms.Label();
-            this.txtd_mecmid = new System.Windows.Forms.TextBox();
-            this.chk_resetmecmid = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -168,6 +168,34 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Details";
             // 
+            // chk_resetmecmid
+            // 
+            this.chk_resetmecmid.AutoSize = true;
+            this.chk_resetmecmid.Location = new System.Drawing.Point(107, 435);
+            this.chk_resetmecmid.Name = "chk_resetmecmid";
+            this.chk_resetmecmid.Size = new System.Drawing.Size(103, 17);
+            this.chk_resetmecmid.TabIndex = 53;
+            this.chk_resetmecmid.Text = "Reset MECM ID";
+            this.chk_resetmecmid.UseVisualStyleBackColor = true;
+            this.chk_resetmecmid.CheckedChanged += new System.EventHandler(this.chk_resetmecmid_CheckedChanged);
+            // 
+            // txtd_mecmid
+            // 
+            this.txtd_mecmid.Location = new System.Drawing.Point(107, 408);
+            this.txtd_mecmid.Name = "txtd_mecmid";
+            this.txtd_mecmid.ReadOnly = true;
+            this.txtd_mecmid.Size = new System.Drawing.Size(222, 20);
+            this.txtd_mecmid.TabIndex = 52;
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(23, 408);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(53, 13);
+            this.label33.TabIndex = 51;
+            this.label33.Text = "MECM ID";
+            // 
             // comboVCPU
             // 
             this.comboVCPU.FormattingEnabled = true;
@@ -203,6 +231,7 @@
             this.chkStartafterDeploy.TabIndex = 48;
             this.chkStartafterDeploy.Text = "Start nach Erstellung";
             this.chkStartafterDeploy.UseVisualStyleBackColor = true;
+            this.chkStartafterDeploy.Visible = false;
             // 
             // chkAutostart
             // 
@@ -215,6 +244,7 @@
             this.chkAutostart.TabIndex = 47;
             this.chkAutostart.Text = "Autostart";
             this.chkAutostart.UseVisualStyleBackColor = true;
+            this.chkAutostart.Visible = false;
             // 
             // chkImportMecm
             // 
@@ -227,6 +257,7 @@
             this.chkImportMecm.TabIndex = 46;
             this.chkImportMecm.Text = "Betankung über MECM";
             this.chkImportMecm.UseVisualStyleBackColor = true;
+            this.chkImportMecm.Visible = false;
             // 
             // chkEnabled
             // 
@@ -240,6 +271,7 @@
             this.chkEnabled.TabIndex = 45;
             this.chkEnabled.Text = "Aktiv";
             this.chkEnabled.UseVisualStyleBackColor = true;
+            this.chkEnabled.Visible = false;
             // 
             // txtd_status
             // 
@@ -942,34 +974,6 @@
             this.lbl_status.Size = new System.Drawing.Size(58, 13);
             this.lbl_status.TabIndex = 5;
             this.lbl_status.Text = "Status: OK";
-            // 
-            // label33
-            // 
-            this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(23, 408);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(53, 13);
-            this.label33.TabIndex = 51;
-            this.label33.Text = "MECM ID";
-            // 
-            // txtd_mecmid
-            // 
-            this.txtd_mecmid.Location = new System.Drawing.Point(107, 408);
-            this.txtd_mecmid.Name = "txtd_mecmid";
-            this.txtd_mecmid.ReadOnly = true;
-            this.txtd_mecmid.Size = new System.Drawing.Size(222, 20);
-            this.txtd_mecmid.TabIndex = 52;
-            // 
-            // chk_resetmecmid
-            // 
-            this.chk_resetmecmid.AutoSize = true;
-            this.chk_resetmecmid.Location = new System.Drawing.Point(107, 435);
-            this.chk_resetmecmid.Name = "chk_resetmecmid";
-            this.chk_resetmecmid.Size = new System.Drawing.Size(103, 17);
-            this.chk_resetmecmid.TabIndex = 53;
-            this.chk_resetmecmid.Text = "Reset MECM ID";
-            this.chk_resetmecmid.UseVisualStyleBackColor = true;
-            this.chk_resetmecmid.CheckedChanged += new System.EventHandler(this.chk_resetmecmid_CheckedChanged);
             // 
             // vmeditForm
             // 

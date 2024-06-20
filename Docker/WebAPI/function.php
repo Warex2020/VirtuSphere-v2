@@ -2,6 +2,62 @@
 error_reporting(E_ALL);
 include 'mysql.php';
 
+/**
+ * FILEPATH: VirtuSphere/Docker/WebAPI/function.php
+ *
+ * This file contains various functions related to logging, token generation, VM management, mission management, package management, and OS management.
+ * It also includes database operations using MySQL.
+ *
+ * Functions:
+ * - addLog($ip, $request, $authToken, $connection): Adds a log entry to the database.
+ * - removeLog($connection): Removes log entries older than 7 days from the database.
+ * - generateToken($username, $password, $connection): Generates a token for a given username and password.
+ * - verifyToken($token, $connection): Verifies the validity of a token.
+ * - createVM($vmName, $vmHostname, $vmIP, $vmSubnet, $vmGateway, $vmDNS1, $vmDNS2, $vmDomain, $vmVLAN, $vmRole, $vmStatus, $connection, $token): Creates a new VM in the database.
+ * - createOrUpdateVm($hostname, $connection): Creates a new VM or updates an existing VM in the database.
+ * - getMissions($connection): Retrieves all missions from the database.
+ * - getVMs_2($connection, $missionId): Retrieves all VMs for a given mission from the database.
+ * - getVMs($connection, $missionId): Retrieves all VMs with their associated packages and network interfaces for a given mission from the database.
+ * - getPackages($connection): Retrieves all packages from the database.
+ * - deleteMission($id, $connection): Deletes a mission from the database.
+ * - createMission($missionName, $connection): Creates a new mission in the database.
+ * - getOS($connection): Retrieves all operating systems from the database.
+ * - createOS($osName, $osStatus, $connection): Creates a new operating system in the database.
+ * - deleteOS($osId, $connection): Deletes an operating system from the database.
+ * - updateOS($osId, $osName, $osStatus, $connection): Updates an existing operating system in the database.
+ *
+ * @param string $ip The IP address of the request.
+ * @param string $request The request made.
+ * @param string $authToken The authentication token.
+ * @param object $connection The MySQL database connection object.
+ * @param string $username The username for token generation.
+ * @param string $password The password for token generation.
+ * @param string $token The generated token.
+ * @param int $missionId The ID of the mission.
+ * @param string $vmName The name of the VM.
+ * @param string $vmHostname The hostname of the VM.
+ * @param string $vmIP The IP address of the VM.
+ * @param string $vmSubnet The subnet of the VM.
+ * @param string $vmGateway The gateway of the VM.
+ * @param string $vmDNS1 The primary DNS of the VM.
+ * @param string $vmDNS2 The secondary DNS of the VM.
+ * @param string $vmDomain The domain of the VM.
+ * @param string $vmVLAN The VLAN of the VM.
+ * @param string $vmRole The role of the VM.
+ * @param string $vmStatus The status of the VM.
+ * @param string $hostname The hostname of the VM.
+ * @param int $id The ID of the mission or operating system.
+ * @param string $missionName The name of the mission.
+ * @param string $osName The name of the operating system.
+ * @param string $osStatus The status of the operating system.
+ * @param array $missions An array containing all missions.
+ * @param array $vms An array containing all VMs.
+ * @param array $packages An array containing all packages.
+ * @param array $os An array containing all operating systems.
+ *
+ * @return mixed The return value depends on the function being called.
+ */
+
 if (!is_dir('logs')) {
    mkdir('logs', 0777, true); // Der Parameter 'true' erlaubt das rekursive Erstellen von Verzeichnissen
 }
@@ -80,6 +136,23 @@ function verifyToken($token, $connection) {
       return FALSE;
    }
 }
+
+function expandToken($token, $connection) {
+   // Verlängert die Gültigkeit des Tokens um weitere 60 Minuten
+   $query = "UPDATE deploy_tokens SET expired = FALSE, created_at = DATE_ADD(NOW(), INTERVAL 60 MINUTE) WHERE token = '$token'";
+   $result = $connection->query($query);
+
+   if (!$result) {
+       die('Error: ' . $connection->error);
+   }
+
+   if ($connection->affected_rows > 0) {
+       return TRUE;
+   } else {
+       return FALSE;
+   }
+}
+
 
 function createVM($vmName, $vmHostname, $vmIP, $vmSubnet, $vmGateway, $vmDNS1, $vmDNS2, $vmDomain, $vmVLAN, $vmRole, $vmStatus, $connection, $token) {
    $query = "INSERT INTO deploy_vms (vm_name, vm_hostname, vm_ip, vm_subnet, vm_gateway, vm_dns1, vm_dns2, vm_domain, vm_vlan, vm_role, vm_status, created_at, updated_at) 

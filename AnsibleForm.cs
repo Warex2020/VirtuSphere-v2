@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using YamlDotNet.RepresentationModel;
 using System.Drawing;
 using System.Text;
+using System.Reflection;
 
 
 
@@ -24,6 +25,7 @@ namespace VirtuSphere
     {
         internal List<VM> vms;
         internal List<MissionItem> missionsList;
+
         private apiService apiService;
 
         // mission dir missionName tmp
@@ -58,56 +60,88 @@ namespace VirtuSphere
 
         }
 
+
         public void setTargetESXi(string esxi_address)
         {
             this.label3.Text = esxi_address;
         }
 
 
-        public AnsibleForm(List<VM> vms, string ProjecttempPath, string apiToken, string apiUrl)
+
+        public AnsibleForm(List<VM> vms, string ProjecttempPath, string apiToken, string apiUrl, List<MissionItem> missionsList)
         {
+            if (vms == null)
+            {
+                throw new ArgumentNullException(nameof(vms), "vms ist null");
+            }
+            if (string.IsNullOrEmpty(ProjecttempPath))
+            {
+                throw new ArgumentNullException(nameof(ProjecttempPath), "ProjecttempPath ist null oder leer");
+            }
+            if (string.IsNullOrEmpty(apiToken))
+            {
+                throw new ArgumentNullException(nameof(apiToken), "apiToken ist null oder leer");
+            }
+            if (string.IsNullOrEmpty(apiUrl))
+            {
+                throw new ArgumentNullException(nameof(apiUrl), "apiUrl ist null oder leer");
+            }
+            if (missionsList == null)
+            {
+                throw new ArgumentNullException(nameof(missionsList), "missionsList ist null");
+            }
+
             this.apiToken = apiToken;
             this.apiUrl = apiUrl;
-        
-            InitializeComponent();
-
-            // comboAction
             this.vms = vms;
             this.ProjecttempPath = ProjecttempPath;
+            this.missionsList = missionsList;
 
+            InitializeComponent();
 
             Console.WriteLine("Lese Playbooks aus: " + ProjecttempPath);
 
-            // lade alle Playbooks in comboPlaybooks
-            string[] playbooks = Directory.GetFiles(ProjecttempPath);
-            foreach (string playbook in playbooks)
+            try
             {
-                // füge hinzu wenn datei mit _playbook.yml endet
-                if (playbook.EndsWith("_playbook.yml"))
+                // lade alle Playbooks in comboPlaybooks
+                string[] playbooks = Directory.GetFiles(ProjecttempPath);
+                foreach (string playbook in playbooks)
                 {
-                    comboPlaybooks.Items.Add(Path.GetFileName(playbook));
+                    // füge hinzu wenn datei mit _playbook.yml endet
+                    if (playbook.EndsWith("_playbook.yml"))
+                    {
+                        comboPlaybooks.Items.Add(Path.GetFileName(playbook));
+                    }
+
+                    // datei gefunden console
+                    Console.WriteLine("Playbook gefunden: " + playbook);
                 }
+
+                // comboPlaybooks soll auch leer zur auswahl haben
+                comboPlaybooks.Items.Add("");
+
+                txtAnsible.Visible = false;
+                btnSave.Visible = false;
+                checkBox1.Visible = false;
+                listFiles.Visible = false;
+                comboPlaybooks.Visible = false;
+                button2.Visible = false;
+                button3.Visible = false;
+                button4.Visible = false;
+                button5.Visible = false;
+
+                generateConfigs();
+                reloadListFiles();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Fehler beim Initialisieren der AnsibleForm: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-
-            txtAnsible.Visible = false;
-            btnSave.Visible = false;
-            checkBox1.Visible = false;
-            listFiles.Visible = false;
-            comboPlaybooks.Visible = false;
-            button2.Visible = false;
-            button3.Visible = false;
-            button4.Visible = false;
-            button5.Visible = false;
-
-            // comboPlaybooks soll auch leer zur auswahl haben
-            comboPlaybooks.Items.Add("");
-
-
-            // check  checkYamlFile und 
-            checkYamlFile(Path.Combine(ProjecttempPath, "serverlist.yml"));
-
         }
+
+
+
 
         public bool modifiziert = false;
         public bool view_modifiziert = false;
@@ -484,13 +518,37 @@ namespace VirtuSphere
         }
 
         // Methode zum erstellen einer neuen Datei
-        internal void generateConfigs()
+        public void generateConfigs()
         {
-            // Erstelle accounts.yml
-            string newFile = Path.Combine(ProjectPathTmp, "accounts.yml");
-          
-            
-            string AccountData = $@"esxi_hostname: ""{esxi_hostname}""
+            try
+            {
+                Console.WriteLine("Start generateConfigs");
+
+                // Überprüfen, ob die notwendigen Parameter und Variablen nicht null sind
+                if (string.IsNullOrEmpty(this.ProjecttempPath))
+                {
+                    throw new ArgumentNullException(nameof(this.ProjecttempPath), "ProjectPathTmp ist null oder leer");
+                }
+                if (vms == null)
+                {
+                    throw new ArgumentNullException(nameof(vms), "vms ist null");
+                }
+                if (missionsList == null)
+                {
+                    throw new ArgumentNullException(nameof(missionsList), "missionsList ist null");
+                }
+                if (missionId == 0)
+                {
+                    throw new ArgumentNullException(nameof(missionId), "missionId ist null oder leer");
+                }
+
+                Console.WriteLine("MissionID in generateConfigs: " + missionId);
+                Console.WriteLine("MissionName in generateConfigs: " + missionName);
+
+                // Erstelle accounts.yml
+                string newFile = Path.Combine(ProjectPathTmp, "accounts.yml");
+
+                string AccountData = $@"esxi_hostname: ""{esxi_hostname}""
 esxi_username: {esxi_username}
 esxi_password: ""{esxi_password}""
 ansible_username: ""{ansible_username}""
@@ -498,61 +556,125 @@ WaitingTime: ""{txtWaitTime.Text}""
 apiUrl: ""{apiUrl}""
 ";
 
-  
-            File.WriteAllText(newFile, AccountData);
+                File.WriteAllText(newFile, AccountData);
+                Console.WriteLine("accounts.yml erfolgreich erstellt.");
 
-            //////////////////////////////////////////////////////////
-            // Erstelle serverlist.yml
-            //////////////////////////////////////////////////////////
-            
+                //////////////////////////////////////////////////////////
+                // Erstelle serverlist.yml
+                //////////////////////////////////////////////////////////
 
-            string serverlist = "vm_configurations:\n";
-            string interfaces = "";
-            string packages = "";
-            string disks = "";
+                string serverlist = "vm_configurations:\n";
+                string interfaces = "";
+                string packages = "";
+                string disks = "";
 
-            // Initialisiere serverlist für jede VM neu, um versehentliche Übernahmen zu vermeiden
-            foreach (var vm in vms)
-            {
-                packages = ""; // Zurücksetzen für jede VM
-                interfaces = ""; // Zurücksetzen für jede VM
-                disks = "";
-
-                foreach (Package package in vm.packages)
+                // fehlermeldung wenn missionId leer ist
+                if (missionId == 0)
                 {
-                    packages += $"      - {package.package_name}\n"; // YAML-Liste formatieren
-                }
-
-                foreach (Interface network in vm.interfaces)
-                {
-                    string networktype = string.IsNullOrEmpty(network.type) ? "vmxnet3" : network.type;
-                    interfaces += $"      - name: \"{network.vlan}\"\n"; // YAML-Liste formatieren
-                    interfaces += $"        device_type: {networktype}\n"; // YAML-Liste formatieren
-                }
-
-                foreach (Disk disk in vm.Disks)
-                {
-                    disks += $"      - size_gb: {disk.disk_size}\n";
-                    disks += $"        type: {(disk.disk_type).ToLower()}\n";
+                    MessageBox.Show("Mission ID ist leer.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
 
                 // Default Werte für Datastore und Datacenter aus missionList
-                string mission2_datacenter = missionsList.FirstOrDefault(m => m.Id == missionId).hypervisor_datacenter;
-                string mission2_datastore = missionsList.FirstOrDefault(m => m.Id == missionId).hypervisor_datastorage;
+                var mission = missionsList.FirstOrDefault(m => m.Id == missionId);
+                if (mission == null)
+                {
+                    throw new InvalidOperationException("Mission nicht gefunden.");
+                }
 
-                // Standardwerte prüfen und zuweisen
-                string vm_ram = string.IsNullOrEmpty(vm.vm_ram) ? "1024" : vm.vm_ram;
-                string vm_cpu = string.IsNullOrEmpty(vm.vm_cpu) ? "1" : vm.vm_cpu;
-                string vm_disk = string.IsNullOrEmpty(vm.vm_disk) ? "20" : vm.vm_disk;
-                string vm_datastore = string.IsNullOrEmpty(vm.vm_datastore) ? mission2_datastore : vm.vm_datastore;
-                string vm_datacenter = string.IsNullOrEmpty(vm.vm_datacenter) ? mission2_datacenter : vm.vm_datacenter;
-                string vm_guest_id = string.IsNullOrEmpty(vm.vm_guest_id) ? "windows2019srv_64Guest" : vm.vm_guest_id;
-                string vm_os = string.IsNullOrEmpty(vm.vm_os) ? "Windows" : vm.vm_os;
+                // Print alle Eigenschaften von mission in Console
+                foreach (PropertyInfo prop in mission.GetType().GetProperties())
+                {
+                    Console.WriteLine($"{prop.Name} = {prop.GetValue(mission, null)}");
+                }
+
+                string mission2_datacenter = mission.hypervisor_datacenter;
+                string mission2_datastore = mission.hypervisor_datastorage;
+
+                // Validierung für mission2_datacenter und mission2_datastore
+                if (string.IsNullOrEmpty(mission2_datacenter))
+                {
+                    MessageBox.Show("Datacenter der Mission ist leer.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                if (string.IsNullOrEmpty(mission2_datastore))
+                {
+                    MessageBox.Show("Datastore der Mission ist leer.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                foreach (var vm in vms)
+                {
+                    packages = ""; // Zurücksetzen für jede VM
+                    interfaces = ""; // Zurücksetzen für jede VM
+                    disks = "";
+
+                    foreach (Package package in vm.packages)
+                    {
+                        packages += $"      - {package.package_name}\n"; // YAML-Liste formatieren
+                    }
+
+                    foreach (Interface network in vm.interfaces)
+                    {
+                        string networktype = string.IsNullOrEmpty(network.type) ? "vmxnet3" : network.type;
+                        interfaces += $"      - name: \"{network.vlan}\"\n"; // YAML-Liste formatieren
+                        interfaces += $"        device_type: {networktype}\n"; // YAML-Liste formatieren
+                    }
+
+                    foreach (Disk disk in vm.Disks)
+                    {
+                        disks += $"      - size_gb: {disk.disk_size}\n";
+                        disks += $"        type: {(disk.disk_type).ToLower()}\n";
+                    }
+
+                    // Validierung für Interfaces und Disks
+                    if (string.IsNullOrEmpty(interfaces))
+                    {
+                        MessageBox.Show($"Keine Interfaces für VM {vm.vm_name} vorhanden.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        // Fragen ob ein Interface hinzugefügt werden soll. Mit Standardwerten mission.wds_vlan
+                        DialogResult dialogResult = MessageBox.Show("Soll ein temporäres Interface hinzugefügt werden?", "Interface hinzufügen", MessageBoxButtons.YesNo);
+
+                        if (dialogResult == DialogResult.Yes)
+                        {
+                            interfaces += $"      - name: \"{mission.wds_vlan}\"\n";
+                            interfaces += $"        device_type: vmxnet3\n";
+                        }
+                        else if (dialogResult == DialogResult.No)
+                        {
+                            //MessageBox.Show("Nein");
+                        }
+
+                    }
+                    if (string.IsNullOrEmpty(disks))
+                    {
+                        MessageBox.Show($"Keine Disks für VM {vm.vm_name} vorhanden.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                       
+                        // fragen ob eine 40gb disk hinzugefügt werden soll
+                        DialogResult dialogResult = MessageBox.Show("Soll eine temporäre 40GB Disk hinzugefügt werden?", "40GB Disk hinzufügen", MessageBoxButtons.YesNo);
+                        if (dialogResult == DialogResult.Yes)
+                        {
+                            disks += $"      - size_gb: 40\n";
+                            disks += $"        type: thin\n";
+                        }
+                        else if (dialogResult == DialogResult.No)
+                        {
+                            //MessageBox.Show("Nein");
+                        }
+
+                    }
 
 
-                // Verwenden Sie String Interpolation für bessere Lesbarkeit
-                // Verwenden Sie String Interpolation für bessere Lesbarkeit
-                serverlist += $@"  - vm_name: ""{vm.vm_name}""
+
+                    // Standardwerte prüfen und zuweisen
+                    string vm_ram = string.IsNullOrEmpty(vm.vm_ram) ? "1024" : vm.vm_ram;
+                    string vm_cpu = string.IsNullOrEmpty(vm.vm_cpu) ? "1" : vm.vm_cpu;
+                    string vm_disk = string.IsNullOrEmpty(vm.vm_disk) ? "20" : vm.vm_disk;
+                    string vm_datastore = string.IsNullOrEmpty(vm.vm_datastore) ? mission2_datastore : vm.vm_datastore;
+                    string vm_datacenter = string.IsNullOrEmpty(vm.vm_datacenter) ? mission2_datacenter : vm.vm_datacenter;
+                    string vm_guest_id = string.IsNullOrEmpty(vm.vm_guest_id) ? "windows2019srv_64Guest" : vm.vm_guest_id;
+                    string vm_os = string.IsNullOrEmpty(vm.vm_os) ? "Windows" : vm.vm_os;
+
+                    serverlist += $@"  - vm_name: ""{vm.vm_name}""
     memory: {vm_ram}
     vcpus: {vm_cpu}
     disks: 
@@ -563,16 +685,14 @@ apiUrl: ""{apiUrl}""
     packages:
 {packages}    os: ""{vm_os}""
 ";
+                }
 
-            }
-            string mission_datacenter = string.IsNullOrEmpty(missionsList.FirstOrDefault(m => m.Id == missionId).hypervisor_datacenter) ? "datacenter1" : missionsList.FirstOrDefault(m => m.Id == missionId).hypervisor_datacenter;
-            string mission_datastore = string.IsNullOrEmpty(missionsList.FirstOrDefault(m => m.Id == missionId).hypervisor_datastorage) ? "datastore1" : missionsList.FirstOrDefault(m => m.Id == missionId).hypervisor_datastorage;
-            string mission_notes = string.IsNullOrEmpty(missionsList.FirstOrDefault(m => m.Id == missionId).mission_notes) ? "Keine" : missionsList.FirstOrDefault(m => m.Id == missionId).mission_notes;
-            string mission_status = string.IsNullOrEmpty(missionsList.FirstOrDefault(m => m.Id == missionId).mission_status) ? "Aktiv" : missionsList.FirstOrDefault(m => m.Id == missionId).mission_status;
+                string mission_datacenter = string.IsNullOrEmpty(mission.hypervisor_datacenter) ? "datacenter1" : mission.hypervisor_datacenter;
+                string mission_datastore = string.IsNullOrEmpty(mission.hypervisor_datastorage) ? "datastore1" : mission.hypervisor_datastorage;
+                string mission_notes = string.IsNullOrEmpty(mission.mission_notes) ? "Keine" : mission.mission_notes;
+                string mission_status = string.IsNullOrEmpty(mission.mission_status) ? "Aktiv" : mission.mission_status;
 
-
-            // Mission-Konfiguration aktualisieren
-            serverlist += $@"
+                serverlist += $@"
 mission_configuration:
   mission_name: ""{missionName}""
   mission_id: {missionId}
@@ -582,19 +702,31 @@ mission_configuration:
   mission_status: ""{mission_status}""
 ";
 
+                string serverlistPath = Path.Combine(ProjecttempPath, "serverlist.yml");
+                if (File.Exists(serverlistPath))
+                {
+                    File.Delete(serverlistPath);
+                }
 
+                File.WriteAllText(serverlistPath, serverlist);
+                Console.WriteLine($"serverlist.yml erfolgreich erstellt unter {serverlistPath}");
 
-
-            if (File.Exists(Path.Combine(ProjecttempPath, "serverlist.yml")))
-            {
-                File.Delete(Path.Combine(ProjecttempPath, "serverlist.yml"));
+                // Reload listFiles
+                reloadListFiles();
             }
-
-            File.WriteAllText(Path.Combine(ProjecttempPath, "serverlist.yml"), serverlist);
-
-            // Reload listFiles
-            reloadListFiles();
+            catch (ArgumentNullException ex)
+            {
+                MessageBox.Show($"Ein notwendiger Parameter ist null: {ex.ParamName} - {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Fehler beim Erstellen der Konfigurationsdateien: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+
+
+
+
 
         private void btn_generateClick(object sender, EventArgs e)
         {

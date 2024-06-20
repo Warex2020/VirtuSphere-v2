@@ -13,6 +13,7 @@ using static VirtuSphere.FMmain;
 using System.Windows.Forms.Design;
 using static System.Net.Mime.MediaTypeNames;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
+using System.Net.Http;
 
 
 
@@ -45,14 +46,20 @@ namespace VirtuSphere
         public List<VLANItem> vLANItems = new List<VLANItem>();
         public List<OSItem> osItems = new List<OSItem>();
 
-        public string Username;
+        public bool UseTls { get; set; }
+        public string Username { get; set; }
 
         public object JsonConvert { get; private set; }
 
-        public FMmain(string apiToken, string apiUrl)
+        public FMmain(string apiToken, string apiUrl, bool useTls)
         {
-            apiService = new apiService(apiToken, apiUrl);
             InitializeComponent();
+            UseTls = useTls;
+            HttpClient httpClient = new HttpClient();
+            apiService = new apiService(httpClient, apiUrl, apiToken, UseTls);
+
+            Console.WriteLine("Form1: useTls: " + UseTls);
+
             DisableInputFields();
             LoadDefaultSettings();
             
@@ -866,7 +873,6 @@ namespace VirtuSphere
         public void ShowVLANs(List<VLANItem> vlanList)
         {
 
-
             // comboPortgruppe_Name leeren
             comboPortgruppe_Name.Items.Clear();
 
@@ -1499,7 +1505,6 @@ namespace VirtuSphere
 
         }
 
-
         private void generatePlaybooks(object sender, EventArgs e)
         {
             Console.WriteLine("MissionID: " + missionId);
@@ -1510,8 +1515,7 @@ namespace VirtuSphere
             {
                 MessageBox.Show("Bitte füllen Sie alle Felder unter Umgebung aus.");
                 // öffne Tab Umgebung
-                VirtuSphere.SelectedTab = VirtuSphere.TabPages["Umgebung"];
-
+                Eigenschaften.SelectedTab = Eigenschaften.TabPages["Umgebung"];
                 return;
             }
 
@@ -1543,19 +1547,14 @@ namespace VirtuSphere
                 return;
             }
 
-
             // erstelle missionName Ordner unter temp, wenn nooch nicht existiert
             string ProjecttempPath = Path.Combine(Path.GetTempPath(), missionName);
             if (!Directory.Exists(ProjecttempPath))
             {
                 Directory.CreateDirectory(ProjecttempPath);
             }
-          
-
 
             var basePath = AppDomain.CurrentDomain.BaseDirectory;
-            var filePath = Path.Combine(basePath, "Ansible", "createVMs-ESXi_playbook.yml");
-            var filePath_startVMs = Path.Combine(basePath, "Ansible", "startVMs-ESXi_playbook.yml");
 
             // kopiere alle dateien von basePath\Ansible nach ProjecttempPath
             string[] files = Directory.GetFiles(Path.Combine(basePath, "Ansible"));
@@ -1569,37 +1568,83 @@ namespace VirtuSphere
 
             Console.WriteLine("ProjecttempPath: " + ProjecttempPath);
 
-            // Öffne unter ProjecttempPath die Datei upload_mac_list.py und ersetze {{WEBAPI}}  zu apiUrl
-            string upload_mac_list = Path.Combine(ProjecttempPath, "upload_mac_list.py");
-            string text = File.ReadAllText(upload_mac_list);
-            text = text.Replace("{{apiUrl}}", apiService.apiUrl);
-            File.WriteAllText(upload_mac_list, text);
+            // Überprüfen, ob ProjecttempPath initialisiert ist
+            if (string.IsNullOrEmpty(ProjecttempPath))
+            {
+                MessageBox.Show("ProjecttempPath ist null oder leer.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
+            // Überprüfen, ob die Datei upload_mac_list.py existiert
+            string upload_mac_list = Path.Combine(ProjecttempPath, "upload_mac_list.py");
+            if (!File.Exists(upload_mac_list))
+            {
+                MessageBox.Show($"Datei '{upload_mac_list}' existiert nicht.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Datei lesen und Platzhalter ersetzen
+            string text = File.ReadAllText(upload_mac_list);
+            text = text.Replace("{{apiUrl}}", apiUrl);
+            text = text.Replace("8022", "8021");
+            File.WriteAllText(upload_mac_list, text);
 
             try
             {
-                AnsibleForm ansibleForm = new AnsibleForm(vms, ProjecttempPath, apiService.apiToken, apiService.apiUrl);
+                // Überprüfen, ob die notwendigen Parameter und Variablen nicht null sind
+                if (vms == null)
+                {
+                    throw new ArgumentNullException(nameof(vms), "vms ist null");
+                }
+                if (string.IsNullOrEmpty(ProjecttempPath))
+                {
+                    throw new ArgumentNullException(nameof(ProjecttempPath), "ProjecttempPath ist null oder leer");
+                }
+                if (apiService == null)
+                {
+                    throw new ArgumentNullException(nameof(apiService), "apiService ist null");
+                }
+                if (string.IsNullOrEmpty(apiService.apiToken))
+                {
+                    throw new ArgumentNullException(nameof(apiService.apiToken), "apiToken ist null oder leer");
+                }
+                if (string.IsNullOrEmpty(apiService.apiUrl))
+                {
+                    throw new ArgumentNullException(nameof(apiService.apiUrl), "apiUrl ist null oder leer");
+                }
+
+                Console.WriteLine("All initial checks passed.");
+
+                // Debugging-Ausgabe für ProjecttempPath
+                Console.WriteLine("Lese Playbooks aus: " + ProjecttempPath);
+
+                Console.WriteLine(vms.Count + " VMs gefunden.");
+                Console.WriteLine("ProjecttempPath: " + ProjecttempPath);
+                Console.WriteLine("apiUrl: " + apiService.apiUrl);
+                Console.WriteLine("apiToken: " + apiService.apiToken);
+
+                // Erstellen der AnsibleForm
+                AnsibleForm ansibleForm = new AnsibleForm(vms, ProjecttempPath, apiService.apiToken, apiService.apiUrl, missionsList);
 
                 ansibleForm.FormClosed += AnsibleForm_FormClosed;
 
-                // createVMs-ESXi
-                String TargetFile = Path.Combine(ProjecttempPath, "createVMs-ESXi.yml");
-                //ansibleForm.
-                //.Items.Add(Path.GetFileName(Path.Combine(ProjecttempPath, "createVMs-ESXi.yml")));
+                // Überprüfen, ob die Variablen aus den Textboxen initialisiert sind
+                if (string.IsNullOrEmpty(txt_hv_ip.Text) || string.IsNullOrEmpty(txt_hv_loginname.Text) || string.IsNullOrEmpty(txt_hv_loginpassword.Text))
+                {
+                    MessageBox.Show("Eine oder mehrere notwendige Textboxen sind leer.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
-                // erfasse Variablen aus Textbox
+                // Erfassen der Variablen aus den Textboxen
                 string esxi_host = txt_hv_ip.Text;
                 string esxi_user = txt_hv_loginname.Text;
                 string esxi_password = txt_hv_loginpassword.Text;
-
 
                 if (!int.TryParse(txt_ssh_port.Text, out int ssh_port2))
                 {
                     MessageBox.Show("SSH-Port ist ungültig.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-
-
 
                 // Konfiguration für bessere Formatierung
                 ansibleForm.txtAnsible.Multiline = true;
@@ -1611,29 +1656,50 @@ namespace VirtuSphere
                 ansibleForm.esxi_username = txt_hv_loginname.Text;
                 ansibleForm.esxi_password = txt_hv_loginpassword.Text;
                 ansibleForm.ansible_username = txt_ssh_user.Text;
-                ansibleForm.missionsList = missionsList;
                 ansibleForm.ssh_hostname = txt_ssh_ip.Text;
                 ansibleForm.ssh_username = txt_ssh_user.Text;
                 ansibleForm.ssh_password = txt_ssh_password.Text;
                 ansibleForm.ssh_checkSSHKey = checkSSHKey.Checked;
                 ansibleForm.ProjecttempPath = ProjecttempPath;
+
+                // Debug-Ausgabe für missionList
+                if (missionsList != null)
+                {
+                    Console.WriteLine("missionsList enthält " + missionsList.Count + " Elemente.");
+                    foreach (var mission in missionsList)
+                    {
+                        Console.WriteLine("Mission: " + mission.mission_name);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("missionsList ist null.");
+                }
+
                 ansibleForm.ssh_port = txt_ssh_port.Text;
                 ansibleForm.hostname = apiUrl;
                 ansibleForm.Token = apiToken;
                 ansibleForm.missionId = missionId;
                 ansibleForm.ssh_port2 = ssh_port2;
                 ansibleForm.SetMissionName(missionName);
-                ansibleForm.setTargetESXi("Zielsystem: "+txt_hv_ip.Text);
-                ansibleForm.generateConfigs();
+                ansibleForm.setTargetESXi("Zielsystem: " + txt_hv_ip.Text);
 
+                // beim schließen der AnsibleForm soll der Ordner mit Inhalt gelöscht werden ProjecttempPath
+                
                 ansibleForm.Show();
+            }
+            catch (ArgumentNullException ex)
+            {
+                MessageBox.Show($"Ein notwendiger Parameter ist null: {ex.ParamName} - {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Fehler beim Lesen der Datei: {ex.Message}");
+                MessageBox.Show($"Fehler beim Lesen der Datei: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
         }
+
+
+
 
         private void AnsibleForm_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -2373,13 +2439,34 @@ namespace VirtuSphere
 
         }
 
-        private void button8_Click(object sender, EventArgs e)
+        private async void labelTimer_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            // verbinde dich mit der txtMECMIP und lese alle Dienste aus
-            string mecIP = txtMECMIP.Text;
+            // Überprüfen, ob noch Zeit verbleibt
+            if (remainingTimeInMinutes > 0)
+            {
+                bool tokenExpanded = await apiService.ExpandToken();
+                if (tokenExpanded)
+                {
+                    // Setze den Timer zurück, zum Beispiel auf einen neuen Startwert
+                    remainingTimeInMinutes = 60; // oder einen anderen Wert, der für deine Anwendung angemessen ist
+                    labelTimer.Text = $"Restzeit: {remainingTimeInMinutes} Minuten";
+                    countdownTimer.Start(); // Starte den Timer erneut, falls er angehalten wurde
+                    MessageBox.Show("Token-Zeit erfolgreich verlängert!", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Token-Zeit konnte nicht verlängert werden.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Token ist bereits abgelaufen, kann nicht verlängert werden.", "Aktion nicht möglich", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
 
 
-   
+        private void labelTimer_Click(object sender, EventArgs e)
+        {
 
         }
     }

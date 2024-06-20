@@ -190,5 +190,17 @@ namespace VirtuSphere.Properties {
                 this["comboHostname"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool chkbx_tls {
+            get {
+                return ((bool)(this["chkbx_tls"]));
+            }
+            set {
+                this["chkbx_tls"] = value;
+            }
+        }
     }
 }
