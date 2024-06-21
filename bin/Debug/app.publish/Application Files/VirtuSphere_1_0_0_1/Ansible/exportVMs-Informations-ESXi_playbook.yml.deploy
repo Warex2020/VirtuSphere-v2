@@ -1,0 +1,29 @@
+---
+- name: Sammle Informationen aller VMs
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ./serverlist.yml
+    - ./accounts.yml
+
+  tasks:
+    - name: Sammle VM-Informationen
+      community.vmware.vmware_guest_info:
+        hostname: "{{ esxi_hostname }}"
+        username: "{{ esxi_username }}"
+        password: "{{ esxi_password }}"
+        validate_certs: no
+        datacenter: "{{ item.datacenter_name }}"
+        name: "{{ item.vm_name }}"
+      delegate_to: localhost
+      loop: "{{ vm_configurations }}"
+      register: vm_info
+
+    - name: Speichere gesammelte Informationen in einer temporaeren Datei
+      copy:
+        dest: "./vm_infos.json"
+        content: "{{ vm_info.results | to_nice_json }}"
+
+    - name: Fuehre Python-Skript aus, um Daten zu verarbeiten und in CSV umzuwandeln
+      ansible.builtin.command: python3 ./upload_mac_list.py
+      delegate_to: localhost

@@ -1613,7 +1613,7 @@ namespace VirtuSphere
 
             // Datei lesen und Platzhalter ersetzen
             string text = File.ReadAllText(upload_mac_list);
-            text = text.Replace("{{apiUrl}}", apiUrl);
+            text = text.Replace("{{apiUrl}}", apiService.apiUrl);
             text = text.Replace("8022", "8021");
             File.WriteAllText(upload_mac_list, text);
 

@@ -1,0 +1,37 @@
+---
+- name: Erstellen von VMs auf einem ESXi-Host
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ./serverlist.yml
+    - ./accounts.yml
+
+  tasks:
+    - name: VMs erstellen basierend auf der Konfigurationsdatei
+      community.vmware.vmware_guest:
+        hostname: "{{ esxi_hostname }}"
+        username: "{{ esxi_username }}"
+        password: "{{ esxi_password }}"
+        validate_certs: no
+        name: "{{ item.vm_name }}"
+        state: present
+        folder: "/"
+        guest_id: "{{ item.guest_id }}"
+        datacenter: "{{ item.datacenter_name }}"
+        datastore: "{{ item.datastore_name }}"
+        disk: "{{ item.disks }}"
+        hardware:
+          memory_mb: "{{ item.memory }}"
+          num_cpus: "{{ item.vcpus }}"
+          scsi: lsilogicsas
+          secure_boot: true
+          boot_firmware: "efi"
+        networks: "{{ item.network }}"
+      delegate_to: localhost
+      loop: "{{ vm_configurations }}"
+      when: vm_configurations | length > 0
+      register: vm_creation_results
+
+    - name: warten
+      pause:
+        seconds: 60

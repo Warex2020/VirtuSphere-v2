@@ -1,0 +1,36 @@
+---
+- name: Setup directories and files, perform ping test, and show IP addresses
+  hosts: localhost
+  tasks:
+    - name: Create directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "~/folder1"
+        - "~/folder2"
+        - "~/folder3"
+
+    - name: Create files
+      ansible.builtin.copy:
+        dest: "{{ item.path }}"
+        content: "{{ item.content | default('Hello World!') }}"
+      loop:
+        - { path: "~/folder1/file1.txt" }
+        - { path: "~/folder1/file2.txt" }
+
+    - name: Perform ping test
+      ansible.builtin.ping:
+
+    - name: Display ping results
+      debug:
+        msg: "Ping successful"
+
+    - name: Get local IP addresses
+      ansible.builtin.shell: hostname -I
+      register: ip_result
+
+    - name: Show local IP addresses
+      debug:
+        msg: "Local IP addresses: {{ ip_result.stdout }}"
