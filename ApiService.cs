@@ -41,71 +41,57 @@ namespace VirtuSphere
             public bool success { get; set; }
 
         }
+        private static bool callbackSet = false; // Statischer Flag zur Überwachung, ob der Callback gesetzt wurde
 
         public async Task<string> IsValidLogin(string username, string password, string hostname, bool useTls)
         {
             globalusername = username;
-            string certCachePath = "certCache.txt"; // Pfad zur Cache-Datei
 
-            // Setze die SecurityProtocol nur, wenn useTls wahr ist
-            if (useTls)
+            if (useTls && !callbackSet)
             {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+
+                // Setze den ServerCertificateValidationCallback, nur wenn er noch nicht gesetzt wurde
+                ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) =>
+                {
+                    Console.WriteLine("Zertifikatsvalidierungs-Callback ausgelöst");
+
+                    var cert = (X509Certificate2)certificate;
+
+                    if (sslPolicyErrors != SslPolicyErrors.None)
+                    {
+                        string certDetails = $"Aussteller: {cert.Issuer}\n" +
+                                             $"Betreff: {cert.Subject}\n" +
+                                             $"Gültig ab: {cert.NotBefore}\n" +
+                                             $"Gültig bis: {cert.NotAfter}\n" +
+                                             $"Fingerabdruck: {cert.Thumbprint}";
+
+                        Console.WriteLine("Zertifikat ist nicht vertrauenswürdig");
+                        Console.WriteLine(certDetails);
+
+                        DialogResult result = MessageBox.Show($"Zertifikat ist nicht vertrauenswürdig\n\n{certDetails}\n\nMöchten Sie trotzdem fortfahren?", "Zertifikatfehler", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                        if (result == DialogResult.Yes)
+                        {
+                            return true; // Zertifikat wird für diese Sitzung ignoriert
+                        }
+
+                        return false; // Zertifikat ist nicht vertrauenswürdig und Benutzer möchte nicht fortfahren
+                    }
+
+                    return true; // Zertifikat ist vertrauenswürdig
+                };
+
+                callbackSet = true; // Setze den Flag, um zu markieren, dass der Callback nun gesetzt ist
             }
 
             string scheme = useTls ? "https" : "http";
             string requestUri = $"{scheme}://{hostname}/api/login.php";
 
-            // Wenn useTls ist, soll die Verbindung geprüft werden, ob das Zertifikat vertrauenswürdig ist
-            if (useTls)
-            {
-                // Zertifikatsprüfung hinzufügen
-                ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
-                {
-                    var cert = (X509Certificate2)certificate;
-                    string certThumbprint = cert.Thumbprint;
-
-                    if (sslPolicyErrors == SslPolicyErrors.None)
-                    {
-                        return true; // Zertifikat ist vertrauenswürdig
-                    }
-
-                    var ignoredCerts = LoadIgnoredCertificates(certCachePath);
-
-                    if (ignoredCerts.Contains(certThumbprint))
-                    {
-                        return true; // Zertifikat wurde bereits ignoriert
-                    }
-
-                    // Details des Zertifikats abrufen
-                    string certDetails = $"Issuer: {cert.Issuer}\n" +
-                                         $"Subject: {cert.Subject}\n" +
-                                         $"Valid From: {cert.NotBefore}\n" +
-                                         $"Valid To: {cert.NotAfter}\n" +
-                                         $"Thumbprint: {cert.Thumbprint}";
-
-                    Console.WriteLine("Zertifikat ist nicht vertrauenswürdig");
-                    Console.WriteLine(certDetails);
-
-                    // Benutzerentscheidung abfragen
-                    DialogResult result = MessageBox.Show($"Zertifikat ist nicht vertrauenswürdig\n\n{certDetails}\n\nMöchten Sie trotzdem fortfahren?", "Zertifikatfehler", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
-                    if (result == DialogResult.Yes)
-                    {
-                        SaveIgnoredCertificate(certCachePath, certThumbprint);
-                        return true; // Zertifikat wird ignoriert
-                    }
-
-                    return false; // Zertifikat ist nicht vertrauenswürdig und Benutzer möchte nicht fortfahren
-                };
-            }
-
-            // Prüfung, ob die Adresse erreichbar ist und die Verbindung möglich ist
             try
             {
-                // Versuche, eine Kopfzeilenanfrage zu senden, um zu sehen, ob der Host erreichbar ist
                 var headRequest = new HttpRequestMessage(HttpMethod.Head, requestUri);
                 var headResponse = await _httpClient.SendAsync(headRequest);
-                headResponse.EnsureSuccessStatusCode(); // Löst eine Ausnahme aus, wenn der Statuscode außerhalb von 2xx liegt
+                headResponse.EnsureSuccessStatusCode();
             }
             catch (HttpRequestException e)
             {
@@ -113,7 +99,6 @@ namespace VirtuSphere
                 return null; // Kann als Indikator für nicht erreichbare Adresse oder Verbindungsfehler dienen
             }
 
-            // Führe die Anmeldeanfrage aus
             var loginData = new Dictionary<string, string>
     {
         { "username", username },
@@ -141,22 +126,23 @@ namespace VirtuSphere
                 }
                 else
                 {
-                    Console.WriteLine($"Request to URL failed: {response.RequestMessage.RequestUri}");
-                    Console.WriteLine($"Status Code: {response.StatusCode}");
-                    Console.WriteLine($"Response Content: {responseContent}");
+                    Console.WriteLine($"Anfrage an URL fehlgeschlagen: {response.RequestMessage.RequestUri}");
+                    Console.WriteLine($"Statuscode: {response.StatusCode}");
+                    Console.WriteLine($"Antwortinhalt: {responseContent}");
                     MessageBox.Show("Ein Fehler ist aufgetreten. Siehe Konsolenausgabe für Details.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception caught: {ex.Message}");
-                Console.WriteLine($"Request: {response.RequestMessage}");
-                Console.WriteLine($"Response: {responseContent}");
+                Console.WriteLine($"Exception abgefangen: {ex.Message}");
+                Console.WriteLine($"Anfrage: {response.RequestMessage}");
+                Console.WriteLine($"Antwort: {responseContent}");
                 MessageBox.Show("Ein kritischer Fehler ist aufgetreten. Siehe Konsolenausgabe für Details.", "Kritischer Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return null; // Bei Fehlschlag
         }
+
 
         private void SaveIgnoredCertificate(string certCachePath, string thumbprint)
         {

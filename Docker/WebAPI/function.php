@@ -513,7 +513,7 @@ function updateMission($mysqli, $missionId, $missionData) {
 
 
 
-function vmListToCreate($missionId, $vmList, $mysqli){
+function vmListToCreate($missionId, $vmList, $mysqli) {
    if (!empty($vmList)) {
        $successCount = 0;
        foreach ($vmList as $vm) {
@@ -551,7 +551,6 @@ function vmListToCreate($missionId, $vmList, $mysqli){
                   $params[] = 1;
                   $types .= 'i';
                }
-
            }
 
            if (!$missionIdIncluded) {
@@ -562,7 +561,6 @@ function vmListToCreate($missionId, $vmList, $mysqli){
                $types = 'i' . $types;
            }
 
-
            $query = "INSERT INTO deploy_vms (" . implode(", ", $columns) . ") VALUES (" . implode(", ", $placeholders) . ")";
 
            if ($stmt = $mysqli->prepare($query)) {
@@ -572,7 +570,6 @@ function vmListToCreate($missionId, $vmList, $mysqli){
                    $successCount++;
 
                   // Interfaces der VM einfügen
-                  // wenn $vm->interfaces nicht leer ist
                   if (!empty($vm->interfaces)) {
                      foreach ($vm->interfaces as $interface) {
                         $stmt = $mysqli->prepare("INSERT INTO deploy_interfaces (vm_id, ip, subnet, gateway, dns1, dns2, vlan, mac, mode, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -584,7 +581,6 @@ function vmListToCreate($missionId, $vmList, $mysqli){
                   // Paketbeziehungen einfügen
                   if (!empty($vm->packages)) {                  
                      foreach ($vm->packages as $package) {
-                        // Überprüfen, ob das Paket existiert, und dessen ID abrufen
                         $packageQuery = $mysqli->prepare("SELECT id FROM deploy_packages WHERE package_name = ? AND package_version = ?");
                         $packageQuery->bind_param("ss", $package->package_name, $package->package_version);
                         $packageQuery->execute();
@@ -593,7 +589,6 @@ function vmListToCreate($missionId, $vmList, $mysqli){
                            $packageData = $result->fetch_assoc();
                            $packageId = $packageData['id'];
 
-                           // Beziehung in deploy_vm_packages einfügen
                            $stmt = $mysqli->prepare("INSERT INTO deploy_vm_packages (vm_id, package_id) VALUES (?, ?)");
                            $stmt->bind_param("ii", $vmId, $packageId);
                            $stmt->execute();
@@ -601,24 +596,24 @@ function vmListToCreate($missionId, $vmList, $mysqli){
                      }
                   }
 
-                  //Diskbeziehungen einfügen
-                  if (!empty($vm->disks)) {
-                     foreach ($vm->disks as $disk) {
-                        $stmt = $mysqli->prepare("INSERT INTO deploy_disks (vm_id, disk_name, disk_size, disk_type) VALUES (?, ?, ?, ?)");
-                        $stmt->bind_param("iss", $vmId, $disk->disk_name, $disk->disk_size, $disk->disk_type);
-                        $stmt->execute();
+                  // Diskbeziehungen einfügen
+                  if (!empty($vm->Disks)) {
+                     foreach ($vm->Disks as $disk) {
+                        $diskStmt = $mysqli->prepare("INSERT INTO deploy_disks (vm_id, disk_name, disk_size, disk_type) VALUES (?, ?, ?, ?)");
+                        $diskStmt->bind_param("isis", $vmId, $disk->disk_name, $disk->disk_size, $disk->disk_type);
+                        if (!$diskStmt->execute()) {
+                            echo "Execute failed: (" . $diskStmt->errno . ") " . $diskStmt->error;
+                        }
+                        $diskStmt->close();
                      }
                   }
                } else {
-                   // Fehlerbehandlung
-                  // schreibe nur in die Datei logs/fail.log, wenn die schreibberechtigung gegeben ist
-                  if (is_writable('logs/fail.log')) {
+                   if (is_writable('logs/fail.log')) {
                       file_put_contents('logs/fail.log', "Fehler beim Einfügen der VM: " . json_encode($vm) . " - " . $mysqli->error . "\n", FILE_APPEND);
-                  }
+                   }
                }
                $stmt->close();
            } else {
-               // Fehlerbehandlung
                echo "Fehler beim Vorbereiten des Insert-Statements: " . $mysqli->error;
            }
        }
@@ -627,6 +622,7 @@ function vmListToCreate($missionId, $vmList, $mysqli){
        return 0;
    }
 }
+
 
 function missionToUpdate($missionList, $connection) {
    $successCount = 0;

@@ -9,10 +9,8 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
 using System.Text.RegularExpressions;
 using static VirtuSphere.apiService;
-
 
 namespace VirtuSphere
 {
@@ -31,37 +29,24 @@ namespace VirtuSphere
         internal bool ssh_checkSSHKey;
         public event EventHandler CommandsCompleted;
 
-
         public DeployForm()
         {
             InitializeComponent();
-
             this.FormClosing += DeployForm_FormClosing;
-
-
-
 
             // Setzt den Hintergrund der RichTextBox auf Schwarz
             richTextBox1.BackColor = Color.Black;
-
             // Setzt die Standardtextfarbe auf Grün (oder eine andere Farbe Ihrer Wahl)
             richTextBox1.ForeColor = Color.Green;
 
-
             // Borderabstand
             txtBox_commands.Margin = new Padding(10, 10, 10, 10);
-
             // zeige keinen Border
             txtBox_commands.BorderStyle = BorderStyle.None;
-
             // zeige keinen Scrollbar
             txtBox_commands.ScrollBars = ScrollBars.None;
-
             // schrift größer
             txtBox_commands.Font = new Font("Arial", 12, FontStyle.Bold);
-
-
-
         }
 
         public async Task ReceiveFileFromSshTarget(string host, int port, string username, string password, string remoteFilePath, string localDirectoryPath, string localFileName)
@@ -85,7 +70,6 @@ namespace VirtuSphere
                         using (var fileStream = File.Create(fullPath))
                         {
                             sftp.DownloadFile(remoteFilePath, fileStream);
-                            // MessageBox.Show("Datei erfolgreich empfangen!", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                     }
                     else
@@ -106,8 +90,6 @@ namespace VirtuSphere
                 }
             }
         }
-
-
 
         public async Task ConnectAndExecuteSSHCommands(string host, int port, string username, string password, string missionName, string runPlaybook, bool chk_createvms, bool chk_exportvminfos, bool chk_autostart, bool chk_verbose, bool chk_removeplaybooks)
         {
@@ -131,58 +113,62 @@ namespace VirtuSphere
                             });
                         };
 
-                        string executionCommand;
-                        // baue hier den Run befehl zusammen
-
-                       // await ExecuteCommandAsync("cd /tmp/" + missionName + ";");
-
-                        executionCommand = "cd /tmp/" + missionName + "; chmod 666 /tmp/" + missionName + "/* ; ";
-
-
+                        string executionCommand = "cd /tmp/" + missionName + "; chmod 666 /tmp/" + missionName + "/* ; ";
 
                         // wenn runPlaybook nicht leer ist dann führe aus
-                        if (runPlaybook != null) { 
+                        if (runPlaybook != null)
+                        {
                             executionCommand += "ansible-playbook /tmp/" + missionName + "/" + runPlaybook;
                             if (chk_verbose) { executionCommand += " -vvv; "; } else { executionCommand += "; "; }
-                        } else
+                        }
+                        else
                         {
-
-                            if (chk_createvms) { executionCommand += "ansible-playbook /tmp/" + missionName + "/createVMs-ESXi_playbook.yml"; 
+                            if (chk_createvms)
+                            {
+                                executionCommand += "ansible-playbook /tmp/" + missionName + "/createVMs-ESXi_playbook.yml";
                                 if (chk_verbose) { executionCommand += " -vvv; "; } else { executionCommand += "; "; }
                             }
 
-                            if (chk_exportvminfos) { executionCommand += " ansible-playbook exportVMs* "; 
-                            if (chk_verbose) { executionCommand += " -vvv ; "; } else { executionCommand += "; "; } }
+                            if (chk_exportvminfos)
+                            {
+                                executionCommand += " ansible-playbook exportVMs* ";
+                                if (chk_verbose) { executionCommand += " -vvv ; "; } else { executionCommand += "; "; }
+                            }
 
+                            if (chk_autostart)
+                            {
+                                executionCommand += " ansible-playbook startVMs*";
+                                if (chk_verbose) { executionCommand += " -vvv"; } else { executionCommand += "; "; }
+                            }
 
-                            if (chk_autostart) { executionCommand += " ansible-playbook startVMs*"; 
-                            if (chk_verbose) { executionCommand += " -vvv"; } else { executionCommand += "; "; } }
-
-                            if (chk_removeplaybooks) { executionCommand += "cd ~ ; rm -rf /tmp/" + missionName + "/"; }
-
+                            if (chk_removeplaybooks)
+                            {
+                                executionCommand += "cd ~ ; rm -rf /tmp/" + missionName + "/";
+                            }
                         }
-                            
 
                         Console.WriteLine(executionCommand);
-
                         await ExecuteCommandAsync(executionCommand);
-
-
-
                         CommandsCompleted?.Invoke(this, EventArgs.Empty);
-
-
-
                     }
                     else
                     {
-                        MessageBox.Show("Verbindung zum SSH-Server konnte nicht hergestellt werden.");
+                        NotifyAndClose("Verbindung zum SSH-Server konnte nicht hergestellt werden.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ein Fehler ist aufgetreten: {ex.Message}");
+                    NotifyAndClose($"Ein Fehler ist aufgetreten: {ex.Message}");
                 }
+            });
+        }
+
+        private void NotifyAndClose(string message)
+        {
+            MessageBox.Show(message, "Verbindungsfehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            this.Invoke((MethodInvoker)delegate
+            {
+                this.Close();
             });
         }
 
@@ -195,16 +181,13 @@ namespace VirtuSphere
                 return WaitForPrompt(shellStream);
             });
         }
+
         private bool IsPrompt(string input, out string prompt)
         {
-            // Ein regulärer Ausdruck, der auf einen generischen Prompt passt.
-            // Dieser sucht nach einem Zeilenende gefolgt von beliebigem Text, gefolgt von '$ ' oder '# '.
             var promptRegex = new Regex(@"(\r\n|\n)(?<Prompt>.+?[@].+?:.+?)(\$|#) $");
-
             var match = promptRegex.Match(input);
             if (match.Success)
             {
-                // Der gefundene Prompt wird zurückgegeben, damit er für weitere Überprüfungen verwendet werden kann.
                 prompt = match.Groups["Prompt"].Value + match.Groups[3].Value + " ";
                 return true;
             }
@@ -238,31 +221,18 @@ namespace VirtuSphere
 
         private void ParseAndAddTextToRichTextBox(string text)
         {
-
             this.Invoke((MethodInvoker)delegate
             {
-                // Entfernen oder Ersetzen von Escape-Codes und nicht benötigten Nachrichten
                 var cleanedText = CleanUpShellOutput(text);
-
-                // Farben basierend auf dem Inhalt anwenden
                 ApplyTextWithColors(cleanedText);
-
-                // Automatisches Scrollen
                 richTextBox1.ScrollToCaret();
             });
         }
 
-
         private string CleanUpShellOutput(string output)
         {
-            // Entfernen von Escape-Codes und nicht benötigten Nachrichten
-            // Dies ist eine vereinfachte Darstellung. Die tatsächliche Implementierung könnte komplexer sein.
-            //var cleanedOutput = output.Replace("\u001B[0m", ""); // Beispiel für das Entfernen eines Escape-Codes
             string cleanedText = Regex.Replace(output, @"\e\[[0-9;]*m", "");
-
-            // Umwandlung von Unix-Zeilenumbrüchen in Windows-Zeilenumbrüche
             cleanedText = cleanedText.Replace("\n", Environment.NewLine);
-
             return cleanedText;
         }
 
@@ -289,42 +259,32 @@ namespace VirtuSphere
                 }
                 else
                 {
-                    richTextBox1.SelectionColor = Color.GreenYellow; // Oder eine andere Standardfarbe
+                    richTextBox1.SelectionColor = Color.GreenYellow;
                 }
                 richTextBox1.AppendText(line + Environment.NewLine);
             }
         }
 
-        // Beispiel für eine Methode, die auf den Prompt wartet
         private void WaitForPrompt(ShellStream shellStream, string prompt)
         {
             var buffer = new StringBuilder();
-            var readBuffer = new byte[4096];  // Größe des Puffers kann je nach Bedarf angepasst werden
+            var readBuffer = new byte[4096];
             int bytesRead;
 
-            // Lesen Sie den Stream in Schleifen, bis der erwartete Prompt gefunden wird
             while (true)
             {
                 bytesRead = shellStream.Read(readBuffer, 0, readBuffer.Length);
                 string text = Encoding.UTF8.GetString(readBuffer, 0, bytesRead);
                 buffer.Append(text);
 
-                // Prüfen Sie, ob der Prompt am Ende des aktuellen Puffers steht
                 if (buffer.ToString().EndsWith(prompt))
                 {
-                    break;  // Beenden Sie die Schleife, wenn der Prompt gefunden wurde
+                    break;
                 }
             }
-
-            // Optional: Entfernen Sie den Prompt aus dem Puffer, wenn Sie nur die Befehlsausgabe benötigen
-            // string outputWithoutPrompt = buffer.ToString().Replace(prompt, "");
         }
 
-
-
-
-
-        public void SendFileToSshTarget(string host, int port, string username, string password, string localFilePath, string remoteFilePath, string remoteDirectoryPath)
+        public bool SendFileToSshTarget(string host, int port, string username, string password, string localFilePath, string remoteFilePath, string remoteDirectoryPath)
         {
             using (var sftp = new SftpClient(host, port, username, password))
             {
@@ -338,26 +298,25 @@ namespace VirtuSphere
                             if (!sftp.Exists(remoteDirectoryPath))
                             {
                                 sftp.CreateDirectory(remoteDirectoryPath);
-                                Console.WriteLine   ("Verzeichnis erstellt: " + remoteDirectoryPath);
+                                Console.WriteLine("Verzeichnis erstellt: " + remoteDirectoryPath);
                             }
 
                             string fullPath = remoteDirectoryPath.EndsWith("/") ? remoteDirectoryPath + remoteFilePath : remoteDirectoryPath + "/" + remoteFilePath;
 
                             sftp.UploadFile(fileStream, fullPath);
-
-                            //MessageBox.Show("Datei erfolgreich gesendet!", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
+                        return true; // Erfolgreich gesendet
                     }
                     else
                     {
                         MessageBox.Show("Verbindung zum SFTP-Server konnte nicht hergestellt werden.", "Verbindungsfehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return false; // Verbindung fehlgeschlagen
                     }
                 }
                 catch (Exception ex)
                 {
-                    // Gib hier detailrechte infos aus
-
                     MessageBox.Show($"Ein Fehler ist aufgetreten: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false; // Fehler aufgetreten
                 }
                 finally
                 {
@@ -369,26 +328,25 @@ namespace VirtuSphere
             }
         }
 
+
         private void txtBox_commands_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
                 SendCommand();
-                e.SuppressKeyPress = true; // Verhindert den Signalton
+                e.SuppressKeyPress = true;
             }
         }
 
-
         private void SendCommand()
         {
-            // Überprüfen, ob die SSH-Verbindung besteht
             if (sshClient != null && sshClient.IsConnected && shellStream != null)
             {
-                string command = txtBox_commands.Text.Trim(); // Befehl aus der TextBox holen und trimmen
+                string command = txtBox_commands.Text.Trim();
                 if (!string.IsNullOrEmpty(command))
                 {
-                    shellStream.WriteLine(command + "\n"); // Befehl senden, gefolgt von einem Zeilenumbruch
-                    txtBox_commands.Clear(); // TextBox leeren, nachdem der Befehl gesendet wurde
+                    shellStream.WriteLine(command + "\n");
+                    txtBox_commands.Clear();
                 }
             }
             else
@@ -399,38 +357,45 @@ namespace VirtuSphere
 
         private void DeployForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            DialogResult dialogResult = MessageBox.Show("Achtung: Verbindung wird beendet und Ansible Playbook wird gestoppt, falls noch aktiv?", "Fenster schließen", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
-            DialogResult result = MessageBox.Show("Achtung: Verbindung wird beendet und Ansible Playbook wird gestoppt, falls noch aktiv?", "Fenster schließen", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-            // Überprüfen des Ergebnisses der MessageBox
-            if (result == DialogResult.No)
+            if (dialogResult == DialogResult.No)
             {
-                // Wenn der Benutzer auf 'Nein' klickt, Abbruch des Schließens
                 e.Cancel = true;
+                return;
             }
 
-
-            // Überprüfen, ob eine SSH-Verbindung besteht und diese dann schließen
-            if (sshClient != null)
+            if (sshClient != null && sshClient.IsConnected)
             {
-                if (sshClient.IsConnected)
+                try
                 {
-                    sshClient.Disconnect();
+                    // Added code to execute the command to delete the temporary mission directory
+                    var command = "rm -rf /tmp/" + missionName + "/";
+                    var cmd = sshClient.CreateCommand(command);
+                    var commandResult = cmd.Execute(); // Renamed variable to avoid conflict
+                    Console.WriteLine($"Command result: {commandResult}");
                 }
-                sshClient.Dispose(); // Ressourcen freigeben
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error executing command: {ex.Message}");
+                }
+
+                sshClient.Disconnect();
             }
+
+            sshClient.Dispose();
         }
+
 
         private void btn_replay(object sender, EventArgs e)
         {
-            // Überprüfen, ob die SSH-Verbindung besteht
             if (sshClient != null && sshClient.IsConnected && shellStream != null)
             {
-                string command = "ansible-playbook cre*"; // Befehl aus der TextBox holen und trimmen
+                string command = "ansible-playbook cre*";
                 if (!string.IsNullOrEmpty(command))
                 {
-                    shellStream.WriteLine(command); // Befehl senden, gefolgt von einem Zeilenumbruch
-                    txtBox_commands.Clear(); // TextBox leeren, nachdem der Befehl gesendet wurde
+                    shellStream.WriteLine(command);
+                    txtBox_commands.Clear();
                 }
             }
             else

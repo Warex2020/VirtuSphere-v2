@@ -51,6 +51,23 @@ namespace VirtuSphere
         private string apiToken;
         private string apiUrl;
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+
+            try
+            {
+                if (Directory.Exists(ProjecttempPath))
+                {
+                    Directory.Delete(ProjecttempPath, true);
+                    Console.WriteLine("ProjecttempPath directory deleted successfully.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting ProjecttempPath directory: {ex.Message}");
+            }
+        }
 
         public void SetMissionName(string missionName)
         {
@@ -130,7 +147,6 @@ namespace VirtuSphere
                 button4.Visible = false;
                 button5.Visible = false;
 
-                generateConfigs();
                 reloadListFiles();
             }
             catch (Exception ex)
@@ -363,21 +379,13 @@ namespace VirtuSphere
 
         private async void btnDeploy2_Click(object sender, EventArgs e)
         {
-            // Erstelle und zeige DeployForm an
             DeployForm deployForm = new DeployForm();
-            deployForm.Show(); // Stellen Sie sicher, dass das Formular angezeigt wird, bevor Befehle ausgeführt werden.
-
-            // Übertrage Variablen
             deployForm.missionName = missionName;
             deployForm.ssh_hostname = ssh_hostname;
             deployForm.ssh_username = ssh_username;
             deployForm.ssh_password = ssh_password;
             deployForm.ssh_port = ssh_port;
-            deployForm.missionName = missionName;
-
             deployForm.ProjectPathTmp = ProjectPathTmp;
-
-
 
             if (!int.TryParse(ssh_port, out int ssh_port2))
             {
@@ -387,32 +395,35 @@ namespace VirtuSphere
 
             deployForm.ssh_port2 = ssh_port2;
 
-            // Erkenne auswahl comboPlaybooks_SelectedIndexChanged
-            // wenn comboPlaybooks nicht leer setzte comboPlaybooks.SelectedItem.ToString();
+            string selectedPlaybook = comboPlaybooks.SelectedItem?.ToString();
 
-
-            string selectedPlaybook = null;
-
-            if(comboPlaybooks.SelectedItem != null) selectedPlaybook = comboPlaybooks.SelectedItem.ToString();
-
-            // Sende alle dateien aus ProjectPathTmp an SSH-Server
+            bool allFilesSent = true;
             foreach (string file in Directory.GetFiles(ProjectPathTmp))
             {
                 Console.WriteLine("Sende Datei an SSH-Server: " + file);
-                deployForm.SendFileToSshTarget(ssh_hostname, ssh_port2, ssh_username, ssh_password, file, Path.GetFileName(file), "/tmp/" + missionName);
+                bool success = deployForm.SendFileToSshTarget(ssh_hostname, ssh_port2, ssh_username, ssh_password, file, Path.GetFileName(file), "/tmp/" + missionName);
+                if (!success)
+                {
+                    allFilesSent = false;
+                    break;
+                }
             }
+
+            if (!allFilesSent)
+            {
+                MessageBox.Show("Nicht alle Dateien konnten erfolgreich gesendet werden.", "Übertragungsfehler", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            deployForm.Show();
 
             var tcs = new TaskCompletionSource<bool>();
             deployForm.CommandsCompleted += (s, e2) => tcs.SetResult(true);
-
-            // Rufen Sie die neue Methode auf, um die SSH-Verbindung herzustellen und Befehle auszuführen
             await deployForm.ConnectAndExecuteSSHCommands(ssh_hostname, ssh_port2, ssh_username, ssh_password, missionName, selectedPlaybook, chk_createvms.Checked, chk_exportvminfos.Checked, chk_autostart.Checked, chk_verbose.Checked, chk_removeplaybooks.Checked);
 
             await tcs.Task;
-
-
-
         }
+
 
         private async void btn_importMacDB_Click(object sender, EventArgs e)
         {
@@ -537,10 +548,7 @@ namespace VirtuSphere
                 {
                     throw new ArgumentNullException(nameof(missionsList), "missionsList ist null");
                 }
-                if (missionId == 0)
-                {
-                    throw new ArgumentNullException(nameof(missionId), "missionId ist null oder leer");
-                }
+
 
                 Console.WriteLine("MissionID in generateConfigs: " + missionId);
                 Console.WriteLine("MissionName in generateConfigs: " + missionName);
@@ -568,12 +576,6 @@ apiUrl: ""{apiUrl}""
                 string packages = "";
                 string disks = "";
 
-                // fehlermeldung wenn missionId leer ist
-                if (missionId == 0)
-                {
-                    MessageBox.Show("Mission ID ist leer.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
 
                 // Default Werte für Datastore und Datacenter aus missionList
                 var mission = missionsList.FirstOrDefault(m => m.Id == missionId);
@@ -669,8 +671,8 @@ apiUrl: ""{apiUrl}""
                     string vm_ram = string.IsNullOrEmpty(vm.vm_ram) ? "1024" : vm.vm_ram;
                     string vm_cpu = string.IsNullOrEmpty(vm.vm_cpu) ? "1" : vm.vm_cpu;
                     string vm_disk = string.IsNullOrEmpty(vm.vm_disk) ? "20" : vm.vm_disk;
-                    string vm_datastore = string.IsNullOrEmpty(vm.vm_datastore) ? mission2_datastore : vm.vm_datastore;
-                    string vm_datacenter = string.IsNullOrEmpty(vm.vm_datacenter) ? mission2_datacenter : vm.vm_datacenter;
+                    string vm_datastore = mission2_datastore;
+                    string vm_datacenter = mission2_datacenter;
                     string vm_guest_id = string.IsNullOrEmpty(vm.vm_guest_id) ? "windows2019srv_64Guest" : vm.vm_guest_id;
                     string vm_os = string.IsNullOrEmpty(vm.vm_os) ? "Windows" : vm.vm_os;
 
@@ -716,7 +718,7 @@ mission_configuration:
             }
             catch (ArgumentNullException ex)
             {
-                MessageBox.Show($"Ein notwendiger Parameter ist null: {ex.ParamName} - {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($".Ein notwendiger Parameter ist null: {ex.ParamName} - {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {

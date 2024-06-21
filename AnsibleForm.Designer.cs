@@ -117,6 +117,7 @@
             this.label4.Size = new System.Drawing.Size(37, 13);
             this.label4.TabIndex = 35;
             this.label4.Text = "Status";
+            this.label4.Visible = false;
             // 
             // chk_removeplaybooks
             // 

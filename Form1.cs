@@ -14,6 +14,9 @@ using System.Windows.Forms.Design;
 using static System.Net.Mime.MediaTypeNames;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 using System.Net.Http;
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
 
 
 
@@ -50,6 +53,8 @@ namespace VirtuSphere
         public string Username { get; set; }
 
         public object JsonConvert { get; private set; }
+
+
 
         public FMmain(string apiToken, string apiUrl, bool useTls)
         {
@@ -90,6 +95,27 @@ namespace VirtuSphere
                 comboVCPU.Items.Add(cpuValue);
             }
 
+        }
+
+        private static bool callbackSet = false; // Statischer Flag zur Überwachung, ob der Callback gesetzt wurde
+
+        public void InitializeSecurityProtocol()
+        {
+            if (!callbackSet)
+            {
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+                ServicePointManager.ServerCertificateValidationCallback = ServerCertificateCustomValidation;
+                callbackSet = true;
+            }
+        }
+
+        private bool ServerCertificateCustomValidation(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            if (sslPolicyErrors == SslPolicyErrors.None)
+                return true;
+
+            // Ihr Code zur Benutzerbenachrichtigung und Entscheidungsfindung
+            return false; // oder true, basierend auf Benutzereingaben oder -einstellungen
         }
 
 
@@ -600,6 +626,8 @@ namespace VirtuSphere
 
                         // Update the listView1
                         UpdateListView(vms);
+
+                        checkStatus();
                     }
                 }
                 ClearTextBoxes();
@@ -1679,10 +1707,12 @@ namespace VirtuSphere
                 ansibleForm.ssh_port = txt_ssh_port.Text;
                 ansibleForm.hostname = apiUrl;
                 ansibleForm.Token = apiToken;
-                ansibleForm.missionId = missionId;
                 ansibleForm.ssh_port2 = ssh_port2;
                 ansibleForm.SetMissionName(missionName);
                 ansibleForm.setTargetESXi("Zielsystem: " + txt_hv_ip.Text);
+                ansibleForm.generateConfigs();
+
+                
 
                 // beim schließen der AnsibleForm soll der Ordner mit Inhalt gelöscht werden ProjecttempPath
                 
@@ -1902,6 +1932,11 @@ namespace VirtuSphere
             {
                 missionName2 = "_" + missionName2;
             }
+
+            // leere VMs 
+            vms.Clear();
+            listView1.Items.Clear();
+
 
             bool success = await CreateMission(missionName2);
 

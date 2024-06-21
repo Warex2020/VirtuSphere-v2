@@ -158,6 +158,22 @@ namespace VirtuSphere
                 }
             }
 
+            // prüfe ob MissionDatastorage in Mission und Datacenter in Mission geändert wurde
+            if (MissionDatastorage != _mainForm.missionsList.Find(x => x.Id == missionId).hypervisor_datastorage)
+            {
+                // frage ob alle VMs geupdated werden sollen, weil sich die Datastorage geändert hat
+                DialogResult dialogResult = MessageBox.Show("Wollen Sie alle VMs in dieser Mission updaten, weil sich die Datastorage geändert hat?", "Datastorage geändert", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    //MessageBox.Show("Ja");
+                    _mainForm.UpdateAllVMsInMission(missionId, missionWDS);
+                }
+                else if (dialogResult == DialogResult.No)
+                {
+                    //MessageBox.Show("Nein");
+                }
+            }
+
 
 
             // Speichere die Daten in der Klasse
@@ -197,8 +213,6 @@ namespace VirtuSphere
 
 
             }
-
-
 
             this.Close();
         }
