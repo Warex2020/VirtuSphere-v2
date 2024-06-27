@@ -23,6 +23,7 @@ namespace VirtuSphere
         internal readonly string apiUrl;  // Ändern auf internal oder public
         internal readonly string apiToken;  // Ändern auf internal oder public
         private readonly bool useTls;
+        public string certThumbprint;
 
         public string globalusername;
         public DateTime TokenExpiryTime { get; private set; }
@@ -69,9 +70,15 @@ namespace VirtuSphere
                         Console.WriteLine("Zertifikat ist nicht vertrauenswürdig");
                         Console.WriteLine(certDetails);
 
+                        if(certThumbprint != null && certThumbprint == cert.Thumbprint)
+                        {
+                            return true; // Zertifikat wird für diese Sitzung ignoriert
+                        }
+
                         DialogResult result = MessageBox.Show($"Zertifikat ist nicht vertrauenswürdig\n\n{certDetails}\n\nMöchten Sie trotzdem fortfahren?", "Zertifikatfehler", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
                         if (result == DialogResult.Yes)
                         {
+                            certThumbprint = cert.Thumbprint;
                             return true; // Zertifikat wird für diese Sitzung ignoriert
                         }
 

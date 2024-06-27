@@ -304,7 +304,7 @@ namespace VirtuSphere
                 dns2 = "",
                 vlan = missionWDSVlan,
                 mode = "DHCP",
-                type = "e1000e"
+                type = "vmxnet3"
             };
 
             newInterface.IsManagementInterface = true;
@@ -1199,7 +1199,7 @@ namespace VirtuSphere
                     // wenn type leer dann setzte e1000e
                     if (vm.interfaces[0].type == "" || vm.interfaces[0].type == null)
                     {
-                        vm.interfaces[0].type = "e1000e";
+                        vm.interfaces[0].type = "vmxnet3";
                     }
 
                     // wenn mode leer dann setzte dhcp

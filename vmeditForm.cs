@@ -390,7 +390,7 @@ namespace VirtuSphere
                 // wenn type leer dann setzte e1000e
                 if (newInterface.type == "" || newInterface.type == null)
                 {
-                    newInterface.type = "e1000e";
+                    newInterface.type = "vmxnet3";
                 }
 
                 // wenn mode leer dann setzte dhcp

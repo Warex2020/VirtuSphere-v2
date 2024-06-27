@@ -1,14 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using static VirtuSphere.apiService;
 using static VirtuSphere.FMmain;
 
 namespace VirtuSphere
@@ -202,7 +193,7 @@ namespace VirtuSphere
 
                 // gib Id von selectedTemplate aus missionList zurück
                 int selectedTemplateId = _mainForm.missionsList.Find(x => x.mission_name == selectedTemplate).Id;
-                
+
                 //MessageBox.Show("Kopiere von Mission ID: " + selectedTemplateId + " ("+selectedTemplate+") zu Mission ID: " + missionId+ " ("+ missionName+")");
 
                 // Kopiere alle VMs mit der alten Mission ID in die neue Mission ID
@@ -217,7 +208,7 @@ namespace VirtuSphere
             this.Close();
         }
 
-     
+
 
         private void btn_close_Click(object sender, EventArgs e)
         {
