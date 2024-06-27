@@ -1,0 +1,27 @@
+---
+- name: Starten der VMs mit Wartezeit
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ./serverlist.yml
+    - ./accounts.yml
+
+  tasks:
+    - name: warten vor dem Starten der VMs
+      pause:
+        minutes: "{{ WaitingTime }}"
+
+    - name: Vorhandene VMs starten
+      community.vmware.vmware_guest_powerstate:
+        hostname: "{{ esxi_hostname }}"
+        username: "{{ esxi_username }}"
+        password: "{{ esxi_password }}"
+        validate_certs: no
+        name: "{{ item.vm_name }}"
+        folder: "/"
+        datacenter: "{{ item.datacenter_name }}"
+        state: powered-on
+        force: no
+      delegate_to: localhost
+      loop: "{{ vm_configurations }}"
+      when: vm_configurations | length > 0

@@ -5,6 +5,4 @@ Docker/WebAPI/logs/fail.log
 obj/Debug/
 ApiService.cs
 Docker/nginx/ssl/
-bin/Release/
-obj/Release/
-bin/Debug/formPositions.json
+
